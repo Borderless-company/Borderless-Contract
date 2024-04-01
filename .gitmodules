@@ -1,3 +1,6 @@
 [submodule "dao-llc-templates/lib/forge-std"]
 	path = dao-llc-templates/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "dao-llc-jp-templates/lib/forge-std"]
+	path = dao-llc-jp-templates/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std

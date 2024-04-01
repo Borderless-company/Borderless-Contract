@@ -16,11 +16,3 @@ holesky = "${HOLESKY_RPC_URL}"
 
 [etherscan]
 holesky = { key = "${DEV_ETHERSCAN_API_KEY}" }
-
-# Upgradeability settings
-# See more Upgradeability settings https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/blob/main/DEFENDER.md
-
-build_info = true
-extra_output = ["storageLayout"]
-
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
