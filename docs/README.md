@@ -6,8 +6,12 @@ title: Dev Documents
 
 - 日本における合同会社型 DAO（DAO-LLC）テンプレート開発のためのドキュメント
 
-1. `Dev Rule` 開発に関するルールを記載しています。※必ず読んでください。
+1. `Dev Rule` 開発に関するルールを記載しています。**必ず読んでください。**
 2. `Documents` 開発に関するドキュメントの一覧を記載しています。
+
+### Sample Project
+
+- [CompanyDAO github](https://github.com/CompanyDAO/protocol-contracts)
 
 ---
 
@@ -15,8 +19,8 @@ title: Dev Documents
 
 - ドキュメント作成に関するルール
 
-  1. ナレッジはもちろん、`シーケンス図`はじめ Diagram 図など、各種ドキュメントを必ず作成すること
-  2. 必ず`ドキュメント・レビュー`をすること
+1. ナレッジはもちろん、`シーケンス図`はじめ Diagram 図など、各種ドキュメントを必ず作成すること
+2. 必ず`ドキュメント・レビュー`をすること
 
 - コーディング・ルール（規定）
 
@@ -48,3 +52,5 @@ function callIndex() external returns(uint256){}// アンダーバーなど付�
 ---
 
 ## Documents
+
+1. `./contracts` DAO-LLC-JP のコントラクト群のドキュメント
