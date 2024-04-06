@@ -2,7 +2,7 @@
 
 ## setup
 
-0. setup [foundry]()
+0. setup [foundry](https://book.getfoundry.sh/getting-started/installation)
 1. `cd dao-llc-jp-templates && forge test` コントラクトプロジェクトに移動してテストを実行する
 
 ## Tools
