@@ -1,14 +1,10 @@
 ---
-title: DAO-LLC-JP smart contracts document
+title: Overlay Borderless.company smart contracts document
 ---
 
 ## Overview
 
-- DAO-LLC-JP のスマートコントラクトの開発ドキュメント用のディレクトリです
-
-- [Overlay Notion ドキュメント（DAO-LLC-JP 開発・検討のためのドキュメント）](https://www.notion.so/overlay-swiss/PoC-DAO-0a1bde6fc64a4d1e919b8e981adbc1bf)
-- 開発のための他サンプル（参考）プロジェクト
-  - [CompanyDAO github](https://github.com/CompanyDAO/protocol-contracts)
+- Overlay Borderless.company のスマートコントラクトの開発ドキュメント用のディレクトリです。
 
 ---
 
@@ -54,8 +50,8 @@ title: DAO-LLC-JP smart contracts document
 
 - Contract list
 
-  1. RegisterTokenyzeCompany(Factoty)
-  2. TokenyzeCompany(New TokenyzeCompany)
+  1. RegisterBorderlessCompany(Regsit and Factoty contract)
+  2. BorderlessCompany(New BorderlessCompany)
   3. Governance
   4. Treasury
   5. Token
@@ -67,4 +63,10 @@ title: DAO-LLC-JP smart contracts document
 
 ## Documents
 
-1. `./1.RegisterTokenyzeCompany.index.md` for RegisterTokenyzeCompany contract
+- 開発資料（Diagram etc）
+
+1. `./1.RegisterTokenyzeCompany.index.md` for RegisterBorderlessCompany contract
+
+- [Overlay Notion ドキュメント（DAO-LLC-JP 開発・検討のためのドキュメント）](https://www.notion.so/overlay-swiss/PoC-DAO-0a1bde6fc64a4d1e919b8e981adbc1bf)
+- 開発のための他サンプル（参考）プロジェクト
+  - [CompanyDAO github](https://github.com/CompanyDAO/protocol-contracts)
