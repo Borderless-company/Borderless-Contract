@@ -3,6 +3,7 @@ pragma solidity =0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
 import {Whitelist} from "src/Whitelist/Whitelist.sol";
+import {EventWhitelist} from "src/interfaces/Whitelist/EventWhitelist.sol";
 import {ErrorWhitelist} from "src/interfaces/Whitelist/ErrorWhitelist.sol";
 
 contract TestWhitelist is Test {
@@ -47,6 +48,9 @@ contract TestWhitelist is Test {
         assertTrue(!wl.isWhitelisted(reserver));
         
         // 2. コントラクトオーナーが、ホワイトリストに予約者アカウントを追加する
+        // 予約者がホワイトリストに登録されたイベントが発生することを確認する
+        vm.expectEmit(true, true, false, false);
+        emit EventWhitelist.NewReserver(address(owner), address(reserver));
         listed = wl.addToWhitelist(reserver);
 
         // 3. listedがtrueであることを確認する
@@ -89,7 +93,7 @@ contract TestWhitelist is Test {
         // 4. 登録した予約アカウントがホワイトリストに含まれていることを確認する
         assertTrue(wl.isWhitelisted(address(reserver)));
 
-        // -- Error check -- //
+        // -- Error-Handling check -- //
 
         // 1. address(0)アカウントはリバートされることを確認する
         vm.expectRevert(
@@ -109,7 +113,7 @@ contract TestWhitelist is Test {
         );
         wl.addToWhitelist(address(0));
 
-        // 2. ホワイトリストに登録済みのアカウントはリバートされることを確認する
+        // 3. ホワイトリストに登録済みのアカウントはリバートされることを確認する
         vm.expectRevert(
             abi.encodeWithSelector(
                 ErrorWhitelist.ReserverAlready.selector,
@@ -118,7 +122,7 @@ contract TestWhitelist is Test {
         );
         wl.addToWhitelist(reserver);
 
-        // 3. ホワイトリスト登録失敗は、リバートされることを確認する
+        // 4. ホワイトリスト登録失敗は、リバートされることを確認する
         // Note: 本ケースは、意図的にfalseをつくることで、異常系のリバートチェックを行っています。
         // - 特殊ケースに伴い、コメントアウトしています。
         // vm.expectRevert(
@@ -151,21 +155,22 @@ contract TestWhitelist is Test {
         // -- test start コントラクト実行者 -- //
         vm.startPrank(dummy);
 
-        // 1. コントラクトオーナーのみ、ホワイトリストに予約者アカウントを指定して確認ができる
+        // 1. dummyコントラクトオーナーでは、ホワイトリストに予約者アカウントを指定して確認ができないことを確認する
         vm.expectRevert(bytes("Error: Whitelist/Only-Owner"));
         wl.isWhitelisted(reserver);
 
         // 2. ホワイトリストに予約者アカウントが存在していないことを確認する
         assertTrue(!wl.isWhitelisted());
 
-        // 3. コントラクトオーナーが、ホワイトリストに予約者アカウントを追加する
+        // 3. dummyコントラクトオーナーが、ホワイトリストに予約者アカウントを追加できないことを確認する
         vm.expectRevert(bytes("Error: Whitelist/Only-Owner"));
         listed = wl.addToWhitelist(reserver);
 
-        // 4. listedがtrueであることを確認する
+        // 4. listedがfalseであることを確認する
         assertTrue(!listed);
 
-        // 5. 登録した予約アカウントがホワイトリストに含まれていることを確認する
+        // 5. dummyの呼び出し者は、自身のアドレスによりホワイトリストに含まれていることか確認できる
+        // Note: このケースでは、dummyの呼び出し者がホワイトリストに含まれていないことを確認する
         assertTrue(!wl.isWhitelisted());
 
         // -- test end -- //
