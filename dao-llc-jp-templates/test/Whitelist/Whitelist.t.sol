@@ -2,7 +2,8 @@
 pragma solidity =0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
-import {Whitelist, ErrorWhitelist} from "src/Whitelist/Whitelist.sol";
+import {Whitelist} from "src/Whitelist/Whitelist.sol";
+import {ErrorWhitelist} from "src/interfaces/Whitelist/ErrorWhitelist.sol";
 
 contract TestWhitelist is Test {
     Whitelist wl;
