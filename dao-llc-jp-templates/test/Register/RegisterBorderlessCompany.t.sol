@@ -3,10 +3,13 @@ pragma solidity =0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
 import {RegisterBorderlessCompany, IBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
+import {Whitelist} from "src/Whitelist/Whitelist.sol";
 
 contract TestRegisterBorderlessCompany is Test {
     RegisterBorderlessCompany rbc;
     IBorderlessCompany ibc;
+    Whitelist wl;
+
     address owner;
     address exMember;
     address admin;
@@ -20,7 +23,10 @@ contract TestRegisterBorderlessCompany is Test {
         owner = makeAddr("OverlayAdmin");
         exMember = makeAddr("Queen");
 
-        rbc = new RegisterBorderlessCompany();
+        vm.prank(owner);
+        wl = new Whitelist();
+
+        rbc = new RegisterBorderlessCompany(address(wl));
     }
 
     // =================== Test Cases ===================
@@ -40,6 +46,7 @@ contract TestRegisterBorderlessCompany is Test {
      * - createBorderlessCompany
      * 
      * テストケースに含まれるオペレーション:
+     * 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
      * 1. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyのためのCompanyInfoを入力する。
      * 2. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyを起動する
      * 3. 新しい`BorderlessCompany`(Borderless.company)コントラクトが起動（設立）が成功したことを確認する。
@@ -59,6 +66,10 @@ contract TestRegisterBorderlessCompany is Test {
         assertTrue(keccak256(abi.encodePacked(establishmentDate)) == keccak256(abi.encodePacked("")));
         assertTrue(started == confirmed);
 
+        // 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
+        vm.prank(owner);
+        wl.addToWhitelist(exMember);
+        
         // -- test start コントラクト実行者 -- //
         vm.startPrank(exMember);
 

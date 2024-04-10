@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity =0.8.24;
 
+import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol"; 
+
 /// @title feature interface for RegisterBorderlessCompany contract
 interface IRegisterBorderlessCompany { // Note: IRegisterBorderlessCompany is an feature interface
     /**
@@ -44,6 +46,7 @@ interface ErrorRegisterBorderlessCompany { // Note: ErrorRegisterBorderlessCompa
 }
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany {
+    IWhitelist private _whitelist;
     // TODO: `_owner`機能の実装をする
     address private _owner;
     // TODO: `_lastIndex`管理機能を実装する
@@ -62,11 +65,12 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     }
 
     // TODO: constructorの実装をする
-    // constructor() {}
+    constructor(address whitelist_) {
+        _whitelist = IWhitelist(whitelist_);
+    }
 
     // TODO: Whitelistより、`isWhitelisted`機能によるアクセスコントロールを実装する
-    // TODO: Error-handlingの実装をする。（modifierで行う）Whitelistコントラクトを用いたアドレスのホワイトリスト制御を実装する
-    function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override returns(bool started_, address companyAddress_) {
+    function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override onlyFounder returns(bool started_, address companyAddress_) {
         CompanyInfo memory _info;
 
         if (companyID_.length == 0 || establishmentDate_.length == 0 || !confirmed_) {
@@ -96,6 +100,11 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         emit NewBorderlessCompany(info_.founder, info_.companyAddress, _lastIndex);
 
         (started_, companyAddress_) = (true, info_.companyAddress);
+    }
+
+    modifier onlyFounder() {
+        require(_whitelist.isWhitelisted(msg.sender) , "Error: Register/Only-Founder");
+        _;
     }
 }
 

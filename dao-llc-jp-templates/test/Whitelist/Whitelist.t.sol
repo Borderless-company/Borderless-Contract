@@ -95,14 +95,14 @@ contract TestWhitelist is Test {
 
         // -- Error-Handling check -- //
 
-        // 1. address(0)アカウントはリバートされることを確認する
+        // 1. dummy == address(0)アカウントはリバートされることを確認する
         vm.expectRevert(
             abi.encodeWithSelector(
                 ErrorWhitelist.InvalidAddress.selector,
-                address(0)
+                address(dummy)
             )
         );
-        wl.isWhitelisted(address(0));
+        wl.isWhitelisted(address(dummy));
 
         // 2. address(0)アカウントはリバートされることを確認する
         vm.expectRevert(
@@ -150,28 +150,20 @@ contract TestWhitelist is Test {
         // -- test用セットアップ -- //
         bool listed;
         dummy = makeAddr("Rabbit");
-        reserver = account_;
 
         // -- test start コントラクト実行者 -- //
         vm.startPrank(dummy);
 
-        // 1. dummyコントラクトオーナーでは、ホワイトリストに予約者アカウントを指定して確認ができないことを確認する
-        vm.expectRevert(bytes("Error: Whitelist/Only-Owner"));
-        wl.isWhitelisted(reserver);
-
-        // 2. ホワイトリストに予約者アカウントが存在していないことを確認する
-        assertTrue(!wl.isWhitelisted());
-
-        // 3. dummyコントラクトオーナーが、ホワイトリストに予約者アカウントを追加できないことを確認する
+        // 1. dummyコントラクトオーナーが、ホワイトリストに予約者アカウントを追加できないことを確認する
         vm.expectRevert(bytes("Error: Whitelist/Only-Owner"));
         listed = wl.addToWhitelist(reserver);
 
-        // 4. listedがfalseであることを確認する
+        // 2. listedがfalseであることを確認する
         assertTrue(!listed);
 
-        // 5. dummyの呼び出し者は、自身のアドレスによりホワイトリストに含まれていることか確認できる
-        // Note: このケースでは、dummyの呼び出し者がホワイトリストに含まれていないことを確認する
-        assertTrue(!wl.isWhitelisted());
+        // 3. dummyの呼び出し者は、自身のアドレスによりホワイトリストに含まれていることか確認できる
+        // Note: このケースでは、reserverがホワイトリストに含まれていないことを確認する
+        assertTrue(!wl.isWhitelisted(reserver));
 
         // -- test end -- //
         vm.stopPrank();

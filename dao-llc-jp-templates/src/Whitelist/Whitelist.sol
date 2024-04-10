@@ -32,14 +32,10 @@ contract Whitelist is IWhitelist, EventWhitelist, ErrorWhitelist {
         }
     }
     
-    function isWhitelisted(address account_) external view override onlyOwner returns(bool listed_){
+    function isWhitelisted(address account_) external view override returns(bool listed_){
         if(account_ == address(0)) revert InvalidAddress(account_);
 
         listed_ = _isWhitelisted(account_);
-    }
-
-    function isWhitelisted() external view override returns(bool listed_){
-        listed_ = _isWhitelisted(msg.sender);
     }
 
     function _isWhitelisted(address account_) internal view returns(bool listed_){
