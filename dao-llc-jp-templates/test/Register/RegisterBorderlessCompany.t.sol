@@ -43,6 +43,7 @@ contract TestRegisterBorderlessCompany is Test {
      * 1. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyのためのCompanyInfoを入力する。
      * 2. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyを起動する
      * 3. 新しい`BorderlessCompany`(Borderless.company)コントラクトが起動（設立）が成功したことを確認する。
+     * 4. 新しい`BorderlessCompany`(Borderless.company)コントラクトの機能実行ができることを確認する。
      * @notice テストケースの実行には、コントラクト実行者が必要です。
      * 1. `owner` に `OverlayAdmin` を指定してコントラクトを実行します。
      * 2. `exMember` に `Queen`を指定して実行します。
