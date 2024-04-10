@@ -44,7 +44,9 @@ interface ErrorRegisterBorderlessCompany { // Note: ErrorRegisterBorderlessCompa
 }
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany {
+    // TODO: `_owner`機能の実装をする
     address private _owner;
+    // TODO: `_lastIndex`管理機能を実装する
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
 
@@ -59,7 +61,11 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         uint256 updateAt;
     }
 
-    // TODO: Whitelistコントラクトを用いたアドレスのホワイトリスト制御を実装する
+    // TODO: constructorの実装をする
+    // constructor() {}
+
+    // TODO: Whitelistより、`isWhitelisted`機能によるアクセスコントロールを実装する
+    // TODO: Error-handlingの実装をする。（modifierで行う）Whitelistコントラクトを用いたアドレスのホワイトリスト制御を実装する
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override returns(bool started_, address companyAddress_) {
         CompanyInfo memory _info;
 
@@ -80,6 +86,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
 
     function _createBorderlessCompany(CompanyInfo memory info_) private returns(bool started_, address companyAddress_) {
         BorderlessCompany _company = new BorderlessCompany(info_.founder);
+        // TODO: Error-handlingを実装する
         info_.companyAddress = address(_company);
 
         _lastIndex++;
@@ -92,10 +99,14 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     }
 }
 
+// Note: 暫定的にIBorderlessCompanyコントラクトを作成
+// TODO: 正規に、ディレクトリとソースコード整理をする
 interface IBorderlessCompany {
     function callAdmin() external returns(bool);
 }
 
+// Note: 暫定的にIBorderlessCompanyコントラクトを作成
+// TODO: 正規に、ディレクトリとソースコード整理をする
 contract BorderlessCompany is IBorderlessCompany {
     address private _admin;
 
