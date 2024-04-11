@@ -5,6 +5,16 @@ import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol";
 
 /// @title feature interface for RegisterBorderlessCompany contract
 interface IRegisterBorderlessCompany { // Note: IRegisterBorderlessCompany is an feature interface
+    struct CompanyInfo {
+        address companyAddress;
+        address founder;
+        bytes companyID;
+        bytes establishmentDate;
+        bool confirmed;
+        uint256 createAt;
+        uint256 updateAt;
+    }
+
     /**
     * @dev ボーダーレス企業を作成します。
     * @param companyID_ 企業のIDです。
@@ -51,17 +61,6 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     address private _owner;
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
-
-    // TODO: `CompanyInfo`データ構造をinterfaceへ移動する。
-    struct CompanyInfo {
-        address companyAddress;
-        address founder;
-        bytes companyID;
-        bytes establishmentDate;
-        bool confirmed;
-        uint256 createAt;
-        uint256 updateAt;
-    }
 
     constructor(address whitelist_) {
         _whitelist = IWhitelist(whitelist_);
