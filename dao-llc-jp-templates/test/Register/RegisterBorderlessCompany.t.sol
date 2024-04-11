@@ -2,8 +2,10 @@
 pragma solidity =0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
-import {RegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany, IBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
 import {Whitelist} from "src/Whitelist/Whitelist.sol";
+import {RegisterBorderlessCompany, IBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
+import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
+import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
 
 contract TestRegisterBorderlessCompany is Test {
     RegisterBorderlessCompany rbc;

@@ -1,57 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity =0.8.24;
 
-import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol"; 
-
-/// @title feature interface for RegisterBorderlessCompany contract
-interface IRegisterBorderlessCompany { // Note: IRegisterBorderlessCompany is an feature interface
-    struct CompanyInfo {
-        address companyAddress;
-        address founder;
-        bytes companyID;
-        bytes establishmentDate;
-        bool confirmed;
-        uint256 createAt;
-        uint256 updateAt;
-    }
-
-    /**
-    * @dev ボーダーレス企業を作成します。
-    * @param companyID_ 企業のIDです。
-    * @param establishmentDate_ 企業の設立日時です。
-    * @param confirmed_ 企業が確認されているかどうかです。
-    * @return started_ 企業作成が開始されたかどうかを示すブール値です。
-    * @return companyAddress_ 作成された企業コントラクトを示すアドレス値です。
-    */
-    // function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external returns(bool started_);
-    function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external returns(bool started_, address companyAddress_);
-}
-
-/// @title Event interface for RegisterBorderlessCompany contract
-interface EventRegisterBorderlessCompany { // Note: EventRegisterBorderlessCompany is an event interface
-    /**
-    * @dev 新しいBorderless.companyが作成されたことを通知するイベントです。
-    * @param founder_ Borderless.companyを起動した呼び出し元のアドレスです。
-    * @param company_ 新しく作成されたBorderless.companyのアドレスです。
-    * @param companyIndex_ 新しく作成されたBorderless.companyのインデックスです。
-    */
-    event NewBorderlessCompany(address indexed founder_, address indexed company_, uint256 indexed companyIndex_);
-}
-
-/// @title Error interface for RegisterBorderlessCompany contract
-interface ErrorRegisterBorderlessCompany { // Note: ErrorRegisterBorderlessCompany is an event interface
-    /**
-    * @dev 不正な事業リソースが提供された場合に発生するエラー
-    * @param account_ 起動（設立）しようとしたが失敗したアカウント
-    */
-    error InvalidCompanyInfo(address account_);
-
-    /**
-    * @dev Borderless.companyを起動（設立）できなかった場合に発生するエラー
-    * @param account_ 起動（設立）しようとしたが失敗したアカウント
-    */
-    error DoNotCreateBorderlessCompany(address account_);
-}
+import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol";
+import {IRegisterBorderlessCompany} from "src/interfaces/Register/IRegisterBorderlessCompany.sol";
+import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
+import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
