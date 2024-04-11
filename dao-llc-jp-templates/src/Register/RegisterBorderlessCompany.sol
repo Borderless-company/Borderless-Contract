@@ -49,7 +49,6 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     IWhitelist private _whitelist;
     // TODO: `_owner`機能の実装をする
     address private _owner;
-    // TODO: `_lastIndex`管理機能を実装する
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
 
