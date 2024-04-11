@@ -2,7 +2,7 @@
 pragma solidity =0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
-import {RegisterBorderlessCompany, IBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
+import {RegisterBorderlessCompany, ErrorRegisterBorderlessCompany, IBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
 import {Whitelist} from "src/Whitelist/Whitelist.sol";
 
 contract TestRegisterBorderlessCompany is Test {
@@ -13,6 +13,7 @@ contract TestRegisterBorderlessCompany is Test {
     address owner;
     address exMember;
     address admin;
+    address dummy;
 
     // -- setup companyInfo param -- //
     bytes companyID;
@@ -26,6 +27,7 @@ contract TestRegisterBorderlessCompany is Test {
         vm.prank(owner);
         wl = new Whitelist();
 
+        vm.prank(owner);
         rbc = new RegisterBorderlessCompany(address(wl));
     }
 
@@ -97,4 +99,65 @@ contract TestRegisterBorderlessCompany is Test {
         // -- test end -- //
         vm.stopPrank();
     }
+
+    /**
+     * @dev 1.NG: 不正な呼び出し者により、Borderless.companyのサービスコントラクト起動失敗ケース
+     * - createBorderlessCompany
+     * 
+     * テストケースに含まれるオペレーション:
+     * 1. サービス予約を完了していない実行者により、Borderless.companyを起動する。
+     * 2. サービス予約を完了した業務執行社員（代表社員）により、不正なCompanyInfoを入力して、Borderless.companyを起動する。
+     *    1. `companyID` 登記による法人IDが存在しない
+     *    2. `establishmentDate` 登記による設立日が存在しない
+     *    3. `confirmed` 規約・規定に同意をしていない（false）
+     * @notice テストケースの実行には、コントラクト実行者が必要です。
+     * 1. `owner` に `OverlayAdmin` を指定してコントラクトを実行します。
+     * 2. `exMember` に `Queen`を指定して実行します。
+     * 3. `admin` は、 `exMember`(Queen)を代入して実行します。
+     * 4. `dummy` は、 `Rabbit`を代入して実行します。
+     */
+     function test_Fail_RegisterBorderlessCompany_createBorderlessCompany_byDummyExMember() public {
+        // -- test用セットアップ -- //
+        bool started;
+        address companyAddress;
+        dummy = makeAddr("Rabbit");
+
+        // -- test前の初期値確認 -- //
+        assertTrue(keccak256(abi.encodePacked(companyID)) == keccak256(abi.encodePacked("")));
+        assertTrue(keccak256(abi.encodePacked(establishmentDate)) == keccak256(abi.encodePacked("")));
+        assertTrue(started == confirmed);
+
+        // -- test start コントラクト実行者 -- //
+        vm.startPrank(dummy);
+
+        // 1. サービス予約を完了していない実行者により、Borderless.companyを起動する
+        vm.expectRevert(bytes("Error: Register/Only-Founder"));
+        (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
+        assertTrue(!started);
+
+        vm.stopPrank();
+
+        // 2. サービス予約を完了した業務執行社員（代表社員）により、不正なCompanyInfoを入力
+        vm.prank(owner);
+        wl.addToWhitelist(exMember);
+ 
+        vm.startPrank(exMember);
+
+        // Note: 不正なCompanyInfoを入力してテストを実行する
+        companyID = "0x-borderless-company-id";
+        establishmentDate = "YYYY-MM-DD HH:MM:SS";
+        confirmed = false;
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorRegisterBorderlessCompany.InvalidCompanyInfo.selector,
+                address(exMember)
+            )
+        );
+        (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
+        assertTrue(!started);
+
+        // -- test end -- //
+        vm.stopPrank();
+     }
 }

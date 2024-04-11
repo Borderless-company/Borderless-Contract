@@ -55,12 +55,12 @@ interface ErrorRegisterBorderlessCompany { // Note: ErrorRegisterBorderlessCompa
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
-    // TODO: `_owner`機能の実装をする
     address private _owner;
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
 
     constructor(address whitelist_) {
+        _owner = msg.sender;
         _whitelist = IWhitelist(whitelist_);
     }
 
