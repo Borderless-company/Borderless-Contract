@@ -2,7 +2,7 @@
 pragma solidity =0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
-import {RegisterBorderlessCompany, ErrorRegisterBorderlessCompany, IBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
+import {RegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany, IBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
 import {Whitelist} from "src/Whitelist/Whitelist.sol";
 
 contract TestRegisterBorderlessCompany is Test {
@@ -81,6 +81,10 @@ contract TestRegisterBorderlessCompany is Test {
         confirmed = true;
 
         // 2. Borderless.companyを起動する
+        // MEMO: contractのaddressはテストログより参照した値です
+        vm.expectEmit(true, true, true, false);
+        emit EventRegisterBorderlessCompany.NewBorderlessCompany(address(exMember), address(0x5fadc320561EED0887d2A7df9C6Dd71d94655C0b), 1);
+
         (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
 
         // 3. Borderless.companyの起動（設立）が成功したことを確認する
