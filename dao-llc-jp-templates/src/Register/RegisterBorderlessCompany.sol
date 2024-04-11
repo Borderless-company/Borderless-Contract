@@ -5,6 +5,7 @@ import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol";
 import {IRegisterBorderlessCompany} from "src/interfaces/Register/IRegisterBorderlessCompany.sol";
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
+import {BorderlessCompany} from "src/BorderlessCompany.sol";
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
@@ -57,7 +58,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         _lastIndex++;
         uint256 _updateIndex = _getLatestIndex();
 
-        if(_currentIndex + 1 == _updateIndex) (updated_, index_) = (true, _lastIndex);
+        if(_currentIndex + 1 == _updateIndex) (updated_, index_) = (true, _updateIndex);
     }
 
     function _getLatestIndex() private view returns(uint256) {
