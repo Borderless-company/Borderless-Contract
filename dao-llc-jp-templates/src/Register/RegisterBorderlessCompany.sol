@@ -45,7 +45,7 @@ interface ErrorRegisterBorderlessCompany { // Note: ErrorRegisterBorderlessCompa
     error DoNotCreateBorderlessCompany(address account_);
 }
 
-contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany {
+contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
     // TODO: `_owner`機能の実装をする
     address private _owner;
@@ -64,42 +64,55 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         uint256 updateAt;
     }
 
-    // TODO: constructorの実装をする
     constructor(address whitelist_) {
         _whitelist = IWhitelist(whitelist_);
     }
 
-    // TODO: Whitelistより、`isWhitelisted`機能によるアクセスコントロールを実装する
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override onlyFounder returns(bool started_, address companyAddress_) {
         CompanyInfo memory _info;
+        if (companyID_.length == 0 || establishmentDate_.length == 0 || !confirmed_) revert InvalidCompanyInfo(msg.sender);
 
-        if (companyID_.length == 0 || establishmentDate_.length == 0 || !confirmed_) {
-            // TODO: Error-handlingを実装する
-            started_ = false;
-        } else {
-            _info.founder = msg.sender;
-            _info.companyID = companyID_;
-            _info.establishmentDate = establishmentDate_;
-            _info.confirmed = confirmed_;
-            _info.createAt = block.timestamp;
-            _info.updateAt = block.timestamp;
-        }
+        _info.founder = msg.sender;
+        _info.companyID = companyID_;
+        _info.establishmentDate = establishmentDate_;
+        _info.confirmed = confirmed_;
+        _info.createAt = block.timestamp;
+        _info.updateAt = block.timestamp;
 
         (started_, companyAddress_) = _createBorderlessCompany(_info);
     }
 
     function _createBorderlessCompany(CompanyInfo memory info_) private returns(bool started_, address companyAddress_) {
+        bool _updated;
+        uint256 _index;
+        
         BorderlessCompany _company = new BorderlessCompany(info_.founder);
-        // TODO: Error-handlingを実装する
-        info_.companyAddress = address(_company);
+        if (address(_company) == address(0)) revert DoNotCreateBorderlessCompany(msg.sender);
+        
+        (_updated, _index) = _incrementLastIndex();
 
+        if(_updated) {
+            info_.companyAddress = address(_company);
+            _companies[_index] = info_;
+
+            emit NewBorderlessCompany(info_.founder, info_.companyAddress, _lastIndex);
+
+            (started_, companyAddress_) = (true, info_.companyAddress);
+        } else {
+            revert DoNotCreateBorderlessCompany(msg.sender);
+        }
+    }
+
+    function _incrementLastIndex() private returns(bool updated_, uint256 index_){
+        uint256 _currentIndex = _getLatestIndex();
         _lastIndex++;
-        // TODO: _lastIndexの値取得をする機能を実装する
-        _companies[_lastIndex] = info_;
+        uint256 _updateIndex = _getLatestIndex();
 
-        emit NewBorderlessCompany(info_.founder, info_.companyAddress, _lastIndex);
+        if(_currentIndex + 1 == _updateIndex) (updated_, index_) = (true, _lastIndex);
+    }
 
-        (started_, companyAddress_) = (true, info_.companyAddress);
+    function _getLatestIndex() private view returns(uint256) {
+        return _lastIndex;
     }
 
     modifier onlyFounder() {
