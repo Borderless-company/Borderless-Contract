@@ -44,14 +44,12 @@ interface ErrorRegisterBorderlessCompany { // Note: ErrorRegisterBorderlessCompa
     * @dev 不正な事業リソースが提供された場合に発生するエラー
     * @param account_ 起動（設立）しようとしたが失敗したアカウント
     */
-    // TODO: `account_`から`CompanyInfo`に変更する
     error InvalidCompanyInfo(address account_);
 
     /**
     * @dev Borderless.companyを起動（設立）できなかった場合に発生するエラー
     * @param account_ 起動（設立）しようとしたが失敗したアカウント
     */
-    // TODO: `account_`から`CompanyInfo`に変更する
     error DoNotCreateBorderlessCompany(address account_);
 }
 
