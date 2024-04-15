@@ -77,3 +77,5 @@
 ---
 
 ## Others
+
+- `make run-abi` cli で、コントラクトの ABI を出力できます。
