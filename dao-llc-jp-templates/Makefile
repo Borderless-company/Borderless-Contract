@@ -5,6 +5,10 @@ include .env
 run-localchain:
 	anvil
 
+.PHONY: run-abi
+run-abi:
+	forge inspect ${CONTRACT_FILE} abi
+
 # sample test script
 .PHONY: dss-test
 dss-test:
