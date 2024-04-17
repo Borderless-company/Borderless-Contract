@@ -52,9 +52,13 @@
 
 ---
 
-### Factory Pool コントラクト　 for Official
+### FactoryPool コントラクト　　 for Official
 
-- Data structure
+1. Data structure
+2. Interfaces
+3. Diagram
+
+#### 1. Data structure
 
 ```solidity
 struct ServiceInfo{
@@ -69,7 +73,9 @@ mapping(uint256 index_ => ServiceInfo info_) _services;
 
 ---
 
-- Interface
+#### 2. Interfaces
+
+- interface
 
 1. `ServiceコントラクトFactory`の登録をする機能
 2. 登録した`ServiceコントラクトFactory`のアドレスを参照できる機能
@@ -86,6 +92,8 @@ interface IFactoryPool{
 }
 ```
 
+---
+
 - Event-handling
 
 1. FactoryPool への新規 Service アドレス追加イベント
@@ -99,6 +107,8 @@ interface EventFactoryPool {
 }
 ```
 
+---
+
 - Error-handling
 
 ```solidity
@@ -111,6 +121,171 @@ modifier onlyOwner() {
     require(msg.sender == _register, "FactoryPool: Only-Owner");
     _;
 }
+```
+
+#### 3. Diagram
+
+- `setService` sequence
+
+```mermaid
+   sequenceDiagram
+      participant OW as Owner
+      participant FP as FactoryPool<br/>Contract
+      participant FS as FactoryService<br/>Contract
+      participant EVM as EVM
+      participant BC as Blockchain
+
+      alt: Deploy new service factory contract
+      Note over OW: 新Service機能コントラクトのデプロイ
+      OW ->>+ EVM: Deploy New FactoryService
+      EVM ->> EVM: create new FactoryService contract
+      EVM -->> BC: transaction
+      EVM ->> FS: create contract
+      EVM ->>- OW: res: tx and contract address
+      end
+
+      alt: setService
+      Note over OW: 新Service機能アドレスのFacotryPool登録
+      OW ->>+ FP: call setService(address service_)
+
+      FP ->> FP: Error-handling: FactoryPool/Only-Owner
+      alt: Error-handling
+
+      Note over FP: Error: FactoryPool/Only-Owner
+      FP -->> OW: res: Error Revert FactoryPool/Only-Owner
+      Note over FP: OK: FactoryPool/Only-Owner
+      end
+
+      FP ->> FP: Error-handling: FactoryPool/Invalid-Param
+
+      alt: Error-handling
+      Note over FP: Error: FactoryPool/Invalid-Param
+      FP -->> OW: res: Error Revert FactoryPool/Invalid-Param
+      Note over FP: OK: FactoryPool/Invalid-Param
+      end
+
+      FP ->> FP: increment index
+      FP ->> FP: create ServiceInfo
+      FP ->> FP: create ServiceInfo
+      alt: event NewService
+      FP ->> FP: execute event: NewService(address indexed service_, uint256 indexed index_)
+      FP -->> BC: transaction
+      end
+
+      FP ->>- OW: req: done
+      end
+```
+
+---
+
+- `updateService` sequence
+
+```mermaid
+   sequenceDiagram
+      participant OW as Owner
+      participant FP as FactoryPool<br/>Contract
+      participant FS as FactoryService<br/>Contract
+      participant EVM as EVM
+      participant BC as Blockchain
+
+      alt: setService sequence
+      OW ->> FP: setService down
+      end
+
+      alt: updateService
+      Note over OW: 登録アドレスのサービス状態更新メソッド
+      OW ->>+ FP: call updateService(address service_, uint256 index_, bool online_)
+      Note over OW: 登録アドレスのみの更新メソッド
+      OW ->>+ FP: call updateService(address service_, uint256 index_)
+
+      FP ->> FP: Error-handling: FactoryPool/Only-Owner
+      alt: Error-handling
+
+      Note over FP: Error: FactoryPool/Only-Owner
+      FP -->> OW: res: Error Revert FactoryPool/Only-Owner
+      Note over FP: OK: FactoryPool/Only-Owner
+      end
+
+      FP ->> FP: Error-handling: FactoryPool/Invalid-Param
+
+      alt: Error-handling
+      Note over FP: Error: FactoryPool/Invalid-Param
+      FP -->> OW: res: Error Revert FactoryPool/Invalid-Param
+      Note over FP: OK: FactoryPool/Invalid-Param
+      end
+
+      FP ->> FP: getService(index_) return service info
+
+      Note over FP: update ServiceInfo
+      FP ->> FP: update address or online state
+      FP ->> FP: update ServiceInfo
+      alt: event NewService
+      FP ->> FP: execute event: UpdateService(address indexed service_, uint256 indexed index_, bool online_)
+      FP -->> BC: transaction
+      end
+
+      FP ->>- OW: req: done
+      end
+```
+
+---
+
+- `getService` sequence
+
+```mermaid
+   sequenceDiagram
+      participant EM as Executive Member
+      participant OW as Owner
+      participant RBC as RegisterBorderlessCompany<br/>Contract
+      participant FP as FactoryPool<br/>Contract
+      participant FS as FactoryService<br/>Contract
+      participant BC as Blockchain
+
+      alt: setService sequence
+      OW ->> FP: setService done
+      end
+
+      alt: create Borderless.company
+      Note over EM: Borderless.company起動
+      EM ->>+ RBC: req: BorderlessCompany設立（起動）
+      RBC ->> RBC: createBorderlessCompany()
+      RBC ->> BC: transaction
+
+      alt: setup Borderless.company service
+      Note over RBC: ServiceFactoryアドレスの取得
+      alt: getService
+      RBC ->>+ FP: execution getService(uint256 index_)
+      FP ->>- RBC: res: service address and online status
+      end
+
+      alt: Error-handling
+      Note over RBC: Error: Register/Service-Offline
+      RBC -->> RBC: Error-handling
+      RBC -->> EM: res: Error Revert Register/Service-Offline
+      Note over RBC: OK: Register/Service-Offline
+      end
+
+      alt: IFactory(address).setup
+      Note over FS: Service起動（インスタンス化）
+      RBC ->>+ FS: execute setup
+
+      alt: Error-handling
+      Note over FS: Error: FactoryService/Only-Register
+      FS -->> EM: res: Error Revert FactoryService/Only-Register
+      Note over FS: OK: FactoryService/Only-Register
+      end
+
+      alt: event SetupBorderlessService
+      FS ->> FS: execute event: SetupBorderlessService(address indexed service_, uint256 indexed index_, bool online_)
+      FS -->> BC: transaction
+      end
+
+      end
+
+      end
+
+      FS ->>- EM: req: done
+      end
 ```
 
 ---
