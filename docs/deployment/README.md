@@ -79,3 +79,19 @@
 ## Others
 
 - `make run-abi` cli で、コントラクトの ABI を出力できます。
+- `foundry-cli`でのコントラクトコール。実際は`makefile`を参照ください。
+
+```linux
+// cli sample
+
+// cast send
+cast send <contract-address> "<feature-name>(<callback-param-type>)" "<return-param-type>" --rpc-url $(RPC_ENDPOINT_URI) --private-key $(PRIVATE_KEY)
+
+// cast call
+cast call <contract-address> "<feature-name>(<callback-param-type>)" "<return-param-type>" --rpc-url $(RPC_ENDPOINT_URI)
+
+// example for call and cast
+cast send 0x19a05acce11caf4b33b2fdc097b45a96518d8bba "mintNFT()" "" --rpc-url $(RPC_ENDPOINT_URI) --private-key $(PRIVATE_KEY)
+
+cast call 0xdc64a140aa3e981100a9beca4e685f962f0cf6ca "getBlockTimeStamp()(int256)" "" --rpc-url http://127.0.0.1:8545
+```
