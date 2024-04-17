@@ -55,7 +55,7 @@ interface IFactoryService {
     function setup(address admin_, address company_, uint256 serviceID_) external returns (address service_);
 }
 
-// Error-handling
+// Event-handling
 /// @title common interface for factory service
 interface EventFactoryService {
     event SetupBorderlessService(address indexed admin_, address indexed service, uint256 indexed serviceID);
