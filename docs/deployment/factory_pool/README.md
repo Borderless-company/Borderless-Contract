@@ -37,6 +37,70 @@
 
 ---
 
+## Common design
+
+- Actor
+
+1. `OverlayAG` Devloper(service provider)
+2. `exMember` call `setup` from `Register`(RegisterBorderlessCompany) contract
+
+---
+
+- Common interface
+
+```solidity
+// interface
+/// @title common interface for factory service
+interface IFactoryService {
+    function setup(address admin_, address company_, uint256 serviceID_) external returns (address service_);
+}
+
+// Error-handling
+/// @title common interface for factory service
+interface EventFactoryService {
+    event SetupBorderlessService(address indexed admin_, address indexed service, uint256 indexed serviceID);
+}
+
+// Error-handling
+modifier onlyRegister() {
+    require(msg.sender == _register, "FactoryService: Only-Register");
+    _;
+}
+```
+
+---
+
+- FacotryService template
+
+```solidity
+/// @title Test factory smart contract for Borderless.company service
+contract FactorySampleService is IFactoryService, EventFactoryService {
+    address private _owner;
+    address private _register;
+
+    constructor(address register_) {
+        _owner = msg.sender;
+        _register = register_;
+    }
+
+    event SetupBorderlessService(address indexed admin_, address indexed service, uint256 indexed serviceID);
+
+    function setup(address admin_, address company_, uint256 serviceID_) external override onlyRegister returns (address service_) {
+        /// Note: common service setup
+        SampleService service = new SampleService(admin_, company_); // Note: **この箇所を変更する**
+
+        emit SetupBorderlessService(admin_, address(service), serviceID_);
+
+        service_ = address(service);
+    }
+
+    modifier onlyRegister() {
+        require(msg.sender == _register, "FactoryService: Only-Register");
+        _;
+    }
+}
+```
+
 ## Diagrams
 
 ### flowchart
