@@ -22,7 +22,9 @@
 
 ---
 
-### Operations
+### Operations memo
+
+- 主には、`1-Ⅱ-1`の "FactoryPool の機能責務"、`1-Ⅴ`の"登録"、`2-Ⅳ`の "Service 起動"が主なオペレーションになります。
 
 1. `OverlayAG Admin` オペレーションによるデプロイ（サービス提供者）
    1. `Whitelist`コントラクトのデプロイ
@@ -50,25 +52,65 @@
 
 ---
 
-### Factory Pool コントラクト
+### Factory Pool コントラクト　 for Official
 
 - Data structure
 
 ```solidity
-address pricate _admin;
+struct ServiceInfo{
+   address _service;
+   bool _online;
+}
+
+address private _owner;
 uint256 private _lastIndex;
-mapping(uint256 index_ => address service_) _services;
+mapping(uint256 index_ => ServiceInfo info_) _services;
 ```
 
 ---
 
 - Interface
 
-1. Service コントラクトの登録をする機能
-2. Service コントラクトのアドレスを参照できる機能
+1. `ServiceコントラクトFactory`の登録をする機能
+2. 登録した`ServiceコントラクトFactory`のアドレスを参照できる機能
+3. 登録した`ServiceコントラクトFactory`のアドレスを更新できる機能
+4. 登録した`ServiceコントラクトFactory`の提供状態を更新できる機能
 
 ```solidity
-function setFactoryPool(uint256 index_ => address service_) external;
+/// @title feature interface
+interface IFactoryPool{
+   function setService(address service_) external;
+   function getService(uint256 index_) external returns(address service_, bool online_);
+   function updateService(address service_, uint256 index_) external;
+   function updateService(address service_, uint256 index_, bool online_) external;
+}
+```
+
+- Event-handling
+
+1. FactoryPool への新規 Service アドレス追加イベント
+2. Service リソース（アドレス・状態）の更新イベント
+
+```solidity
+/// @title Event interface
+interface EventFactoryPool {
+   event NewService(address indexed service_, uint256 indexed index_);
+   event UpdateService(address indexed service_, uint256 indexed index_, bool online_);
+}
+```
+
+- Error-handling
+
+```solidity
+/// @title Error interface
+interface ErrorFactoryPool {
+   error InvalidParam(address service_, uint256 index_, bool online_);
+}
+
+modifier onlyOwner() {
+    require(msg.sender == _register, "FactoryPool: Only-Owner");
+    _;
+}
 ```
 
 ---
@@ -78,7 +120,6 @@ function setFactoryPool(uint256 index_ => address service_) external;
 - Common interface
 
 ```solidity
-// interface
 /// @title common interface for factory service
 interface IFactoryService {
     function setup(address admin_, address company_, uint256 serviceID_) external returns (address service_);
@@ -130,7 +171,11 @@ contract FactorySampleService is IFactoryService, EventFactoryService {
 }
 ```
 
+---
+
 ## Diagrams
+
+---
 
 ### flowchart
 
@@ -148,5 +193,7 @@ contract FactorySampleService is IFactoryService, EventFactoryService {
    2. `BorderlessCompany`コントラクトが起動する。
    3. `FactoryPool`コントラクトより、`_services`を参照し`各Serviceリリース用のFacotry`コントラクトを実行する
    4. 3 をもとに`各Serviceリリース用のFacotry`コントラクトアドレスを指定して、 `setup`により Service を起動する
+
+---
 
 ### sequence
