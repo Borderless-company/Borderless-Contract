@@ -238,7 +238,7 @@ contract FactorySampleService is IFactoryService, EventFactoryService {
 
 1. setService
 2. updateService
-3. getService // Note: createBorderlessCompany methods sequence
+3. getService, activate // Note: createBorderlessCompany methods sequence
 
 ---
 
@@ -359,9 +359,9 @@ contract FactorySampleService is IFactoryService, EventFactoryService {
 
 ---
 
-#### 3. `getService` sequence
+#### 3. `getService, activate` sequence
 
-![`getService` sequence ](README.md-3.svg)
+![`getService, activate` sequence ](README.md-3.svg)
 
 <details>
 <summary>mermaid code</summary>
