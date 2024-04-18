@@ -10,6 +10,12 @@ interface ErrorRegisterBorderlessCompany { // Note: ErrorRegisterBorderlessCompa
     error InvalidCompanyInfo(address account_);
 
     /**
+    * @dev 不正なアドレスリソースが提供された場合に発生するエラー
+    * @param account_ 不正なアドレス（アカウント）
+    */
+    error InvalidParam(address account_);
+
+    /**
     * @dev Borderless.companyを起動（設立）できなかった場合に発生するエラー
     * @param account_ 起動（設立）しようとしたが失敗したアカウント
     */

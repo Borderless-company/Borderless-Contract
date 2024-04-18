@@ -23,11 +23,12 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     }
 
     function setFactoryPool(address factoryPool_) external override onlyOwner {
-        if(factoryPool_ == address(0)) revert InvalidFactoryPool(factoryPool_);
+        if(factoryPool_ == address(0)) revert InvalidParam(msg.sender);
 
         _facotryPool = IFactoryPool(factoryPool_);
 
-        emit SetFacrotyPool(msg.sender, factoryPool_);
+        // TODO: Event-handling
+        // emit SetFacrotyPool(msg.sender, factoryPool_);
     }
 
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override onlyFounder returns(bool started_, address companyAddress_) {
