@@ -41,21 +41,26 @@ contract BorderlessCompany is IBorderlessCompany {
     ITreasuryService private _treasuryService;
     ITokenService private _tokenService;
 
-    // TODO: Whitelistコントラクトを用いたアドレスのホワイトリスト制御を実装する
     constructor(address admin_, address register_) {
         _admin = admin_;
         _register = register_;
     }
 
     function initialService(address[] calldata services_) external override onlyRegister returns(bool completed_){
+        if(address(_governanceService) != address(0) || address(_treasuryService) != address(0) || address(_tokenService) != address(0)) revert AlreadyInitialService(msg.sender);
+        
+        completed_ = _initialService(services_);
+    }
+
+    function _initialService(address[] calldata services_) internal returns(bool completed_){
         for(uint256 _index = 1; _index <= services_.length; _index++) {
             address activatedAddress = services_[_index - 1];
-            if (_index == 1) _governanceService = IGovernanceService(activatedAddress);
-            if (_index == 2) _treasuryService = ITreasuryService(activatedAddress);
-            if (_index == 3) _tokenService = ITokenService(activatedAddress);
+            if (_index == 1 && activatedAddress != address(0)) _governanceService = IGovernanceService(activatedAddress);
+            if (_index == 2 && activatedAddress != address(0)) _treasuryService = ITreasuryService(activatedAddress);
+            if (_index == 3 && activatedAddress != address(0)) _tokenService = ITokenService(activatedAddress);
         }
 
-        emit InitialService(msg.sender, address(_governanceService), address(_treasuryService), address(_tokenService));
+        emit InitialService(address(this), address(_governanceService), address(_treasuryService), address(_tokenService));
         completed_ = true;
     }
 
@@ -65,6 +70,8 @@ contract BorderlessCompany is IBorderlessCompany {
     }
 
     event InitialService(address indexed company_, address governance_, address treasury_, address token_);
+
+    error AlreadyInitialService(address account_);
 
     modifier onlyAdmin() {
         require(msg.sender == _admin, "Error: BorderlessCompany/Only-Admin");
