@@ -26,7 +26,7 @@ contract FactoryServiceTemplate is IFactoryService, EventFactoryService {
     }
 
     modifier onlyRegister() {
-        require(msg.sender == _register, "FactoryService: Only-Register");
+        require(msg.sender == _register, "Error: FactoryService/Only-Register");
         _;
     }
 }
@@ -46,7 +46,7 @@ contract SampleService {
     }
 
     modifier onlyService() {
-        require(_validateCaller(), "SampleService: Invalid-Caller");
+        require(_validateCaller(), "Error: SampleService/Invalid-Caller");
         _;
     }
 

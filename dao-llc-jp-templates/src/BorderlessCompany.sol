@@ -23,7 +23,7 @@ contract BorderlessCompany is IBorderlessCompany {
     }
 
     modifier onlyAdmin() {
-        require(msg.sender == _admin, "Error: Register/Only-Admin");
+        require(msg.sender == _admin, "Error: BorderlessCompany/Only-Admin");
         _;
     }
 }

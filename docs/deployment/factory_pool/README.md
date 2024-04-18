@@ -67,13 +67,16 @@
 
 ```solidity
 struct ServiceInfo{
-   address _service;
-   bool _online;
+   address service;
+   bool online;
+   uint256 createAt;
+   uint256 updateAt;
 }
 
 address private _owner;
+address private _register;
 uint256 private _lastIndex;
-mapping(uint256 index_ => ServiceInfo info_) _services;
+mapping(uint256 index_ => ServiceInfo info_) private _services;
 ```
 
 ---
@@ -97,10 +100,40 @@ mapping(uint256 index_ => ServiceInfo info_) _services;
 ```solidity
 /// @title feature interface
 interface IFactoryPool{
+   /**
+    * @dev サービスアドレスを設定します。この関数はコントラクトオーナーのみが実行できます。
+    * @param service_ 設定するサービスのアドレスです。
+    */
    function setService(address service_) external;
-   function getService(uint256 index_) external returns(address service_, bool online_);
-   function updateService(address service_, uint256 index_) external;
-   function updateService(address service_, uint256 index_, bool online_) external;
+
+   /**
+   * @dev 最新のインデックスを取得します。
+   * @return index_ 最新のインデックスです。
+   */
+   function getLatestIndex() external returns(uint256 index_);
+
+    /**
+    * @dev 指定されたインデックスのサービスアドレスとオンライン状態を取得します。
+    * @param index_ サービスのインデックスです。
+    * @return service_ サービスのアドレスです。
+    * @return online_ サービスがオンラインであるかどうかを示すブール値です。
+    */
+    function getService(uint256 index_) external returns(address service_, bool online_);
+
+    /**
+    * @dev 指定されたインデックスのサービスアドレスを更新します。この関数はコントラクトオーナーのみが実行できます。
+    * @param service_ 更新後のサービスのアドレスです。
+    * @param index_ 更新するサービスのインデックスです。
+    */
+    function updateService(address service_, uint256 index_) external;
+
+    /**
+    * @dev 指定されたインデックスのサービスアドレスとオンライン状態を更新します。この関数はコントラクトオーナーのみが実行できます。
+    * @param service_ 更新後のサービスのアドレスです。
+    * @param index_ 更新するサービスのインデックスです。
+    * @param online_ サービスのオンライン状態を示すブール値です。
+    */
+    function updateService(address service_, uint256 index_, bool online_) external;
 }
 ```
 
@@ -114,7 +147,19 @@ interface IFactoryPool{
 ```solidity
 /// @title Event interface
 interface EventFactoryPool {
+   /**
+   * @dev 新しいサービスが追加されたことを通知するイベントです。
+   * @param service_ 追加されたサービスのアドレスです。
+   * @param index_ サービスのインデックスです。
+   */
    event NewService(address indexed service_, uint256 indexed index_);
+
+   /**
+   * @dev サービスの状態が更新されたことを通知するイベントです。
+   * @param service_ 更新されたサービスのアドレスです。
+   * @param index_ サービスのインデックスです。
+   * @param online_ サービスのオンライン状態です。
+   */
    event UpdateService(address indexed service_, uint256 indexed index_, bool online_);
 }
 ```
@@ -124,7 +169,9 @@ interface EventFactoryPool {
 - Error-handling
 
 1. `Error: FactoryPool/Invalid-Param` 不正なパラメータのリバート
-2. `Error: FactoryPool/Only-Owner` 不正なパラメータのリバート
+2. `Error: FactoryPool/DoNot-Set-Service` Service 登録 NG のリバート
+3. `Error: FactoryPool/Only-Owner` 不正な呼び出し者のリバート
+4. `Error: FactoryPool/Only-Register` 不正な呼び出し者のリバート
 
 ```solidity
 /// @title Error interface
@@ -144,9 +191,15 @@ interface ErrorFactoryPool {
    error DoNotSetService(address service_);
 }
 
+// -- 3, 4 -- //
 modifier onlyOwner() {
     require(msg.sender == _owner, "FactoryPool: Only-Owner");
     _;
+}
+
+modifier onlyRegister() {
+   require(msg.sender == _register, "FactoryPool: Only-Register");
+   _;
 }
 ```
 
@@ -178,10 +231,19 @@ address private _register;
 
 - interface
 
+1. `activate`Factory でサービスの起動をする機能
+
 ```solidity
 /// @title common interface for factory service
 interface IFactoryService {
-    function activate(address admin_, address company_, uint256 serviceID_) external returns (address service_);
+   /**
+   * @dev 管理者がサービスを有効化するための関数です。
+   * @param admin_ サービスを有効化する管理者のアドレスです。
+   * @param company_ サービスを提供する企業のアドレスです。
+   * @param serviceID_ 有効化するサービスのIDです。
+   * @return service_ 有効化されたサービスのアドレスです。
+   */
+   function activate(address admin_, address company_, uint256 serviceID_) external returns (address service_);
 }
 ```
 
@@ -189,10 +251,18 @@ interface IFactoryService {
 
 - Event-handling
 
+1. `activate`により、サービスが有効化されたことを通知する
+
 ```solidity
 /// @title common interface for factory service
 interface EventFactoryService {
-    event ActivateBorderlessService(address indexed admin_, address indexed service, uint256 indexed serviceID);
+   /**
+   * @dev ボーダーレスサービスが有効化されたことを通知するイベントです。
+   * @param admin_ サービスを有効化した管理者のアドレスです。
+   * @param service 有効化されたサービスのアドレスです。
+   * @param serviceID 有効化されたサービスのIDです。
+   */
+   event ActivateBorderlessService(address indexed admin_, address indexed service, uint256 indexed serviceID);
 }
 ```
 
@@ -200,10 +270,12 @@ interface EventFactoryService {
 
 - Error-handling
 
+1. `Error: FactoryService/Only-Register`不正な呼び出し者のリバート
+
 ```solidity
-// Error-handling
+// -- 1. modifierで処理する -- //
 modifier onlyRegister() {
-    require(msg.sender == _register, "FactoryService: Only-Register");
+    require(msg.sender == _register, "Error: FactoryService/Only-Register");
     _;
 }
 ```

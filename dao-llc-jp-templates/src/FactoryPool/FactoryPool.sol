@@ -7,7 +7,6 @@ import {ErrorFactoryPool} from "src/interfaces/FactoryPool/ErrorFactoryPool.sol"
 
 contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     address private _owner;
-    // TODO: document Data structに更新をする
     address private _register;
     uint256 private _lastIndex;
     mapping(uint256 index_ => ServiceInfo info_) private _services;
@@ -85,7 +84,6 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         if(_currentIndex + 1 == _updateIndex) (updated_, index_) = (true, _updateIndex);
     }
 
-    // TODO: document interfaceに更新をする
     function getLatestIndex() external view onlyRegister returns(uint256 index_) {
         index_ = _getLatestIndex();
     }
@@ -95,13 +93,12 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == _owner, "FactoryPool: Only-Owner");
+        require(msg.sender == _owner, "Error: FactoryPool/Only-Owner");
         _;
     }
 
-    // TODO: document error interfaceの更新をする
     modifier onlyRegister() {
-        require(msg.sender == _register, "FactoryPool: Only-Register");
+        require(msg.sender == _register, "Error: FactoryPool/Only-Register");
         _;
     }
 }
