@@ -20,10 +20,15 @@ contract FactoryServiceTemplate is IFactoryService, EventFactoryService {
         /// Note: common service setup
         SampleService service = new SampleService(admin_, company_); // Note: **この箇所を変更する**
 
+        if(address(service) == address(0)) revert DoNotActivateService(admin_, company_, serviceID_); // Note: **この箇所を変更する**
+
         emit ActivateBorderlessService(admin_, address(service), serviceID_);
 
         service_ = address(service);
     }
+
+    // TODO: documentとerror-handlingを追加する
+    error DoNotActivateService(address account_, address company_, uint256 serviceID_);
 
     modifier onlyRegister() {
         require(msg.sender == _register, "Error: FactoryService/Only-Register");

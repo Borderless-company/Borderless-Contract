@@ -24,6 +24,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
 
     function _setService(address service_) internal {
         ServiceInfo memory _info;
+        /// TODO: 削除を検討する。固定値（IDの番号ルール）で管理しても良いかもしれない。
         (bool _updated, uint256 _index) = _incrementLastIndex();
 
         if(!_updated) revert DoNotSetService(service_);
@@ -76,6 +77,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         emit UpdateService(info_.service, index_, info_.online);
     }
 
+    // TODO: 削除を検討する。固定値（IDの番号ルール）で管理しても良いかもしれないため
     function _incrementLastIndex() private returns(bool updated_, uint256 index_){
         uint256 _currentIndex = _getLatestIndex();
         _lastIndex++;

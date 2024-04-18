@@ -37,7 +37,7 @@ contract TestFactoryPool is Test {
     //       1. `Whitelist`は、`業務執行社員・代表社員`のホワイトリスト管理と、その登録機能を有する
     //    2. `FactoryPool`コントラクトのデプロイする。
     //       1. `FactoryPool`は、`各Serviceリリース用のFacotry`の ID・アドレス管理と、その登録機能を有する
-    //    3. `Register`コントラクトのデプロイし、その時に、`Whitelist`, `FactoryPool`コントラクトのアドレスを登録する。
+    //    3. `Register`コントラクトのデプロイし、その時に、`Whitelist`コントラクトのアドレスを登録する。
     //    4. `各Serviceリリース用のFacotry`コントラクトをデプロイし、その時に、`Register`コントラクトのアドレスを登録する。
     //    5. `FactoryPool`コントラクトへデプロイした、`各Serviceリリース用のFacotry`コントラクトのアドレスを登録する。
     //       1. `Register`コントラクトで、`createBorderlessCompany`機能をコールする時にアドレスを参照する。
@@ -61,9 +61,8 @@ contract TestFactoryPool is Test {
         rbc = new RegisterBorderlessCompany(address(wl));
 
         // -- 1-3. FactoryPoolのデプロイ -- //
+        // RegisterBorderlessCompanyにFactoryPoolのアドレス登録 -- //
         fp = new FactoryPool(address(rbc));
-
-        // -- 1-4. RegisterBorderlessCompanyにFactoryPoolのアドレス登録 -- //
         rbc.setFactoryPool(address(fp));
 
         vm.stopPrank();

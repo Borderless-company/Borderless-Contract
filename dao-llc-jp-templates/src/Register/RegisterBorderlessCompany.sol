@@ -7,12 +7,11 @@ import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegis
 import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol";
 import {IFactoryPool} from "src/interfaces/FactoryPool/IFactoryPool.sol";
 import {IFactoryService} from "src/interfaces/FactoryPool/FactoryServices/IFactoryService.sol";
-import {BorderlessCompany} from "src/BorderlessCompany.sol";
+import {BorderlessCompany, IBorderlessCompany} from "src/BorderlessCompany.sol";
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
     IFactoryPool private _facotryPool;
-    IFactoryService private _factoryService;
     address private _owner;
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
@@ -46,9 +45,10 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
 
     function _createBorderlessCompany(CompanyInfo memory info_) private returns(bool started_, address companyAddress_) {
         bool _updated;
+        bool _completed;
         uint256 _index;
         
-        BorderlessCompany _company = new BorderlessCompany(info_.founder);
+        BorderlessCompany _company = new BorderlessCompany(info_.founder, address(this));
         if (address(_company) != address(0)) (_updated, _index) = _incrementLastIndex();
         
         if(!_updated) revert DoNotCreateBorderlessCompany(msg.sender);
@@ -56,25 +56,29 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         info_.companyAddress = address(_company);
         _companies[_index] = info_;
 
-        emit NewBorderlessCompany(info_.founder, info_.companyAddress, _lastIndex);
+        _completed = _setupService(info_.founder, info_.companyAddress);
 
-        _setupService(info_.founder, info_.companyAddress);
-
-        (started_, companyAddress_) = (true, info_.companyAddress);
+        if(_completed) emit NewBorderlessCompany(info_.founder, info_.companyAddress, _index);
+            
+        (started_, companyAddress_) = (_completed, info_.companyAddress);
     }
 
-    function _setupService(address admin_, address company_) internal {
+    function _setupService(address admin_, address company_) internal returns(bool completed_){
         address _service;
         bool _online;
-        uint256 _serviceIndex = _facotryPool.getLatestIndex();
+        uint8 _serviceIndex = 3;
+        address[] memory _services = new address[](_serviceIndex);
 
         for(uint256 _index = 1; _index <= _serviceIndex; _index++) {
             (_service, _online) = _facotryPool.getService(_index);
 
-            _factoryService = IFactoryService(_service);
-
-            if(_online) _factoryService.activate(admin_, company_, _index);
+            if(_online) {
+                address activatedAddress = IFactoryService(_service).activate(admin_, company_, _index);
+                _services[_index - 1] = activatedAddress;
+            }
         }
+
+        completed_ = IBorderlessCompany(company_).initialService(_services);
     }
 
     function _incrementLastIndex() private returns(bool updated_, uint256 index_){
