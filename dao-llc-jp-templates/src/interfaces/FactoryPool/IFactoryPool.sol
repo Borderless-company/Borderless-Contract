@@ -17,12 +17,6 @@ interface IFactoryPool {
     function setService(address service_, uint256 index_) external;
 
     /**
-    * @dev 最新のインデックスを取得します。
-    * @return index_ 最新のインデックスです。
-    */
-    function getLatestIndex() external returns(uint256 index_);
-
-    /**
     * @dev 指定されたインデックスのサービスアドレスとオンライン状態を取得します。
     * @param index_ サービスのインデックスです。
     * @return service_ サービスのアドレスです。

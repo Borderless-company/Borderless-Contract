@@ -8,7 +8,6 @@ import {ErrorFactoryPool} from "src/interfaces/FactoryPool/ErrorFactoryPool.sol"
 contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     address private _owner;
     address private _register;
-    uint256 private _lastIndex;
     mapping(uint256 index_ => ServiceInfo info_) private _services;
 
     constructor(address register_) {
@@ -72,14 +71,6 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         _services[index_] = info_;
 
         emit UpdateService(info_.service, index_, info_.online);
-    }
-
-    function getLatestIndex() external view onlyValidCaller returns(uint256 index_) {
-        index_ = _getLatestIndex();
-    }
-
-    function _getLatestIndex() private view returns(uint256 index_) {
-        index_ = _lastIndex;
     }
 
     modifier onlyOwner() {

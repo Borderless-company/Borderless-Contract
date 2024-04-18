@@ -75,7 +75,6 @@ struct ServiceInfo{
 
 address private _owner;
 address private _register;
-uint256 private _lastIndex;
 mapping(uint256 index_ => ServiceInfo info_) private _services;
 ```
 
@@ -105,12 +104,6 @@ interface IFactoryPool{
     * @param service_ 設定するサービスのアドレスです。
     */
    function setService(address service_) external;
-
-   /**
-   * @dev 最新のインデックスを取得します。
-   * @return index_ 最新のインデックスです。
-   */
-   function getLatestIndex() external returns(uint256 index_);
 
     /**
     * @dev 指定されたインデックスのサービスアドレスとオンライン状態を取得します。
@@ -171,7 +164,7 @@ interface EventFactoryPool {
 1. `Error: FactoryPool/Invalid-Param` 不正なパラメータのリバート
 2. `Error: FactoryPool/DoNot-Set-Service` Service 登録 NG のリバート
 3. `Error: FactoryPool/Only-Owner` 不正な呼び出し者のリバート
-4. `Error: FactoryPool/Only-Register` 不正な呼び出し者のリバート
+4. `Error: FactoryPool/Invalid-Caller` 不正な呼び出し者のリバート
 
 ```solidity
 /// @title Error interface
@@ -193,12 +186,12 @@ interface ErrorFactoryPool {
 
 // -- 3, 4 -- //
 modifier onlyOwner() {
-    require(msg.sender == _owner, "FactoryPool: Only-Owner");
-    _;
+   require(msg.sender == _owner, "Error: FactoryPool/Only-Owner");
+   _;
 }
 
-modifier onlyRegister() {
-   require(msg.sender == _register, "FactoryPool: Only-Register");
+modifier onlyValidCaller() {
+   require(_validateCaller(), "Error: FactoryPool/Invalid-Caller");
    _;
 }
 ```
