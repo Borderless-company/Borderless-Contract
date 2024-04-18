@@ -7,11 +7,12 @@ import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegis
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
 import {BorderlessCompany} from "src/BorderlessCompany.sol";
 import {IFactoryPool} from "src/interfaces/FactoryPool/IFactoryPool.sol";
-
+import {IFactoryService} from "src/interfaces/FactoryPool/FactoryServices/IFactoryService.sol";
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
     IFactoryPool private _facotryPool;
+    IFactoryService private _factoryService;
     address private _owner;
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
@@ -42,7 +43,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         
         BorderlessCompany _company = new BorderlessCompany(info_.founder);
         if (address(_company) == address(0)) revert DoNotCreateBorderlessCompany(msg.sender);
-        
+
         (_updated, _index) = _incrementLastIndex();
 
         if(_updated) {
@@ -51,9 +52,25 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
 
             emit NewBorderlessCompany(info_.founder, info_.companyAddress, _lastIndex);
 
+            _setupService(info_.founder, info_.companyAddress);
+
             (started_, companyAddress_) = (true, info_.companyAddress);
         } else {
             revert DoNotCreateBorderlessCompany(msg.sender);
+        }
+    }
+
+    function _setupService(address admin_, address company_) internal {
+        address _service;
+        bool _online;
+        uint256 _serviceIndex = _facotryPool.getLatestIndex();
+
+        for(uint256 _index = 1; _index <= _serviceIndex; _index++) {
+            (_service, _online) = _facotryPool.getService(_index);
+
+            _factoryService = IFactoryService(_service);
+
+            if(_online) _factoryService.activate(admin_, company_, _index);
         }
     }
 

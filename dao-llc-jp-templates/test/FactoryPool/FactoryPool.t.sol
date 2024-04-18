@@ -8,6 +8,7 @@ import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegis
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
 import {IBorderlessCompany} from "src/BorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
+import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol";
 
 /// Note: FactoryService Templateのテスト用コントラクト
 import {FactoryServiceTemplate} from "src/FactoryPool/FactoryServices/FactoryServiceTemplate.sol";
@@ -71,8 +72,10 @@ contract TestFactoryPool is Test {
     }
 
     /**
-     * @dev 1.OK: Borderless.companyのサービスコントラクトの起動成功のテストケース
+     * @dev 1.OK: FactoryPoolコントラクトにより、Borderless.companyのサービスコントラクトを起動するテストケース
      * - createBorderlessCompany
+     * - activate
+     * - getService
      * 
      * テストケースに含まれるオペレーション:
      * 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
@@ -85,47 +88,64 @@ contract TestFactoryPool is Test {
      * 2. `exMember` に `Queen`を指定して実行します。
      * 3. `admin` は、 `exMember`(Queen)を代入して実行します。
      */
-    function test_Success_FactoryPool_createBorderlessCompany_byExManaer() public {
+    function test_Success_FactoryPoolService_createBorderlessCompany_byExManaer() public {
         // -- test用セットアップ -- //
-        // bool started;
-        // address companyAddress;
+        bool started;
+        address companyAddress;
 
-        // // -- test前の初期値確認 -- //
-        // assertTrue(keccak256(abi.encodePacked(companyID)) == keccak256(abi.encodePacked("")));
-        // assertTrue(keccak256(abi.encodePacked(establishmentDate)) == keccak256(abi.encodePacked("")));
-        // assertTrue(started == confirmed);
+        // -- test前の初期値確認 -- //
+        assertTrue(keccak256(abi.encodePacked(companyID)) == keccak256(abi.encodePacked("")));
+        assertTrue(keccak256(abi.encodePacked(establishmentDate)) == keccak256(abi.encodePacked("")));
+        assertTrue(started == confirmed);
 
-        // // 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
-        // vm.prank(owner);
-        // wl.addToWhitelist(exMember);
+        // -- 0. サービス機能リリースと活性化 -- //
+        vm.startPrank(owner);
+
+        // -- 0-1. `FactoryServiceTemplate`コントラクトのデプロイ(サービスリリース) -- //
+        fst = new FactoryServiceTemplate(address(rbc));
+
+        // -- 0-2. `FactoryPool`コントラクトへ、`FactoryServiceTemplate`のアドレス登録 -- //
+        vm.expectEmit(true, true, false, false);
+        emit EventFactoryPool.NewService(address(fst), 1);
+        fp.setService(address(fst));
+
+        // -- 0-3. `FactoryPool`コントラクトへ登録した、`FactoryServiceTemplate`サービス状態をOnlineへ更新 -- //
+        vm.expectEmit(true, true, false, false);
+        emit EventFactoryPool.UpdateService(address(fst), 1, true);
+        fp.updateService(address(fst), 1, true);
+
+        // 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
+        wl.addToWhitelist(exMember);
+
+        vm.stopPrank();
         
         // -- test start コントラクト実行者 -- //
         vm.startPrank(exMember);
 
-        // // 1. Borderless.companyのためのCompanyInfoを入力する
-        // companyID = "0x-borderless-company-id";
-        // establishmentDate = "YYYY-MM-DD HH:MM:SS";
-        // confirmed = true;
+        // 1. Borderless.companyのためのCompanyInfoを入力する
+        companyID = "0x-borderless-company-id";
+        establishmentDate = "YYYY-MM-DD HH:MM:SS";
+        confirmed = true;
 
-        // // 2. Borderless.companyを起動する
-        // // MEMO: contractのaddressはテストログより参照した値です
-        // vm.expectEmit(true, true, true, false);
-        // emit EventRegisterBorderlessCompany.NewBorderlessCompany(address(exMember), address(0x5fadc320561EED0887d2A7df9C6Dd71d94655C0b), 1);
+        // 2. Borderless.companyを起動する
+        // MEMO: contractのaddressはテストログより参照した値です
+        vm.expectEmit(true, true, true, false);
+        emit EventRegisterBorderlessCompany.NewBorderlessCompany(address(exMember), address(0xf5f87b77f35198a87Bc89355348dbc78A191882E), 1);
 
-        // (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
+        (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
 
-        // // 3. Borderless.companyの起動（設立）が成功したことを確認する
-        // assertTrue(started);
+        // 3. Borderless.companyの起動（設立）が成功したことを確認する
+        assertTrue(started);
 
-        // vm.stopPrank();
+        vm.stopPrank();
 
-        // // -- 起動（設立）したBorderless.companyでのコントラクト実行テスト -- //
-        // admin = exMember; // 業務執行社員・代表社員
-        // vm.startPrank(admin);
+        // -- 起動（設立）したBorderless.companyでのコントラクト実行テスト -- //
+        admin = exMember; // 業務執行社員・代表社員
+        vm.startPrank(admin);
 
-        // // 1. 新しい`BorderlessCompany`(Borderless.company)コントラクトの機能を、admin(`exMember`)が実行できることを確認する
-        // ibc = IBorderlessCompany(companyAddress);
-        // assertTrue(ibc.callAdmin());
+        // 1. 新しい`BorderlessCompany`(Borderless.company)コントラクトの機能を、admin(`exMember`)が実行できることを確認する
+        ibc = IBorderlessCompany(companyAddress);
+        assertTrue(ibc.callAdmin());
 
         // -- test end -- //
         vm.stopPrank();
