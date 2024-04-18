@@ -57,14 +57,17 @@ contract TestFactoryPool is Test {
         // -- 1-1. Whitelistのデプロイ -- //
         wl = new Whitelist();
 
-        // -- 1-2. FactoryPoolのデプロイ -- //
-        fp = new FactoryPool();
+        // -- 1-2. RegisterBorderlessCompanyのデプロイ -- //
+        rbc = new RegisterBorderlessCompany(address(wl));
 
         // -- 1-3. FactoryPoolのデプロイ -- //
-        // TODO: FactoryPoolアドレスをRegisterに登録する
-        rbc = new RegisterBorderlessCompany(address(wl), address(fp));
+        fp = new FactoryPool(address(rbc));
 
-        // -- 1-4. 各Serviceリリース用のFacotryのデプロイ -- //
+        // -- 1-4. RegisterBorderlessCompanyにFactoryPoolのアドレス登録 -- //
+        // TODO: IRegisterBorderlessCompanyのインターフェースを作成する
+        rbc.setFactoryPool(address(fp));
+
+        // -- 1-5. 各Serviceリリース用のFacotryのデプロイ -- //
         // Note: FactoryServiceTemplateのデプロイ(Sample用)
         fst = new FactoryServiceTemplate(address(rbc));
 
@@ -130,7 +133,7 @@ contract TestFactoryPool is Test {
         // 2. Borderless.companyを起動する
         // MEMO: contractのaddressはテストログより参照した値です
         vm.expectEmit(true, true, true, false);
-        emit EventRegisterBorderlessCompany.NewBorderlessCompany(address(exMember), address(0xf5f87b77f35198a87Bc89355348dbc78A191882E), 1);
+        emit EventRegisterBorderlessCompany.NewBorderlessCompany(address(exMember), address(0x5fadc320561EED0887d2A7df9C6Dd71d94655C0b), 1);
 
         (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
 

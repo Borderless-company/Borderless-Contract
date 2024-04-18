@@ -17,10 +17,16 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
 
-    constructor(address whitelist_, address factoryPool_) {
+    constructor(address whitelist_) {
         _owner = msg.sender;
         _whitelist = IWhitelist(whitelist_);
+    }
+
+    function setFactoryPool(address factoryPool_) external override onlyOwner {
         _facotryPool = IFactoryPool(factoryPool_);
+
+        // TODO: SetFactoryPoolのイベントをドキュメントに追加する
+        emit SetFacrotyPool(msg.sender, factoryPool_);
     }
 
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override onlyFounder returns(bool started_, address companyAddress_) {
@@ -42,22 +48,18 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         uint256 _index;
         
         BorderlessCompany _company = new BorderlessCompany(info_.founder);
-        if (address(_company) == address(0)) revert DoNotCreateBorderlessCompany(msg.sender);
+        if (address(_company) != address(0)) (_updated, _index) = _incrementLastIndex();
+        
+        if(!_updated) revert DoNotCreateBorderlessCompany(msg.sender);
 
-        (_updated, _index) = _incrementLastIndex();
+        info_.companyAddress = address(_company);
+        _companies[_index] = info_;
 
-        if(_updated) {
-            info_.companyAddress = address(_company);
-            _companies[_index] = info_;
+        emit NewBorderlessCompany(info_.founder, info_.companyAddress, _lastIndex);
 
-            emit NewBorderlessCompany(info_.founder, info_.companyAddress, _lastIndex);
+        _setupService(info_.founder, info_.companyAddress);
 
-            _setupService(info_.founder, info_.companyAddress);
-
-            (started_, companyAddress_) = (true, info_.companyAddress);
-        } else {
-            revert DoNotCreateBorderlessCompany(msg.sender);
-        }
+        (started_, companyAddress_) = (true, info_.companyAddress);
     }
 
     function _setupService(address admin_, address company_) internal {
@@ -88,6 +90,12 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
 
     modifier onlyFounder() {
         require(_whitelist.isWhitelisted(msg.sender) , "Error: Register/Only-Founder");
+        _;
+    }
+
+    // TODO: OnlyOwnerのドキュメントを追加する
+    modifier onlyOwner() {
+        require(msg.sender == _owner, "Error: Register/Only-Owner");
         _;
     }
 }

@@ -10,4 +10,7 @@ interface EventRegisterBorderlessCompany { // Note: EventRegisterBorderlessCompa
     * @param companyIndex_ 新しく作成されたBorderless.companyのインデックスです。
     */
     event NewBorderlessCompany(address indexed founder_, address indexed company_, uint256 indexed companyIndex_);
+
+    // TODO: documentsの更新をする
+    event SetFacrotyPool(address indexed account_, address indexed pool_);
 }

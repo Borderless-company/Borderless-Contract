@@ -23,4 +23,6 @@ interface IRegisterBorderlessCompany { // Note: IRegisterBorderlessCompany is an
     */
     // function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external returns(bool started_);
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external returns(bool started_, address companyAddress_);
+
+    function setFactoryPool(address factoryPool_) external;
 }

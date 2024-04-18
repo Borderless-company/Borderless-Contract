@@ -8,13 +8,13 @@ import {ErrorFactoryPool} from "src/interfaces/FactoryPool/ErrorFactoryPool.sol"
 contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     address private _owner;
     // TODO: document Data structに更新をする
-    // address private _register;
+    address private _register;
     uint256 private _lastIndex;
     mapping(uint256 index_ => ServiceInfo info_) private _services;
 
-    constructor() {
+    constructor(address register_) {
         _owner = msg.sender;
-        // _register = register_;
+        _register = register_;
     }
 
     function setService(address service_) external override onlyOwner {
@@ -38,7 +38,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         emit NewService(_info.service, _index);
     }
 
-    function getService(uint256 index_) external view override returns(address service_, bool online_){
+    function getService(uint256 index_) external view override onlyRegister returns(address service_, bool online_){
         if(index_ <= 0) revert InvalidParam(msg.sender, index_, false);
 
         ServiceInfo memory _info = _services[index_];
@@ -86,7 +86,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     }
 
     // TODO: document interfaceに更新をする
-    function getLatestIndex() external view returns(uint256 index_) {
+    function getLatestIndex() external view onlyRegister returns(uint256 index_) {
         index_ = _getLatestIndex();
     }
 
@@ -100,8 +100,8 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     }
 
     // TODO: document error interfaceの更新をする
-    // modifier onlyRegister() {
-    //     require(msg.sender == _register, "FactoryPool: Only-Register");
-    //     _;
-    // }
+    modifier onlyRegister() {
+        require(msg.sender == _register, "FactoryPool: Only-Register");
+        _;
+    }
 }

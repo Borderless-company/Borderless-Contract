@@ -18,9 +18,11 @@ contract BorderlessCompanyScript is Script {
 
         wl = new Whitelist();
 
-        fp = new FactoryPool();
+        rbc = new RegisterBorderlessCompany(address(wl));
 
-        rbc = new RegisterBorderlessCompany(address(wl), address(fp));
+        fp = new FactoryPool(address(rbc));
+
+        rbc.setFactoryPool(address(fp));
 
         vm.stopBroadcast();
     }

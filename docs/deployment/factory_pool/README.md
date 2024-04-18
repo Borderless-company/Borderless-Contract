@@ -436,6 +436,17 @@ contract FactorySampleService is IFactoryService, EventFactoryService {
 
 ---
 
+## Issue
+
+- offline ステータスのサービスの活性化ケースを作成する
+- （1）Developer により活性化をし、その後、（2）ユーザーにより活性化されたサービスを利用開始する操作が必要になる
+- 操作項目
+
+1. サービスを選択
+2. サービスを activate する
+
+---
+
 ## Others
 
 - Mermaid の SVG 変換
