@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity =0.8.24;
 
-import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol";
 import {IRegisterBorderlessCompany} from "src/interfaces/Register/IRegisterBorderlessCompany.sol";
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
-import {BorderlessCompany} from "src/BorderlessCompany.sol";
+import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol";
 import {IFactoryPool} from "src/interfaces/FactoryPool/IFactoryPool.sol";
 import {IFactoryService} from "src/interfaces/FactoryPool/FactoryServices/IFactoryService.sol";
+import {BorderlessCompany} from "src/BorderlessCompany.sol";
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
@@ -27,8 +27,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
 
         _facotryPool = IFactoryPool(factoryPool_);
 
-        // TODO: Event-handling
-        // emit SetFacrotyPool(msg.sender, factoryPool_);
+        emit SetFactoryPool(msg.sender, factoryPool_);
     }
 
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override onlyFounder returns(bool started_, address companyAddress_) {
