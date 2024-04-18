@@ -6,16 +6,20 @@ import {IRegisterBorderlessCompany} from "src/interfaces/Register/IRegisterBorde
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
 import {BorderlessCompany} from "src/BorderlessCompany.sol";
+import {IFactoryPool} from "src/interfaces/FactoryPool/IFactoryPool.sol";
+
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
+    IFactoryPool private _facotryPool;
     address private _owner;
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
 
-    constructor(address whitelist_) {
+    constructor(address whitelist_, address factoryPool_) {
         _owner = msg.sender;
         _whitelist = IWhitelist(whitelist_);
+        _facotryPool = IFactoryPool(factoryPool_);
     }
 
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override onlyFounder returns(bool started_, address companyAddress_) {

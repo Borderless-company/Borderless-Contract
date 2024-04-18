@@ -7,11 +7,13 @@ import {RegisterBorderlessCompany} from "src/Register/RegisterBorderlessCompany.
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
 import {IBorderlessCompany} from "src/BorderlessCompany.sol";
+import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
 
 contract TestRegisterBorderlessCompany is Test {
     RegisterBorderlessCompany rbc;
     IBorderlessCompany ibc;
     Whitelist wl;
+    FactoryPool fp;
 
     address owner;
     address exMember;
@@ -27,11 +29,14 @@ contract TestRegisterBorderlessCompany is Test {
         owner = makeAddr("OverlayAdmin");
         exMember = makeAddr("Queen");
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         wl = new Whitelist();
 
-        vm.prank(owner);
-        rbc = new RegisterBorderlessCompany(address(wl));
+        fp = new FactoryPool();
+
+        rbc = new RegisterBorderlessCompany(address(wl), address(fp));
+
+        vm.stopPrank();
     }
 
     // =================== Test Cases ===================

@@ -133,7 +133,7 @@ interface ErrorFactoryPool {
 }
 
 modifier onlyOwner() {
-    require(msg.sender == _register, "FactoryPool: Only-Owner");
+    require(msg.sender == _owner, "FactoryPool: Only-Owner");
     _;
 }
 ```
@@ -213,8 +213,6 @@ contract FactorySampleService is IFactoryService, EventFactoryService {
         _owner = msg.sender;
         _register = register_;
     }
-
-    event ActivateBorderlessService(address indexed admin_, address indexed service, uint256 indexed serviceID);
 
     function activate(address admin_, address company_, uint256 serviceID_) external override onlyRegister returns (address service_) {
         /// Note: common service setup

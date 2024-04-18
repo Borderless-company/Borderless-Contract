@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity =0.8.24;
 
-contract EventFactoryService {}
+/// @title common interface for factory service
+interface EventFactoryService {
+    event ActivateBorderlessService(address indexed admin_, address indexed service, uint256 indexed serviceID);
+}

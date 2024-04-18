@@ -9,70 +9,15 @@ import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegis
 import {IBorderlessCompany} from "src/BorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
 
-/// @title Test smart contract for Borderless.company service
-contract SampleService {
-    address private _admin;
-    address private _company;
-
-    constructor(address admin_, address company_) {
-        _admin = admin_;
-        _company = company_;
-    }
-
-    function callAdmin() public view onlyService returns (bool called_) {
-        called_ = true;
-    }
-
-    modifier onlyService() {
-        require(_validateCaller(), "SampleService: Invalid-Caller");
-        _;
-    }
-
-    function _validateCaller() internal view returns (bool called_) {
-        if(msg.sender == _admin && msg.sender == _company) called_ = true;
-    }
-}
-
-/// @title common interface for factory service
-interface IFactoryService {
-    function setup(address admin_, address company_, uint256 serviceID_) external returns (address service_);
-}
-
-/// @title common event interface for factory service
-interface EventFactoryService {
-    event SetupBorderlessService(address indexed admin_, address indexed service, uint256 indexed serviceID);
-}
-
-/// @title Test factory smart contract for Borderless.company service
-contract FactorySampleService is IFactoryService, EventFactoryService {
-    address private _owner;
-    address private _register;
-
-    constructor(address register_) {
-        _owner = msg.sender;
-        _register = register_;
-    }
-
-    function setup(address admin_, address company_, uint256 serviceID_) external override onlyRegister returns (address service_) {
-        /// Note: common service setup
-        SampleService service = new SampleService(admin_, company_);
-
-        emit SetupBorderlessService(admin_, address(service), serviceID_);
-
-        service_ = address(service);
-    }
-
-    modifier onlyRegister() {
-        require(msg.sender == _register, "FactoryService: Only-Register");
-        _;
-    }
-}
+/// Note: FactoryService Templateのテスト用コントラクト
+import {FactoryServiceTemplate} from "src/FactoryPool/FactoryServices/FactoryServiceTemplate.sol";
 
 contract TestFactoryPool is Test {
     FactoryPool fp;
     RegisterBorderlessCompany rbc;
     IBorderlessCompany ibc;
     Whitelist wl;
+    FactoryServiceTemplate fst;
 
     address owner;
     address exMember;
@@ -83,20 +28,6 @@ contract TestFactoryPool is Test {
     bytes companyID;
     bytes establishmentDate;
     bool confirmed;
-
-    function setUp() public {
-        owner = makeAddr("OverlayAdmin");
-        exMember = makeAddr("Queen");
-
-        vm.startPrank(owner);
-        fp = new FactoryPool();
-
-        wl = new Whitelist();
-
-        rbc = new RegisterBorderlessCompany(address(wl));
-
-        vm.stopPrank();
-    }
 
     // =================== Test Cases ===================
     // OK: FactoryPoolコントラクトにより、Borderless.companyのサービスコントラクトを起動するテストケース
@@ -115,6 +46,29 @@ contract TestFactoryPool is Test {
     //    3. `FactoryPool`コントラクトより、`_services`を参照し`各Serviceリリース用のFacotry`コントラクトを実行する。
     //    4. 3 をもとに`各Serviceリリース用のFacotry`コントラクトアドレスを指定して、 `setup`により Service を起動する。
     // ===================================================
+
+    function setUp() public {
+        owner = makeAddr("OverlayAdmin");
+        exMember = makeAddr("Queen");
+
+        vm.startPrank(owner);
+
+        // -- 1-1. Whitelistのデプロイ -- //
+        wl = new Whitelist();
+
+        // -- 1-2. FactoryPoolのデプロイ -- //
+        fp = new FactoryPool();
+
+        // -- 1-3. FactoryPoolのデプロイ -- //
+        // TODO: FactoryPoolアドレスをRegisterに登録する
+        rbc = new RegisterBorderlessCompany(address(wl), address(fp));
+
+        // -- 1-4. 各Serviceリリース用のFacotryのデプロイ -- //
+        // Note: FactoryServiceTemplateのデプロイ(Sample用)
+        fst = new FactoryServiceTemplate(address(rbc));
+
+        vm.stopPrank();
+    }
 
     /**
      * @dev 1.OK: Borderless.companyのサービスコントラクトの起動成功のテストケース
