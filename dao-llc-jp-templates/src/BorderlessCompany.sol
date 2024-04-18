@@ -81,7 +81,7 @@ contract BorderlessCompany is IBorderlessCompany {
     function getService(uint256 index_) external view onlyAdmin returns(address service_) {
         require(index_ <= 0 && _getService(index_) != address(0), "Error: BorderlessComapny/Invalid-Index");
 
-        services_ = _getService(index_);
+        service_ = _getService(index_);
     }
 
     function _getService(uint256 index_) internal view returns(address service_) {
