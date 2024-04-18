@@ -16,29 +16,26 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         _register = register_;
     }
 
-    function setService(address service_) external override onlyOwner {
-        if(service_ == address(0)) revert InvalidParam(service_, 0, false);
+    function setService(address service_, uint256 index_) external override onlyOwner {
+        if(service_ == address(0) || index_ <= 0) revert InvalidParam(service_, index_, false);
+        if(_services[index_].service != address(0)) revert InvalidParam(service_, index_, false);
         
-        _setService(service_);
+        _setService(service_, index_);
     }
 
-    function _setService(address service_) internal {
+    function _setService(address service_, uint256 index_) internal {
         ServiceInfo memory _info;
-        /// TODO: 削除を検討する。固定値（IDの番号ルール）で管理しても良いかもしれない。
-        (bool _updated, uint256 _index) = _incrementLastIndex();
-
-        if(!_updated) revert DoNotSetService(service_);
 
         _info.service = service_;
         _info.createAt = block.timestamp;
         _info.updateAt = block.timestamp;
 
-        _services[_index] = _info;
+        _services[index_] = _info;
 
-        emit NewService(_info.service, _index);
+        emit NewService(_info.service, index_);
     }
 
-    function getService(uint256 index_) external view override onlyRegister returns(address service_, bool online_){
+    function getService(uint256 index_) external view override onlyValidCaller returns(address service_, bool online_){
         if(index_ <= 0) revert InvalidParam(msg.sender, index_, false);
 
         ServiceInfo memory _info = _services[index_];
@@ -77,16 +74,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         emit UpdateService(info_.service, index_, info_.online);
     }
 
-    // TODO: 削除を検討する。固定値（IDの番号ルール）で管理しても良いかもしれないため
-    function _incrementLastIndex() private returns(bool updated_, uint256 index_){
-        uint256 _currentIndex = _getLatestIndex();
-        _lastIndex++;
-        uint256 _updateIndex = _getLatestIndex();
-
-        if(_currentIndex + 1 == _updateIndex) (updated_, index_) = (true, _updateIndex);
-    }
-
-    function getLatestIndex() external view onlyRegister returns(uint256 index_) {
+    function getLatestIndex() external view onlyValidCaller returns(uint256 index_) {
         index_ = _getLatestIndex();
     }
 
@@ -99,8 +87,12 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         _;
     }
 
-    modifier onlyRegister() {
-        require(msg.sender == _register, "Error: FactoryPool/Only-Register");
+    modifier onlyValidCaller() {
+        require(_validateCaller(), "Error: FactoryPool/Invalid-Caller");
         _;
+    }
+
+    function _validateCaller() internal view returns(bool valid_){
+        if(msg.sender == _owner || msg.sender == _register) valid_ = true;
     }
 }

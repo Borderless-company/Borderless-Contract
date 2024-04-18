@@ -61,8 +61,8 @@ contract TestFactoryPool is Test {
         rbc = new RegisterBorderlessCompany(address(wl));
 
         // -- 1-3. FactoryPoolのデプロイ -- //
-        // RegisterBorderlessCompanyにFactoryPoolのアドレス登録 -- //
         fp = new FactoryPool(address(rbc));
+        // RegisterBorderlessCompanyにFactoryPoolのアドレス登録
         rbc.setFactoryPool(address(fp));
 
         vm.stopPrank();
@@ -106,12 +106,32 @@ contract TestFactoryPool is Test {
         // -- 0-2. `FactoryPool`コントラクトへ、`FactoryServiceTemplate`のアドレス登録 -- //
         vm.expectEmit(true, true, false, false);
         emit EventFactoryPool.NewService(address(fst), 1);
-        fp.setService(address(fst));
+        fp.setService(address(fst), 1); // index = 1 GovernanceService
+
+        vm.expectEmit(true, true, false, false);
+        emit EventFactoryPool.NewService(address(fst), 2);
+        // Note: contractは仮アドレスをセット
+        fp.setService(address(fst), 2); // index = 2 TreasuryService
+
+        vm.expectEmit(true, true, false, false);
+        emit EventFactoryPool.NewService(address(fst), 3);
+        // Note: contractは仮アドレスをセット
+        fp.setService(address(fst), 3); // index = 3 TokenService
 
         // -- 0-3. `FactoryPool`コントラクトへ登録した、`FactoryServiceTemplate`サービス状態をOnlineへ更新 -- //
         vm.expectEmit(true, true, false, false);
         emit EventFactoryPool.UpdateService(address(fst), 1, true);
-        fp.updateService(address(fst), 1, true);
+        fp.updateService(address(fst), 1, true); // index = 1 GovernanceService
+
+        vm.expectEmit(true, true, false, false);
+        emit EventFactoryPool.UpdateService(address(fst), 2, true);
+        // Note: contractは仮アドレスをセット
+        fp.updateService(address(fst), 2, true); // index = 2 TreasuryService
+
+        vm.expectEmit(true, true, false, false);
+        emit EventFactoryPool.UpdateService(address(fst), 3, true);
+        // Note: contractは仮アドレスをセット
+        fp.updateService(address(fst), 3, true); // index = 3 TokenService
 
         // 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
         wl.addToWhitelist(exMember);

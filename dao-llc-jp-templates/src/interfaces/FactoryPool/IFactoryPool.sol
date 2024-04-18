@@ -12,8 +12,9 @@ interface IFactoryPool {
     /**
     * @dev サービスアドレスを設定します。この関数はコントラクトオーナーのみが実行できます。
     * @param service_ 設定するサービスのアドレスです。
+    * @param index_ 設定するサービスのIndex値です。
     */
-    function setService(address service_) external;
+    function setService(address service_, uint256 index_) external;
 
     /**
     * @dev 最新のインデックスを取得します。
