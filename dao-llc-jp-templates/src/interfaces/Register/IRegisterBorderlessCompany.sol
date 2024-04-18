@@ -21,6 +21,11 @@ interface IRegisterBorderlessCompany { // Note: IRegisterBorderlessCompany is an
     * @return started_ 企業作成が開始されたかどうかを示すブール値です。
     * @return companyAddress_ 作成された企業コントラクトを示すアドレス値です。
     */
-    // function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external returns(bool started_);
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external returns(bool started_, address companyAddress_);
+
+    /**
+    * @dev Registerコントラクトから使用されるファクトリープールのアドレスを設定します。
+    * @param factoryPool_ 設定するファクトリープールのアドレス
+    */
+    function setFactoryPool(address factoryPool_) external;
 }

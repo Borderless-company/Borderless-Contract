@@ -10,4 +10,11 @@ interface EventRegisterBorderlessCompany { // Note: EventRegisterBorderlessCompa
     * @param companyIndex_ 新しく作成されたBorderless.companyのインデックスです。
     */
     event NewBorderlessCompany(address indexed founder_, address indexed company_, uint256 indexed companyIndex_);
+
+    /**
+    * @dev Registerコントラクトから使用されるファクトリープールのアドレスの設定が変更された際に発生するイベントです。
+    * @param account_ ファクトリープールの設定を変更したアカウントのアドレス
+    * @param pool_ 設定された新しいファクトリープールのアドレス
+    */
+    event SetFactoryPool(address indexed account_, address indexed pool_);
 }
