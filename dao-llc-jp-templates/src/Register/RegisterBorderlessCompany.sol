@@ -23,9 +23,10 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     }
 
     function setFactoryPool(address factoryPool_) external override onlyOwner {
+        if(factoryPool_ == address(0)) revert InvalidFactoryPool(factoryPool_);
+
         _facotryPool = IFactoryPool(factoryPool_);
 
-        // TODO: SetFactoryPoolのイベントをドキュメントに追加する
         emit SetFacrotyPool(msg.sender, factoryPool_);
     }
 
@@ -88,14 +89,13 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         return _lastIndex;
     }
 
-    modifier onlyFounder() {
-        require(_whitelist.isWhitelisted(msg.sender) , "Error: Register/Only-Founder");
+    modifier onlyOwner() {
+        require(msg.sender == _owner, "Error: Register/Only-Owner");
         _;
     }
 
-    // TODO: OnlyOwnerのドキュメントを追加する
-    modifier onlyOwner() {
-        require(msg.sender == _owner, "Error: Register/Only-Owner");
+    modifier onlyFounder() {
+        require(_whitelist.isWhitelisted(msg.sender) , "Error: Register/Only-Founder");
         _;
     }
 }

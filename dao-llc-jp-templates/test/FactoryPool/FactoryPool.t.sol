@@ -64,16 +64,12 @@ contract TestFactoryPool is Test {
         fp = new FactoryPool(address(rbc));
 
         // -- 1-4. RegisterBorderlessCompanyにFactoryPoolのアドレス登録 -- //
-        // TODO: IRegisterBorderlessCompanyのインターフェースを作成する
         rbc.setFactoryPool(address(fp));
-
-        // -- 1-5. 各Serviceリリース用のFacotryのデプロイ -- //
-        // Note: FactoryServiceTemplateのデプロイ(Sample用)
-        fst = new FactoryServiceTemplate(address(rbc));
 
         vm.stopPrank();
     }
 
+    // TODO: Test caseのドキュメント更新
     /**
      * @dev 1.OK: FactoryPoolコントラクトにより、Borderless.companyのサービスコントラクトを起動するテストケース
      * - createBorderlessCompany
@@ -105,6 +101,7 @@ contract TestFactoryPool is Test {
         vm.startPrank(owner);
 
         // -- 0-1. `FactoryServiceTemplate`コントラクトのデプロイ(サービスリリース) -- //
+        // Note: FactoryServiceTemplateのデプロイ(Sample用)
         fst = new FactoryServiceTemplate(address(rbc));
 
         // -- 0-2. `FactoryPool`コントラクトへ、`FactoryServiceTemplate`のアドレス登録 -- //
