@@ -13,20 +13,6 @@ interface IBorderlessCompany { // Note: IBorderlessCompny is an feature interfac
     function initialService(address[] memory services_) external returns(bool completed_);
 
     /**
-    * @dev サービスを追加します。
-    * @param index_ 追加するサービスのインデックスです。
-    * @return service_ 追加されたサービスのアドレスです。
-    */
-    function addService(uint256 index_) external returns(address service_);
-
-    /**
-    * @dev サービスを削除します。
-    * @param index_ 削除するサービスのインデックスです。
-    * @return service_ 削除されたサービスのアドレスです。
-    */
-    function removeService(uint256 index_) external returns(address service_);
-
-    /**
     * @dev 指定されたインデックスのサービスを取得します。
     * @param index_ サービスのインデックスです。
     * @return service_ 指定されたインデックスのサービスのアドレスです。

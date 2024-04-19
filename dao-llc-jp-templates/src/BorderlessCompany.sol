@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity =0.8.24;
 
-import {IBorderlessCompany} from "src/interfaces/Service/IBorderlessCompany.sol";
-import {EventBorderlessCompany} from "src/interfaces/Service/EventBorderlessCompany.sol";
-import {ErrorBorderlessCompany} from "src/interfaces/Service/ErrorBorderlessCompany.sol";
+import {IBorderlessCompany} from "src/interfaces/IBorderlessCompany.sol";
+import {EventBorderlessCompany} from "src/interfaces/EventBorderlessCompany.sol";
+import {ErrorBorderlessCompany} from "src/interfaces/ErrorBorderlessCompany.sol";
 
 contract BorderlessCompany is IBorderlessCompany, EventBorderlessCompany, ErrorBorderlessCompany {
     address private _register;
@@ -44,13 +44,9 @@ contract BorderlessCompany is IBorderlessCompany, EventBorderlessCompany, ErrorB
         service_ = _services[index_];
     }
 
-    function addService(uint256 index_) external override returns(address service_){}
-
     function assignmentRole(address account_, bool isAdmin_) external override returns(bool assigned_){}
 
     function releaseRole(address account_, bool isAdmin_) external override returns(bool released_){}
-
-    function removeService(uint256 index_) external override returns(address service_){}
 
     modifier onlyAdmin() {
         require(_admins[msg.sender], "Error: BorderlessCompany/Only-Admin");

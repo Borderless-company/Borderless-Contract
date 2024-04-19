@@ -15,9 +15,12 @@ import {FactoryServiceTemplate} from "src/FactoryPool/FactoryServices/FactorySer
 // TODO: Governance, Treasuryの簡易コントラクトと、それをデプロイするFactoryコントラクトを作成する
 // STEP_1 : ServiceFactoryをデプロイする
 // STEP_2 : ServiceFactoryをOnlineにする
-import {GovernanceServiceFactory, IGovernanceService} from "src/FactoryPool/FactoryServices/GovernanceServiceFactory.sol";
-import {TreasuryServiceFactory, ITreasuryService} from "src/FactoryPool/FactoryServices/TreasuryServiceFactory.sol";
-import {TokenServiceFactory, ITokenService} from "src/FactoryPool/FactoryServices/TokenServiceFactory.sol";
+import {GovernanceServiceFactory} from "src/FactoryPool/FactoryServices/GovernanceServiceFactory.sol";
+import {IGovernanceService} from "src/interfaces/Services/GovernanceService/IGovernanceService.sol";
+import {TreasuryServiceFactory} from "src/FactoryPool/FactoryServices/TreasuryServiceFactory.sol";
+import {ITreasuryService} from "src/interfaces/Services/TreasuryService/ITreasuryService.sol";
+import {TokenServiceFactory} from "src/FactoryPool/FactoryServices/TokenServiceFactory.sol";
+import {ITokenService} from "src/interfaces/Services/TokenService/ITokenService.sol";
 
 contract TestBorderlessCompany is Test {
     FactoryPool fp;

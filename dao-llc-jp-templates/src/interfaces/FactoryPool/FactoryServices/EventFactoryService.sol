@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity =0.8.24;
 
-/// @title common interface for factory service
+/// @title Event interface for FactoryService contract
 interface EventFactoryService {
     /**
     * @dev ボーダーレスサービスが有効化されたことを通知するイベントです。

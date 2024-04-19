@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity =0.8.24;
 
-/// @title common interface for factory service
+/// @title feature interface for factory service
 interface IFactoryService {
     /**
     * @dev 管理者がサービスを有効化するための関数です。

@@ -13,20 +13,6 @@ interface EventBorderlessCompany {
     event InitialService(address indexed company_, address governance_, address treasury_, address token_);
 
     /**
-    * @dev サービスが追加されたことを通知するイベントです。
-    * @param service_ 追加されたサービスのアドレスです。
-    * @param index_ 追加されたサービスのインデックスです。
-    */
-    event AddService(address indexed service_, uint256 indexed index_);
-
-    /**
-    * @dev サービスが削除されたことを通知するイベントです。
-    * @param service_ 削除されたサービスのアドレスです。
-    * @param index_ 削除されたサービスのインデックスです。
-    */
-    event RemoveService(address indexed service_, uint256 indexed index_);
-
-    /**
     * @dev 管理者の役割が割り当てられたことを通知するイベントです。
     * @param admin_ 役割が割り当てられた管理者のアドレスです。
     */

@@ -3,11 +3,10 @@ pragma solidity =0.8.24;
 
 import {IFactoryService} from "src/interfaces/FactoryPool/FactoryServices/IFactoryService.sol";
 import {EventFactoryService} from "src/interfaces/FactoryPool/FactoryServices/EventFactoryService.sol";
-
-// -- Factory Template contract -- //
+import {ErrorFactoryService} from "src/interfaces/FactoryPool/FactoryServices/ErrorFactoryService.sol";
 
 /// @title Test factory smart contract for Borderless.company service
-contract FactoryServiceTemplate is IFactoryService, EventFactoryService {
+contract FactoryServiceTemplate is IFactoryService, EventFactoryService, ErrorFactoryService {
     address private _owner;
     address private _register;
 
@@ -26,9 +25,6 @@ contract FactoryServiceTemplate is IFactoryService, EventFactoryService {
 
         service_ = address(service);
     }
-
-    // TODO: documentとerror-handlingを追加する
-    error DoNotActivateService(address account_, address company_, uint256 serviceID_);
 
     modifier onlyRegister() {
         require(msg.sender == _register, "Error: FactoryService/Only-Register");
