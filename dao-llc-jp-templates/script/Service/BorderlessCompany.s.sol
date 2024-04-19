@@ -31,11 +31,8 @@ contract BorderlessCompanyScript is Script {
 
         rbc.setFactoryPool(address(fp));
 
-        // Governance
         gnsf = new GovernanceServiceFactory(address(rbc));
-        // Treasury
         trsf = new TreasuryServiceFactory(address(rbc));
-        // Token
         tksf = new TokenServiceFactory(address(rbc));
 
         // -- Set Service Address -- //
