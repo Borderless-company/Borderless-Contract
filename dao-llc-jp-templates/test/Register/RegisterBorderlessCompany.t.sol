@@ -108,7 +108,8 @@ contract TestRegisterBorderlessCompany is Test {
 
         // 1. 新しい`BorderlessCompany`(Borderless.company)コントラクトの機能を、admin(`exMember`)が実行できることを確認する
         ibc = IBorderlessCompany(companyAddress);
-        assertTrue(ibc.callAdmin());
+        address serviceAddress = ibc.getService(1);
+        assertTrue(serviceAddress != address(0));
 
         // -- test end -- //
         vm.stopPrank();
