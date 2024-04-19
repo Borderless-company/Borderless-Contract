@@ -15,6 +15,7 @@ import {TreasuryServiceFactory} from "src/FactoryPool/FactoryServices/TreasurySe
 import {ITreasuryService} from "src/interfaces/Services/TreasuryService/ITreasuryService.sol";
 import {TokenServiceFactory} from "src/FactoryPool/FactoryServices/TokenServiceFactory.sol";
 import {ITokenService} from "src/interfaces/Services/TokenService/ITokenService.sol";
+import {EventBorderlessCompany} from "src/interfaces/EventBorderlessCompany.sol";
 
 contract TestBorderlessCompany is Test {
     FactoryPool fp;
@@ -28,6 +29,8 @@ contract TestBorderlessCompany is Test {
     address owner;
     address exMember;
     address admin;
+    address newAdmin;
+    address member;
     address dummy;
 
     // -- setup companyInfo param -- //
@@ -57,6 +60,8 @@ contract TestBorderlessCompany is Test {
     function setUp() public {
         owner = makeAddr("OverlayAdmin");
         exMember = makeAddr("Queen");
+        newAdmin = makeAddr("King");
+        member = makeAddr("Rabbit");
 
         vm.startPrank(owner);
 
@@ -195,6 +200,27 @@ contract TestBorderlessCompany is Test {
         // TokenService
         address tos = ibc.getService(3);
         ITokenService(tos).callAdmin();
+
+        // -- 5. Role付与(追加) -- //
+        // Admin
+        vm.expectEmit(true, true, false, false);
+        emit EventBorderlessCompany.AssignmentRoleAdmin(address(newAdmin), true);
+        ibc.assignmentRole(address(newAdmin), true);
+
+        // Member
+        vm.expectEmit(true, true, false, false);
+        emit EventBorderlessCompany.AssignmentRoleMember(address(member), true);
+        ibc.assignmentRole(address(member), false);
+
+        // -- 6. Role解除(削除) -- //
+        // Admin
+        vm.expectEmit(true, true, false, false);
+        emit EventBorderlessCompany.ReleaseRoleAdmin(address(newAdmin), true);
+        ibc.releaseRole(address(newAdmin), true);
+        // Member
+        vm.expectEmit(true, true, false, false);
+        emit EventBorderlessCompany.ReleaseRoleMember(address(member), true);
+        ibc.releaseRole(address(member), false);
 
         // -- test end -- //
         vm.stopPrank();

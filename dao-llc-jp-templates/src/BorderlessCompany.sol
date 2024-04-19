@@ -44,12 +44,63 @@ contract BorderlessCompany is IBorderlessCompany, EventBorderlessCompany, ErrorB
         service_ = _services[index_];
     }
 
-    function assignmentRole(address account_, bool isAdmin_) external override returns(bool assigned_){}
+    function assignmentRole(address account_, bool isAdmin_) external override onlyAdmin returns(bool assigned_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
 
-    function releaseRole(address account_, bool isAdmin_) external override returns(bool released_){}
+        if(!isAdmin_) assigned_ = _assignmentRoleMember(account_);
+        else assigned_ = _assignmentRoleAdmin(account_);
+    }
+
+    function _assignmentRoleAdmin(address account_) internal returns(bool assigned_){
+        if(_admins[account_]) revert AlreadyAssignmentRole(account_);
+        
+        _admins[account_] = true;
+        emit AssignmentRoleAdmin(account_, _admins[account_]);
+
+        assigned_ = _admins[account_];
+    }
+
+    function _assignmentRoleMember(address account_) internal returns(bool assigned_){
+        if(_members[account_]) revert AlreadyAssignmentRole(account_);
+        
+        _members[account_] = true;
+        emit AssignmentRoleMember(account_, _admins[account_]);
+
+        assigned_ = _members[account_];
+    }
+
+    function releaseRole(address account_, bool isAdmin_) external override onlyAdmin returns(bool released_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+
+        if(!isAdmin_) released_ = _releaseRoleMember(account_);
+        else released_ = _releaseRoleAdmin(account_);
+    }
+
+    function _releaseRoleAdmin(address account_) internal returns(bool released_){
+        if(!_admins[account_]) revert AlreadyReleaseRole(account_);
+        
+        _admins[account_] = false;
+        emit ReleaseRoleAdmin(account_, !_admins[account_]);
+
+        released_ = !_admins[account_];
+    }
+
+    function _releaseRoleMember(address account_) internal returns(bool released_){
+        if(!_members[account_]) revert AlreadyReleaseRole(account_);
+        
+        _members[account_] = false;
+        emit ReleaseRoleMember(account_, !_admins[account_]);
+
+        released_ = !_members[account_];
+    }
 
     modifier onlyAdmin() {
         require(_admins[msg.sender], "Error: BorderlessCompany/Only-Admin");
+        _;
+    }
+
+    modifier onlyMember() {
+        require(_members[msg.sender], "Error: BorderlessCompany/Only-Member");
         _;
     }
 

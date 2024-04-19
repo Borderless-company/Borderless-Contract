@@ -15,24 +15,28 @@ interface EventBorderlessCompany {
     /**
     * @dev 管理者の役割が割り当てられたことを通知するイベントです。
     * @param admin_ 役割が割り当てられた管理者のアドレスです。
+    * @param assigned_ 役割が割り当て完了を示すブールです。
     */
-    event AssignmentRoleAdmin(address indexed admin_);
+    event AssignmentRoleAdmin(address indexed admin_, bool assigned_);
 
     /**
     * @dev メンバーの役割が割り当てられたことを通知するイベントです。
     * @param member_ 役割が割り当てられたメンバーのアドレスです。
+    * @param assigned_ 役割が割り当て完了を示すブールです。
     */
-    event AssignmentRoleMember(address indexed member_);
+    event AssignmentRoleMember(address indexed member_, bool assigned_);
 
     /**
     * @dev 管理者の役割が解除されたことを通知するイベントです。
     * @param admin_ 役割が解除された管理者のアドレスです。
+    * @param released_ 役割が割り当て解除を示すブールです。
     */
-    event ReleaseRoleAdmin(address indexed admin_);
+    event ReleaseRoleAdmin(address indexed admin_, bool released_);
 
     /**
     * @dev メンバーの役割が解除されたことを通知するイベントです。
     * @param member_ 役割が解除されたメンバーのアドレスです。
+    * @param released_ 役割が割り当て解除を示すブールです。
     */
-    event ReleaseRoleMember(address indexed member_);
+    event ReleaseRoleMember(address indexed member_, bool released_);
 }
