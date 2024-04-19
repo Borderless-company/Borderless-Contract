@@ -9,20 +9,28 @@ import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegis
 import {IBorderlessCompany} from "src/BorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
 import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol";
+import {GovernanceServiceFactory} from "src/FactoryPool/FactoryServices/GovernanceServiceFactory.sol";
+import {IGovernanceService} from "src/interfaces/Services/GovernanceService/IGovernanceService.sol";
+import {TreasuryServiceFactory} from "src/FactoryPool/FactoryServices/TreasuryServiceFactory.sol";
+import {ITreasuryService} from "src/interfaces/Services/TreasuryService/ITreasuryService.sol";
+import {TokenServiceFactory} from "src/FactoryPool/FactoryServices/TokenServiceFactory.sol";
+import {ITokenService} from "src/interfaces/Services/TokenService/ITokenService.sol";
+import {EventBorderlessCompany} from "src/interfaces/EventBorderlessCompany.sol";
 
-/// Note: FactoryService Templateのテスト用コントラクト
-import {FactoryServiceTemplate} from "src/FactoryPool/FactoryServices/FactoryServiceTemplate.sol";
-
-contract TestFactoryPool is Test {
+contract TestBorderlessCompany is Test {
     FactoryPool fp;
     RegisterBorderlessCompany rbc;
     IBorderlessCompany ibc;
     Whitelist wl;
-    FactoryServiceTemplate fst;
+    GovernanceServiceFactory gnsf;
+    TreasuryServiceFactory trsf;
+    TokenServiceFactory tksf;
 
     address owner;
     address exMember;
     address admin;
+    address newAdmin;
+    address member;
     address dummy;
 
     // -- setup companyInfo param -- //
@@ -31,7 +39,7 @@ contract TestFactoryPool is Test {
     bool confirmed;
 
     // =================== Test Cases ===================
-    // OK: FactoryPoolコントラクトにより、Borderless.companyのサービスコントラクトを起動するテストケース
+    // OK: Borderless.companyの各サービスコントラクト機能を実行するテストケース
     // 1. `OverlayAG Admin` オペレーションによるデプロイ（サービス提供者）
     //    1. `Whitelist`コントラクトのデプロイ
     //       1. `Whitelist`は、`業務執行社員・代表社員`のホワイトリスト管理と、その登録機能を有する
@@ -46,11 +54,14 @@ contract TestFactoryPool is Test {
     //    2. `BorderlessCompany`コントラクトが起動する。
     //    3. `FactoryPool`コントラクトより、`_services`を参照し`各Serviceリリース用のFacotry`コントラクトを実行する。
     //    4. 3 をもとに`各Serviceリリース用のFacotry`コントラクトアドレスを指定して、 `setup`により Service を起動する。
+    //    5. `各Service`コントラクトアドレスを指定して、 `callAdmin()`が実行できることを確認する。
     // ===================================================
 
     function setUp() public {
         owner = makeAddr("OverlayAdmin");
         exMember = makeAddr("Queen");
+        newAdmin = makeAddr("King");
+        member = makeAddr("Rabbit");
 
         vm.startPrank(owner);
 
@@ -70,10 +81,11 @@ contract TestFactoryPool is Test {
 
     // TODO: Test caseのドキュメント更新
     /**
-     * @dev 1.OK: FactoryPoolコントラクトにより、Borderless.companyのサービスコントラクトを起動するテストケース
+     * @dev 1.OK: Borderless.companyの各サービスコントラクト機能を実行するテストケース
      * - createBorderlessCompany
      * - activate
      * - getService
+     * - 各Serviceコントラクトの機能実行`callAdmin()`
      * 
      * テストケースに含まれるオペレーション:
      * 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
@@ -81,12 +93,13 @@ contract TestFactoryPool is Test {
      * 2. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyを起動する
      * 3. 新しい`BorderlessCompany`(Borderless.company)コントラクトが起動（設立）が成功したことを確認する。
      * 4. 新しい`BorderlessCompany`(Borderless.company)コントラクトの機能実行ができることを確認する。
+     * 5. 新しい`Service`の機能実行ができることを確認する。
      * @notice テストケースの実行には、コントラクト実行者が必要です。
      * 1. `owner` に `OverlayAdmin` を指定してコントラクトを実行します。
      * 2. `exMember` に `Queen`を指定して実行します。
      * 3. `admin` は、 `exMember`(Queen)を代入して実行します。
      */
-    function test_Success_FactoryPoolService_createBorderlessCompany_byExManaer() public {
+    function test_Success_BorderlessCompany_createBorderlessCompany_byExManaer() public {
         // -- test用セットアップ -- //
         bool started;
         address companyAddress;
@@ -100,40 +113,51 @@ contract TestFactoryPool is Test {
         vm.startPrank(owner);
 
         // -- 0-1. `FactoryServiceTemplate`コントラクトのデプロイ(サービスリリース) -- //
-        // Note: FactoryServiceTemplateのデプロイ(Sample用)
-        fst = new FactoryServiceTemplate(address(rbc));
+        // Governance
+        gnsf = new GovernanceServiceFactory(address(rbc));
+        // Treasury
+        trsf = new TreasuryServiceFactory(address(rbc));
+        // Token
+        tksf = new TokenServiceFactory(address(rbc));
 
         // -- 0-2. `FactoryPool`コントラクトへ、`FactoryServiceTemplate`のアドレス登録 -- //
+        // Governance
         vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.NewService(address(fst), 1);
-        fp.setService(address(fst), 1); // index = 1 GovernanceService
+        emit EventFactoryPool.NewService(address(gnsf), 1);
+        fp.setService(address(gnsf), 1); // index = 1 GovernanceService
 
+        // Treasury
         vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.NewService(address(fst), 2);
+        emit EventFactoryPool.NewService(address(trsf), 2);
         // Note: contractは仮アドレスをセット
-        fp.setService(address(fst), 2); // index = 2 TreasuryService
+        fp.setService(address(trsf), 2); // index = 2 TreasuryService
 
+        // Token
         vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.NewService(address(fst), 3);
+        emit EventFactoryPool.NewService(address(tksf), 3);
         // Note: contractは仮アドレスをセット
-        fp.setService(address(fst), 3); // index = 3 TokenService
+        fp.setService(address(tksf), 3); // index = 3 TokenService
 
         // -- 0-3. `FactoryPool`コントラクトへ登録した、`FactoryServiceTemplate`サービス状態をOnlineへ更新 -- //
+        // Governance
         vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.UpdateService(address(fst), 1, true);
-        fp.updateService(address(fst), 1, true); // index = 1 GovernanceService
+        emit EventFactoryPool.UpdateService(address(gnsf), 1, true);
+        fp.updateService(address(gnsf), 1, true); // index = 1 GovernanceService
 
+        // Treasury
         vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.UpdateService(address(fst), 2, true);
+        emit EventFactoryPool.UpdateService(address(trsf), 2, true);
         // Note: contractは仮アドレスをセット
-        fp.updateService(address(fst), 2, true); // index = 2 TreasuryService
+        fp.updateService(address(trsf), 2, true); // index = 2 TreasuryService
 
+        // Token
         vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.UpdateService(address(fst), 3, true);
+        emit EventFactoryPool.UpdateService(address(tksf), 3, true);
         // Note: contractは仮アドレスをセット
-        fp.updateService(address(fst), 3, true); // index = 3 TokenService
+        fp.updateService(address(tksf), 3, true); // index = 3 TokenService
 
-        // 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
+        // -- Reservation -- //
+        // -- 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。 -- //
         wl.addToWhitelist(exMember);
 
         vm.stopPrank();
@@ -162,10 +186,41 @@ contract TestFactoryPool is Test {
         admin = exMember; // 業務執行社員・代表社員
         vm.startPrank(admin);
 
-        // 1. 新しい`BorderlessCompany`(Borderless.company)コントラクトの機能を、admin(`exMember`)が実行できることを確認する
+        // -- 4. Service contract 機能のcallをする -- //
         ibc = IBorderlessCompany(companyAddress);
-        address serviceAddress = ibc.getService(1);
-        assertTrue(serviceAddress != address(0));
+
+        // GovernanceService
+        address gs = ibc.getService(1);
+        IGovernanceService(gs).callAdmin();
+
+        // TreasuryService
+        address ts = ibc.getService(2);
+        ITreasuryService(ts).callAdmin();
+
+        // TokenService
+        address tos = ibc.getService(3);
+        ITokenService(tos).callAdmin();
+
+        // -- 5. Role付与(追加) -- //
+        // Admin
+        vm.expectEmit(true, true, false, false);
+        emit EventBorderlessCompany.AssignmentRoleAdmin(address(newAdmin), true);
+        ibc.assignmentRole(address(newAdmin), true);
+
+        // Member
+        vm.expectEmit(true, true, false, false);
+        emit EventBorderlessCompany.AssignmentRoleMember(address(member), true);
+        ibc.assignmentRole(address(member), false);
+
+        // -- 6. Role解除(削除) -- //
+        // Admin
+        vm.expectEmit(true, true, false, false);
+        emit EventBorderlessCompany.ReleaseRoleAdmin(address(newAdmin), true);
+        ibc.releaseRole(address(newAdmin), true);
+        // Member
+        vm.expectEmit(true, true, false, false);
+        emit EventBorderlessCompany.ReleaseRoleMember(address(member), true);
+        ibc.releaseRole(address(member), false);
 
         // -- test end -- //
         vm.stopPrank();

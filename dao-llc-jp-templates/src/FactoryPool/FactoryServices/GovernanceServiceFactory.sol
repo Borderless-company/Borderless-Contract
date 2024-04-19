@@ -4,9 +4,10 @@ pragma solidity =0.8.24;
 import {IFactoryService} from "src/interfaces/FactoryPool/FactoryServices/IFactoryService.sol";
 import {EventFactoryService} from "src/interfaces/FactoryPool/FactoryServices/EventFactoryService.sol";
 import {ErrorFactoryService} from "src/interfaces/FactoryPool/FactoryServices/ErrorFactoryService.sol";
+import {GovernanceService} from "src/Services/GovernanceService.sol";
 
 /// @title Test factory smart contract for Borderless.company service
-contract FactoryServiceTemplate is IFactoryService, EventFactoryService, ErrorFactoryService {
+contract GovernanceServiceFactory is IFactoryService, EventFactoryService, ErrorFactoryService {
     address private _owner;
     address private _register;
 
@@ -17,7 +18,7 @@ contract FactoryServiceTemplate is IFactoryService, EventFactoryService, ErrorFa
 
     function activate(address admin_, address company_, uint256 serviceID_) external override onlyRegister returns (address service_) {
         /// Note: common service setup
-        SampleService service = new SampleService(admin_, company_); // Note: **この箇所を変更する**
+        GovernanceService service = new GovernanceService(admin_, company_); // Note: **この箇所を変更する**
 
         if(address(service) == address(0)) revert DoNotActivateService(admin_, company_, serviceID_); // Note: **この箇所を変更する**
 
@@ -29,29 +30,5 @@ contract FactoryServiceTemplate is IFactoryService, EventFactoryService, ErrorFa
     modifier onlyRegister() {
         require(msg.sender == _register, "Error: FactoryService/Only-Register");
         _;
-    }
-}
-
-/// @title Test smart contract for Borderless.company service
-contract SampleService {
-    address private _admin;
-    address private _company;
-
-    constructor(address admin_, address company_) {
-        _admin = admin_;
-        _company = company_;
-    }
-
-    function callAdmin() public view onlyService returns (bool called_) {
-        called_ = true;
-    }
-
-    modifier onlyService() {
-        require(_validateCaller(), "Error: SampleService/Invalid-Caller");
-        _;
-    }
-
-    function _validateCaller() internal view returns (bool called_) {
-        if(msg.sender == _admin && msg.sender == _company) called_ = true;
     }
 }
