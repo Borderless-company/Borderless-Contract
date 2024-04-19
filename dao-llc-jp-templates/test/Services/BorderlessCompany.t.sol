@@ -9,12 +9,6 @@ import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegis
 import {IBorderlessCompany} from "src/BorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
 import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol";
-
-/// Note: FactoryService Templateのテスト用コントラクト
-import {FactoryServiceTemplate} from "src/FactoryPool/FactoryServices/FactoryServiceTemplate.sol";
-// TODO: Governance, Treasuryの簡易コントラクトと、それをデプロイするFactoryコントラクトを作成する
-// STEP_1 : ServiceFactoryをデプロイする
-// STEP_2 : ServiceFactoryをOnlineにする
 import {GovernanceServiceFactory} from "src/FactoryPool/FactoryServices/GovernanceServiceFactory.sol";
 import {IGovernanceService} from "src/interfaces/Services/GovernanceService/IGovernanceService.sol";
 import {TreasuryServiceFactory} from "src/FactoryPool/FactoryServices/TreasuryServiceFactory.sol";

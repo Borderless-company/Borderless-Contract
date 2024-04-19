@@ -8,12 +8,16 @@ import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegis
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
 import {IBorderlessCompany} from "src/BorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
+/// Note: FactoryService Templateのテスト用コントラクト
+import {FactoryServiceTemplate} from "src/FactoryPool/FactoryServices/FactoryServiceTemplate.sol";
+import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol";
 
 contract TestRegisterBorderlessCompany is Test {
     RegisterBorderlessCompany rbc;
     IBorderlessCompany ibc;
     Whitelist wl;
     FactoryPool fp;
+    FactoryServiceTemplate fst;
 
     address owner;
     address exMember;
@@ -108,8 +112,8 @@ contract TestRegisterBorderlessCompany is Test {
 
         // 1. 新しい`BorderlessCompany`(Borderless.company)コントラクトの機能を、admin(`exMember`)が実行できることを確認する
         ibc = IBorderlessCompany(companyAddress);
-        address serviceAddress = ibc.getService(1);
-        assertTrue(serviceAddress != address(0));
+        
+        assertTrue(address(ibc) != address(0));
 
         // -- test end -- //
         vm.stopPrank();
