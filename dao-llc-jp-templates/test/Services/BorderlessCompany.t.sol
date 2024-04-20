@@ -16,6 +16,7 @@ import {ITreasuryService} from "src/interfaces/Services/TreasuryService/ITreasur
 import {TokenServiceFactory} from "src/FactoryPool/FactoryServices/TokenServiceFactory.sol";
 import {ITokenService} from "src/interfaces/Services/TokenService/ITokenService.sol";
 import {EventBorderlessCompany} from "src/interfaces/EventBorderlessCompany.sol";
+import {NonFungibleTokenTYPE721} from "src/Services/TokenStandards/NonFungibleTokenTYPE721.sol";
 
 contract TestBorderlessCompany is Test {
     FactoryPool fp;
@@ -199,7 +200,24 @@ contract TestBorderlessCompany is Test {
 
         // TokenService
         address tos = ibc.getService(3);
-        ITokenService(tos).callAdmin();
+        ITokenService(tos).activateStandard721Token("Dynamo token", "DYN", "https://dynamo.com", true);
+        assertTrue(1 == ITokenService(tos).getLastIndexStandard721Token());
+
+        // -- SBT -- //
+        address token_;
+        (token_,,) = ITokenService(tos).getInfoStandard721token(1);
+
+        NonFungibleTokenTYPE721(token_).mint();
+        NonFungibleTokenTYPE721(token_).mint(member);
+
+        // -- NFT -- //
+        ITokenService(tos).activateStandard721Token("Kaba token", "KAB", "https://kaba.com", false);
+        assertTrue(2 == ITokenService(tos).getLastIndexStandard721Token());
+
+        (token_,,) = ITokenService(tos).getInfoStandard721token(2);
+        NonFungibleTokenTYPE721(token_).mint();
+        // NonFungibleTokenTYPE721(token_).mint(member);
+        NonFungibleTokenTYPE721(token_).transferFrom(admin, member, 1);
 
         // -- 5. Role付与(追加) -- //
         // Admin
