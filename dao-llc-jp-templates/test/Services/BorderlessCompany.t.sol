@@ -205,7 +205,7 @@ contract TestBorderlessCompany is Test {
 
         // -- SBT -- //
         address token_;
-        (token_,,) = ITokenService(tos).getInfoStandard721token(1);
+        (token_,,,) = ITokenService(tos).getInfoStandard721token(1);
 
         NonFungibleTokenTYPE721(token_).mint();
         NonFungibleTokenTYPE721(token_).mint(member);
@@ -214,7 +214,7 @@ contract TestBorderlessCompany is Test {
         ITokenService(tos).activateStandard721Token("Kaba token", "KAB", "https://kaba.com", false);
         assertTrue(2 == ITokenService(tos).getLastIndexStandard721Token());
 
-        (token_,,) = ITokenService(tos).getInfoStandard721token(2);
+        (token_,,,) = ITokenService(tos).getInfoStandard721token(2);
         NonFungibleTokenTYPE721(token_).mint();
         // NonFungibleTokenTYPE721(token_).mint(member);
         NonFungibleTokenTYPE721(token_).transferFrom(admin, member, 1);

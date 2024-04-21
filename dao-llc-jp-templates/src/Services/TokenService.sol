@@ -54,12 +54,12 @@ contract TokenService is ITokenService, EventTokenService, ErrorTokenService{
         index_ = _lastIndex721;
     }
 
-    function getInfoStandard721token(uint256 index_) external view returns(address token_, string memory name_, string memory symbol_) {
+    function getInfoStandard721token(uint256 index_) external view returns(address token_, string memory name_, string memory symbol_, bool sbt_) {
         TokenInfo memory _info;
         if(index_ == 0 || index_ > _lastIndex721) revert InvalidIndex(index_);
         
         _info = _standard721tokens[index_];
-        (token_, name_, symbol_) = (_info.token_, _info.name_, _info.symbol_);
+        (token_, name_, symbol_, sbt_) = (_info.token_, _info.name_, _info.symbol_, _info.sbt_);
     }
 
     modifier onlyAdmin(){

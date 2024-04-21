@@ -38,6 +38,7 @@ interface ITokenService {
     * @return token_ ERC721標準のトークンのアドレスです。
     * @return name_ ERC721標準のトークンの名前です。
     * @return symbol_ ERC721標準のトークンのシンボルです。
+    * @return sbt_ SBTであるかを示すブール値です。
     */
-    function getInfoStandard721token(uint256 index_) external view returns(address token_, string memory name_, string memory symbol_);
+    function getInfoStandard721token(uint256 index_) external view returns(address token_, string memory name_, string memory symbol_, bool sbt_);
 }

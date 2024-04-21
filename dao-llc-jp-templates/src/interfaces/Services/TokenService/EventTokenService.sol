@@ -9,5 +9,5 @@ interface EventTokenService {
     * @param name_ トークンの名前です。
     * @param sbt_ SBTトークンであるかどうかを示すブール値です。
     */
-    event NewNonFungibleToken721(address indexed token_, string indexed symbol_, string name_, bool sbt_);
+    event NewNonFungibleToken721(address indexed token_, string indexed symbol_, string indexed name_, bool sbt_);
 }
