@@ -69,9 +69,16 @@ cast-send-localnet-regist:
 ## 0xaFD8e809a7f7d7C6bcb67866938F721ff0D345C4 is Whitelist contract address (ETH Sepolia)
 ## 0x89f61198a6032D1EcCE53C39539eA564c425Cc75
 ## 0x5afB48E2D7d16F7f2Bf4644738794324b66b0E90
+## 2024/4/21
+## 0xc27190ECBaD46E6AeA32894e0D8e2344d0Fb1C11 is Whitelist contract address (ETH Sepolia)
+## 0x89f61198a6032D1EcCE53C39539eA564c425Cc75
+## 0x5afB48E2D7d16F7f2Bf4644738794324b66b0E90
+## 0x143bF6734C5c81d6BBC9bddA4e903398ae866eCF
+## 0x81D6BB0964BCFa56f85670719Ff9f5E0F4cc150e
+## 0xD59A04c31b06ce54367eE809cE56d8acC9fE1143
 .PHONY: cast-send-testnet-sepolia-whitelist
 cast-send-testnet-sepolia-whitelist:
-	cast send 0xaFD8e809a7f7d7C6bcb67866938F721ff0D345C4 "addToWhitelist(address)(bool)" "0x89f61198a6032D1EcCE53C39539eA564c425Cc75" --rpc-url $(ETH_SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY)
+	cast send 0xaFD8e809a7f7d7C6bcb67866938F721ff0D345C4 "addToWhitelist(address)(bool)" "0xD59A04c31b06ce54367eE809cE56d8acC9fE1143" --rpc-url $(ETH_SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY)
 
 ## 0xaFD8e809a7f7d7C6bcb67866938F721ff0D345C4 is Whitelist contract address (Polygon Amoy)
 .PHONY: cast-send-testnet-amoy-whitelist
