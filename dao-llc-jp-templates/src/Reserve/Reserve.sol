@@ -50,6 +50,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
     }
 
     function reserverOf(uint256 index_) external view onlyOwner returns(address reserver_){
+        if(index_ <= 0 || index_ > _lastIndex) revert InvalidIndex(index_);
         reserver_ = _reservers[index_];
     }
 
