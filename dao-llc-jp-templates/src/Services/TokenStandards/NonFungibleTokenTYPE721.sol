@@ -95,7 +95,7 @@ contract NonFungibleTokenTYPE721 is ERC721, EventNonFungibleTokenTYPE721, ErrorN
     // }
 
     function transferFrom(address from, address to, uint256 tokenId) public override checkLock {
-        if(_holoderOf(to)) revert AlreadyMinted(to_, name(), symbol());
+        if(_holoderOf(to)) revert AlreadyMinted(to, name(), symbol());
         super.transferFrom(from, to, tokenId);
 
         _holders[from] = false;
