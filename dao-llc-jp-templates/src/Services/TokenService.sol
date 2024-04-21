@@ -11,10 +11,7 @@ contract TokenService is ITokenService, EventTokenService, ErrorTokenService{
     address private _admin;
     address private _company;
     uint256 private _lastIndex721;
-    uint256 private _lastIndex20;
     mapping(uint256 index_ => TokenInfo info_) private _standard721tokens;
-    // TODO: ERC20のトークン情報を格納するためのマッピングを作成（機能開発の時に作成する）
-    // mapping(uint256 index_ => TokenInfo info_) private _standard20tokens;
 
     constructor(address admin_, address company_) {
         _admin = admin_;
