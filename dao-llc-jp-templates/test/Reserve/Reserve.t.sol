@@ -59,6 +59,19 @@ contract TestReserve is Test {
         // 4. 登録した予約契約アカウントがホワイトリストに含まれていることを確認する
         assertTrue(rs.isWhitelisted(reserver));
 
+        // 5. 予約者数のインデックスを取得する
+        uint256 index = rs.lastIndexOf();
+        assertTrue(index == 1);
+
+        // 6. 予約者のアドレスを取得する
+        address reserver_ = rs.reserverOf(index);
+        assertTrue(reserver_ == reserver);
+
+        // 7. 全予約者のアドレスを取得する
+        address[] memory reservers = rs.reserversOf();
+        assertTrue(reservers.length == 1);
+        assertTrue(reservers[0] == reserver);
+
         // -- test end -- //
         vm.stopPrank();
     }

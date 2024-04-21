@@ -19,4 +19,24 @@ interface IReserve { // Note: IWhitelist is an feature interface
     * @return listed_ アカウントがリストに含まれているかどうかのブール値
     */
     function isWhitelisted(address account_) external returns(bool listed_);
+
+    /**
+    * @dev 予約者数のインデックスを取得するための関数
+    * @return index_ 予約者のインデックスです。
+    */
+    function lastIndexOf() external returns(uint256 index_);
+
+    /**
+    * @dev 予約者のアドレスを取得するための関数
+    * @notice オーナーのみがこの関数を呼び出せます
+    * @return reserver_ 予約者のアドレスです。
+    */
+    function reserverOf(uint256 index_) external view returns(address reserver_);
+
+    /**
+    * @dev 全予約者のアドレスを取得するための関数です。
+    * @notice オーナーのみがこの関数を呼び出せます
+    * @return reservers_ 予約者のアドレスの配列です。
+    */
+    function reserversOf() external view returns(address[] memory reservers_);
 }
