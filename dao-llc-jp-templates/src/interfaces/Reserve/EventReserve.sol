@@ -9,4 +9,11 @@ interface EventReserve { // Note: EventReserve is an Event interface
     * @param account_ 新しく予約されたアカウントのアドレス
     */
     event NewReserver(address indexed caller_, address indexed account_);
+
+    /**
+    * @dev 予約契約がキャンセルされたときに発生するイベント
+    * @param caller_ イベントを発生させた呼び出し元のアドレス
+    * @param account_ 予約キャンセルしたアカウントのアドレス
+    */
+    event CancelReserve(address indexed caller_, address indexed account_);
 }

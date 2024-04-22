@@ -13,6 +13,14 @@ interface IReserve { // Note: IWhitelist is an feature interface
     function reservation(address account_) external returns(bool listed_);
 
     /**
+    * @dev 指定されたアカウントをホワイトリストから解除する関数
+    * @notice オーナーのみがこの関数を呼び出せます
+    * @param account_ 予約解除するアカウントのアドレス
+    * @return listed_ アカウントがリストに含まれているかどうかのブール値
+    */
+    function cancel(address account_) external returns(bool listed_);
+
+    /**
     * @dev 指定されたアカウントがホワイトリストに含まれているかを確認する外部公開関数
     * @notice オーナー以外もこの関数を呼び出せます
     * @param account_ 確認するアカウントのアドレス

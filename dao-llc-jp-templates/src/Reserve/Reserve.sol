@@ -34,6 +34,31 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
         listed_ = _whitelist[account_];
     }
+
+    function cancel(address account_) external override onlyOwner returns(bool listed_) {
+        if(account_ == address(0)) revert InvalidAddress(account_);
+        if(!_isWhitelisted(account_)) revert AlreadyNotReserve(account_);
+
+        if(_removeWhitelist(account_)) revert DoNotToAddWhitelist(account_);
+
+        listed_ = _whitelist[account_];
+    }
+
+    function _removeWhitelist(address account_) internal returns(bool listed_) {
+        for(uint256 i = 1; i <= _lastIndex; i++){
+            if(_reserverOf(i) == account_){
+                delete _reservers[i];
+                if(_reserverOf(i) != address(0)) _reservers[i] = address(0);
+                break;
+            }
+        }
+
+        emit CancelReserver(msg.sender, account_);
+
+        _whitelist[account_] = false;
+
+        listed_ = _whitelist[account_];
+    }
     
     function isWhitelisted(address account_) external view override returns(bool listed_){
         if(account_ == address(0)) revert InvalidAddress(account_);
@@ -51,6 +76,10 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
     function reserverOf(uint256 index_) external view onlyOwner returns(address reserver_){
         if(index_ <= 0 || index_ > _lastIndex) revert InvalidIndex(index_);
+        reserver_ = _reserverOf(index_);
+    }
+
+    function _reserverOf(uint256 index_) internal view returns(address reserver_){
         reserver_ = _reservers[index_];
     }
 
@@ -58,7 +87,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         reservers_ = new address[](_lastIndex);
     
         for(uint256 i = 1; i <= _lastIndex; i++){
-            if(_reservers[i] != address(0)) reservers_[i -1] = _reservers[i];
+            if(_reserverOf(i) != address(0)) reservers_[i -1] = _reserverOf(i);
         }
     }
 
