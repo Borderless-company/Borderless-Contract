@@ -49,11 +49,12 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
             if(_reserverOf(i) == account_){
                 delete _reservers[i];
                 if(_reserverOf(i) != address(0)) _reservers[i] = address(0);
+                
                 break;
             }
         }
 
-        emit CancelReserver(msg.sender, account_);
+        emit CancelReserve(msg.sender, account_);
 
         _whitelist[account_] = false;
 
