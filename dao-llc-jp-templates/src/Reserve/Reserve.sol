@@ -26,11 +26,13 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
     function _addToWhitelist(address account_) internal returns(bool listed_) {
         _lastIndex++;
-        _reservers[_lastIndex] = account_;
+        _reservers[_indexOf()] = account_;
 
-        emit NewReserver(msg.sender, account_);
+        if(_reserverOf(_indexOf()) == account_) {
+            emit NewReserver(account_, _indexOf());
 
-        _whitelist[account_] = true;
+            _whitelist[account_] = true;
+        }
 
         listed_ = _whitelist[account_];
     }
@@ -39,24 +41,24 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         if(account_ == address(0)) revert InvalidAddress(account_);
         if(!_isWhitelisted(account_)) revert AlreadyNotReserve(account_);
 
-        if(_removeWhitelist(account_)) revert DoNotToAddWhitelist(account_);
+        if(_cancelWhitelist(account_)) revert DoNotToAddWhitelist(account_);
 
         listed_ = _whitelist[account_];
     }
 
-    function _removeWhitelist(address account_) internal returns(bool listed_) {
-        for(uint256 i = 1; i <= _lastIndex; i++){
-            if(_reserverOf(i) == account_){
-                delete _reservers[i];
-                if(_reserverOf(i) != address(0)) _reservers[i] = address(0);
-                
+    function _cancelWhitelist(address account_) internal returns(bool listed_) {
+        uint256 _index = 1;
+
+        for(_index; _index <= _lastIndex; _index++){
+            if(_reserverOf(_index) == account_) _reservers[_index] = address(0);
+            if(_isWhitelisted(account_)) _whitelist[account_] = false;
+
+            if(_reserverOf(_index) == address(0) && !_isWhitelisted(account_)) {
+                emit CancelReserve(account_, _index);
+
                 break;
             }
         }
-
-        emit CancelReserve(msg.sender, account_);
-
-        _whitelist[account_] = false;
 
         listed_ = _whitelist[account_];
     }
@@ -72,6 +74,10 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
     }
 
     function lastIndexOf() external view onlyOwner returns(uint256 index_){
+        index_ = _indexOf();
+    }
+
+    function _indexOf() internal view returns(uint256 index_){
         index_ = _lastIndex;
     }
 

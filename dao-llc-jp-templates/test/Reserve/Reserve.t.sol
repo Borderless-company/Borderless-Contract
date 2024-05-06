@@ -50,7 +50,7 @@ contract TestReserve is Test {
         // 2. コントラクトオーナーが、ホワイトリストに予約者アカウントを追加する
         // 予約者がホワイトリストに登録されたイベントが発生することを確認する
         vm.expectEmit(true, true, false, false);
-        emit EventReserve.NewReserver(address(owner), address(reserver));
+        emit EventReserve.NewReserver(address(reserver), 1);
         listed = rs.reservation(reserver);
 
         // 3. listedがtrueであることを確認する
