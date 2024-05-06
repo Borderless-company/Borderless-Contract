@@ -63,13 +63,21 @@ cast-send-localnet-whitelist:
 cast-send-localnet-regist:
 	cast send 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 "createBorderlessCompany(bytes, bytes, bool)(bool, address)" 0x61 0x61 true --rpc-url $(LOCAL_RPC_URL) --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
-
 ## 0x09FaFD544F9dc6656743A5C828FB7491E18bC41D is Whitelist contract address (ETH Sepolia)
 ## 2024/4/19
 ## 0xaFD8e809a7f7d7C6bcb67866938F721ff0D345C4 is Whitelist contract address (ETH Sepolia)
 ## 0x89f61198a6032D1EcCE53C39539eA564c425Cc75
 ## 0x5afB48E2D7d16F7f2Bf4644738794324b66b0E90
 ## 2024/4/21
+## 0x15F8f9FEF076dE5EB7211E9a11c346B6bB957Cd7 is Whitelist contract address (ETH Sepolia)
+## 0x5afB48E2D7d16F7f2Bf4644738794324b66b0E90
+## 0xD59A04c31b06ce54367eE809cE56d8acC9fE1143
+## 0xb69CB3EFbaDB1b30f6d88020e1FA1FC84B8804d4
+## Coffee
+## 0x3b76BE0a32446b22d50d42524796DD90B25487FD
+.PHONY: cast-send-testnet-sepolia-whitelist
+cast-send-testnet-sepolia-whitelist:
+	cast send 0x15F8f9FEF076dE5EB7211E9a11c346B6bB957Cd7 "addToWhitelist(address)(bool)" "0xf20e96Dc4f6942892e3375A3601cDB2E5A81C973" --rpc-url $(ETH_SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY)
 ## 0xc27190ECBaD46E6AeA32894e0D8e2344d0Fb1C11 is Whitelist contract address (ETH Sepolia)
 ## 0x89f61198a6032D1EcCE53C39539eA564c425Cc75
 ## 0x5afB48E2D7d16F7f2Bf4644738794324b66b0E90
