@@ -5,15 +5,15 @@ pragma solidity =0.8.24;
 interface EventReserve { // Note: EventReserve is an Event interface
     /**
     * @dev 新しい予約者が追加されたときに発生するイベント
-    * @param caller_ イベントを発生させた呼び出し元のアドレス
-    * @param account_ 新しく予約されたアカウントのアドレス
+    * @param account_ 新しく予約契約されたアカウントのアドレス
+    * @param index_ 新しく予約契約されたインデックス値
     */
-    event NewReserver(address indexed caller_, address indexed account_);
+    event NewReserver(address indexed account_, uint256 indexed index_);
 
     /**
     * @dev 予約契約がキャンセルされたときに発生するイベント
-    * @param caller_ イベントを発生させた呼び出し元のアドレス
-    * @param account_ 予約キャンセルしたアカウントのアドレス
+    * @param account_ 新しく予約契約されたアカウントのアドレス
+    * @param index_ 新しく予約契約されたインデックス値
     */
-    event CancelReserve(address indexed caller_, address indexed account_);
+    event CancelReserve(address indexed account_, uint256 indexed index_);
 }
