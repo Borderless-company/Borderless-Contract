@@ -32,4 +32,16 @@ interface ErrorReserve { // Note: ErrorReserve is an Error interface
     * @param account_ ホワイトリストに追加しようとしたが失敗したアカウント
     */
     error DoNotToAddWhitelist(address account_);
+
+    /**
+    * @dev 既に登録済みの管理アカウントが提供された場合に発生するエラー
+    * @param account_ 既に登録された管理アカウント
+    */
+    error AlreadyAdmin(address account_);
+
+    /**
+    * @dev 登録なしの管理アカウントが提供された場合に発生するエラー
+    * @param account_ 登録がない管理アカウント
+    */
+    error NotAdmin(address account_);
 }

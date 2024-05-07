@@ -65,16 +65,16 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
     function setAdmin(address account_) external override onlyAdmin returns(bool assigned_){
         if(account_ == address(0)) revert InvalidAddress(account_);
-        // TODO: Error-handlingの追加をする
-        // if(_admins[account_]) revert AlreadyAdmin(account_);
+        // TODO: adminの重複登録チェック処理を追加する
+        if(_admins[account_]) revert AlreadyAdmin(account_);
 
         assigned_ = _setAdmin(account_);
     }
 
     function deleteAdmin(address account_) external override onlyAdmin returns(bool assigned_){
         if(account_ == address(0)) revert InvalidAddress(account_);
-        // TODO: Error-handlingの追加をする
-        // if(!_admins[account_]) revert NotAdmin(account_);
+        // TODO: adminの重複登録チェック処理を追加する
+        if(!_admins[account_]) revert NotAdmin(account_);
 
         assigned_ = _deleteAdmin(account_);
     }
