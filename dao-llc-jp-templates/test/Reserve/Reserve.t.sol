@@ -129,7 +129,7 @@ contract TestReserve is Test {
         // 3. ホワイトリストに登録済みのアカウントはリバートされることを確認する
         vm.expectRevert(
             abi.encodeWithSelector(
-                ErrorReserve.AlreadyReserver.selector,
+                ErrorReserve.AlreadyReserve.selector,
                 address(reserver)
             )
         );

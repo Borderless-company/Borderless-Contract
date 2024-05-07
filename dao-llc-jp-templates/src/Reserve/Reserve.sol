@@ -17,7 +17,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
     
     function reservation(address account_) external override onlyOwner returns(bool listed_) {
         if(account_ == address(0)) revert InvalidAddress(account_);
-        if(_isWhitelisted(account_)) revert AlreadyReserver(account_);
+        if(_isWhitelisted(account_)) revert AlreadyReserve(account_);
 
         if(!_addToWhitelist(account_)) revert DoNotToAddWhitelist(account_);
 
@@ -39,7 +39,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
     function cancel(address account_) external override onlyOwner returns(bool listed_) {
         if(account_ == address(0)) revert InvalidAddress(account_);
-        if(!_isWhitelisted(account_)) revert AlreadyNotReserve(account_);
+        if(!_isWhitelisted(account_)) revert NotyetReserve(account_);
 
         if(_cancelWhitelist(account_)) revert DoNotToAddWhitelist(account_);
 
