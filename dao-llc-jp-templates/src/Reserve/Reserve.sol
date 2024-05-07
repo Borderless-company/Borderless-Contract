@@ -119,8 +119,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         _admins[account_] = true;
         _assigned = _getAdmin(account_);
 
-        // TODO: Error-handlingの追加をする
-        // if(!_assigned) revert NotSetAdmin(account_);
+        if(!_assigned) revert DoNotSetAdmin(account_);
 
         emit NewAdmin(account_);
 
@@ -133,8 +132,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         delete _admins[account_];
         _assigned = _getAdmin(account_);
 
-        // TODO: Error-handlingの追加をする
-        // if(_assigned) revert NotDeleteAdmin(account_);
+        if(_assigned) revert DoNotDeleteAdmin(account_);
 
         emit DeleteAdmin(account_);
 

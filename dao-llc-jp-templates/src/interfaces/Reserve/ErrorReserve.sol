@@ -44,4 +44,16 @@ interface ErrorReserve { // Note: ErrorReserve is an Error interface
     * @param account_ 登録がない管理アカウント
     */
     error NotAdmin(address account_);
+    
+    /**
+    * @dev 管理者アカウントを追加できなかった場合に発生するエラー
+    * @param account_ 管理者に追加しようとしたが失敗したアカウント
+    */
+    error DoNotSetAdmin(address account_);
+
+    /**
+    * @dev 管理者アカウントを削除できなかった場合に発生するエラー
+    * @param account_ 管理者から削除しようとしたが失敗したアカウント
+    */
+    error DoNotDeleteAdmin(address account_);
 }
