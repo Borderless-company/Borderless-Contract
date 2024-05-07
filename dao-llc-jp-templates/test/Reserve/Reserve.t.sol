@@ -168,7 +168,7 @@ contract TestReserve is Test {
         vm.startPrank(dummy);
 
         // 1. dummyコントラクトオーナーが、ホワイトリストに予約者アカウントを追加できないことを確認する
-        vm.expectRevert(bytes("Error: Reserve/Only-Owner"));
+        vm.expectRevert(bytes("Error: Reserve/Only-Admin"));
         listed = rs.reservation(reserver);
 
         // 2. listedがfalseであることを確認する
