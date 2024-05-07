@@ -69,11 +69,27 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         // TODO: Error-handlingの追加をする
         // if(_admins[account_]) revert AlreadyAdmin(account_);
 
-        _admins[account_] = true;
-        
-        // TODO: 新規登録した管理者が正常に設定されたかの確認処理を追加する
-        assigned_ = _admins[account_];
+        assigned_ = _setAdmin(account_);
     }
+
+    function _setAdmin(address account_) internal returns(bool assigned_){
+        bool _assigned;
+
+        _admins[account_] = true;
+
+        // TODO: 新規登録した管理者が正常に設定されたかの確認処理を追加する
+        _assigned = _admins[account_];
+
+        // TODO: Error-handlingの追加をする
+        // if(!_assigned) revert NotSetAdmin(account_);
+
+        // TODO: Event handlingの追加をする
+        // emit NewAdmin(account_);
+
+        assigned_ = _assigned;
+    }
+
+    
     
     function isWhitelisted(address account_) external view override returns(bool listed_){
         if(account_ == address(0)) revert InvalidAddress(account_);
