@@ -19,13 +19,13 @@ interface ErrorReserve { // Note: ErrorReserve is an Error interface
     * @dev 既に予約済みのアカウントが提供された場合に発生するエラー
     * @param account_ 既に予約されたアカウント
     */
-    error AlreadyReserver(address account_);
+    error AlreadyReserve(address account_);
 
     /**
     * @dev 既に予約契約なしアカウントが提供された場合に発生するエラー
     * @param account_ 予約契約がないアカウント
     */
-    error AlreadyNotReserve(address account_);
+    error NotyetReserve(address account_);
 
     /**
     * @dev ホワイトリストにアカウントを追加できなかった場合に発生するエラー
