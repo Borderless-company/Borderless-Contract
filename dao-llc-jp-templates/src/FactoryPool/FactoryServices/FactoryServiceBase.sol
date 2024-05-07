@@ -6,11 +6,9 @@ import {EventFactoryService} from "src/interfaces/FactoryPool/FactoryServices/Ev
 import {ErrorFactoryService} from "src/interfaces/FactoryPool/FactoryServices/ErrorFactoryService.sol";
 
 abstract contract FactoryServiceBase is IFactoryService, EventFactoryService, ErrorFactoryService {
-    address private _owner;
     address private _register;
 
     constructor(address register_) {
-        _owner = msg.sender;
         _register = register_;
     }
 

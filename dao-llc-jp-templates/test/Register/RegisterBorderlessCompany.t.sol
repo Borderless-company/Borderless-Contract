@@ -8,8 +8,6 @@ import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegis
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
 import {IBorderlessCompany} from "src/BorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
-/// Note: FactoryService Templateのテスト用コントラクト
-import {FactoryServiceTemplate} from "src/FactoryPool/FactoryServices/FactoryServiceTemplate.sol";
 import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol";
 
 contract TestRegisterBorderlessCompany is Test {
@@ -17,7 +15,6 @@ contract TestRegisterBorderlessCompany is Test {
     IBorderlessCompany ibc;
     Whitelist wl;
     FactoryPool fp;
-    FactoryServiceTemplate fst;
 
     address owner;
     address exMember;
