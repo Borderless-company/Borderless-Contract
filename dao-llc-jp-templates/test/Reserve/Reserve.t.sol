@@ -205,6 +205,12 @@ contract TestReserve is Test {
         // 2. assignedがtrueであることを確認する
         assertTrue(assigned);
 
+        // 3. 管理者のアドレス削除をする
+        assigned = rs.deleteAdmin(newAdmin);
+
+        // 4. assignedがtrueであることを確認する
+        assertTrue(assigned);
+
         // -- test end -- //
         vm.stopPrank();
     }

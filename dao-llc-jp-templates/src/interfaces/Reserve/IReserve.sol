@@ -28,6 +28,13 @@ interface IReserve { // Note: IWhitelist is an feature interface
     function setAdmin(address account_) external returns(bool assigned_);
 
     /**
+    * @dev 管理者を削除するための関数です。
+    * @param account_ 削除する管理者のアドレスです。
+    * @return assigned_ 管理者の削除が正常に設定された場合はtrueを返します。
+    */
+    function deleteAdmin(address account_) external returns(bool assigned_);
+
+    /**
     * @dev 指定されたアカウントがホワイトリストに含まれているかを確認する外部公開関数
     * @notice オーナー以外もこの関数を呼び出せます
     * @param account_ 確認するアカウントのアドレス
