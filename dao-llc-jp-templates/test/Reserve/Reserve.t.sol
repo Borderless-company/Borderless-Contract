@@ -8,17 +8,17 @@ import {ErrorReserve} from "src/interfaces/Reserve/ErrorReserve.sol";
 
 contract TestReserve is Test {
     Reserve rs;
-    address owner;
+    address admin;
     address newAdmin;
     address reserver;
     address dummy;
 
     function setUp() public {
-        owner = makeAddr("OverlayAdmin");
+        admin = makeAddr("OverlayAdmin");
         newAdmin = makeAddr("King");
         reserver = makeAddr("Queen");
 
-        vm.prank(address(owner));
+        vm.prank(address(admin));
         rs = new Reserve();
     }
 
@@ -36,15 +36,15 @@ contract TestReserve is Test {
      * 1. ホワイトリストに予約者のアカウントを追加する。
      * 2. ホワイトリストへ予約者アカウント追加が成功したことを確認する。
      * @notice テストケースの実行には、コントラクト実行者が必要です。
-     * 1. `owner` に `OverlayAdmin` を指定してコントラクトを実行します。
+     * 1. `admin` に `OverlayAdmin` を指定してコントラクトを実行します。
      * 2. `reserver` に `Queen`を指定してホワイトリストに追加します。
      */
-    function test_Success_Reserve_reservation_ByOwner() public {
+    function test_Success_Reserve_reservation_ByAdmin() public {
         // -- test用セットアップ -- //
         bool listed;
 
         // -- test start コントラクト実行者 -- //
-        vm.startPrank(owner);
+        vm.startPrank(admin);
 
         // 1. ホワイトリストに予約者アカウントが存在していないことを確認する
         assertTrue(!rs.isWhitelisted(reserver));
@@ -84,17 +84,17 @@ contract TestReserve is Test {
      * 1. ホワイトリストに予約者のアカウントを追加する。
      * 2. ホワイトリストへ予約者アカウント追加が失敗したことを確認する。
      * @notice テストケースの実行には、コントラクト実行者が必要です。
-     * 1. `owner` に `OverlayAdmin` を指定してコントラクトを実行します。
+     * 1. `admin` に `OverlayAdmin` を指定してコントラクトを実行します。
      * 2. `reserver`に、不正なアドレスを指定してリバートチェックをします
      * - address(0)アカウントであるケースのリバートチェックをします
      * - 登録済みの予約アカウントであるケースのリバートチェックをします 
      */
-    function test_Fail_Reserve_reservation_ByOwner() public {
+    function test_Fail_Reserve_reservation_ByAdmin() public {
         // -- test用セットアップ -- //
         bool listed;
 
         // -- test start コントラクト実行者 -- //
-        vm.startPrank(owner);
+        vm.startPrank(admin);
 
         // 1. ホワイトリストに予約者アカウントが存在していないことを確認する
         assertTrue(!rs.isWhitelisted(address(reserver)));
@@ -158,10 +158,10 @@ contract TestReserve is Test {
     //  * 1. ホワイトリストに予約者のアカウントを追加する。
     //  * 2. ホワイトリストへ予約者アカウント追加ができていないことを確認する。
     //  * @notice テストケースの実行には、コントラクト実行者が必要です。
-    //  * 1. `owner` に `dummy` を指定してコントラクトを実行します。
+    //  * 1. `admin` に `dummy` を指定してコントラクトを実行します。
     //  * 2. ランダムなアドレスを指定した`reserver`をホワイトリストに追加します。 
     //  */
-    function test_Fail_Reserve_reservation_ByDummyOwner() public {
+    function test_Fail_Reserve_reservation_ByDummyAdmin() public {
         // -- test用セットアップ -- //
         bool listed;
         dummy = makeAddr("Rabbit");
@@ -197,7 +197,7 @@ contract TestReserve is Test {
         bool assigned;
 
         // -- test start コントラクト実行者 -- //
-        vm.startPrank(owner);
+        vm.startPrank(admin);
 
         // 1. コントラクトオーナーが、新規管理者のアドレスを追加できることを確認する。
         assigned = rs.setAdmin(newAdmin);
