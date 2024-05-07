@@ -63,6 +63,17 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
         listed_ = _whitelist[account_];
     }
+
+    function setAdmin(address account_) external override onlyAdmin returns(bool assigned_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+        // TODO: Error-handlingの追加をする
+        // if(_admins[account_]) revert AlreadyAdmin(account_);
+
+        _admins[account_] = true;
+        
+        // TODO: 新規登録した管理者が正常に設定されたかの確認処理を追加する
+        assigned_ = _admins[account_];
+    }
     
     function isWhitelisted(address account_) external view override returns(bool listed_){
         if(account_ == address(0)) revert InvalidAddress(account_);

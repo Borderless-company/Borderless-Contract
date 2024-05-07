@@ -9,11 +9,13 @@ import {ErrorReserve} from "src/interfaces/Reserve/ErrorReserve.sol";
 contract TestReserve is Test {
     Reserve rs;
     address owner;
+    address newAdmin;
     address reserver;
     address dummy;
 
     function setUp() public {
         owner = makeAddr("OverlayAdmin");
+        newAdmin = makeAddr("King");
         reserver = makeAddr("Queen");
 
         vm.prank(address(owner));
@@ -181,4 +183,30 @@ contract TestReserve is Test {
         // -- test end -- //
         vm.stopPrank();
     }
+
+    /**
+    * @dev テストケース: 新しい管理者を設定する関数の正常な動作を確認する。
+    * テストケースの手順:
+    * 1. テスト用の管理者アカウントを指定して、setAdmin関数を呼び出す。
+    * 2. 管理者が正常に設定されたことを確認する。
+    * @notice テストケースの実行には、コントラクト実行者が必要です。
+    * テスト用の管理者アカウントを指定して、setAdmin関数を呼び出し、管理者が正常に設定されたことを確認します。
+    */
+    function test_Success_Reserve_setAdmin_ByAdmin() public {
+        // -- test用セットアップ -- //
+        bool assigned;
+
+        // -- test start コントラクト実行者 -- //
+        vm.startPrank(owner);
+
+        // 1. コントラクトオーナーが、新規管理者のアドレスを追加できることを確認する。
+        assigned = rs.setAdmin(newAdmin);
+
+        // 2. assignedがtrueであることを確認する
+        assertTrue(assigned);
+
+        // -- test end -- //
+        vm.stopPrank();
+    }
+
 }
