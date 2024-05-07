@@ -12,8 +12,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
     mapping(address account_ => bool listed_) private _whitelist;
     
     constructor() {
-        // TODO: adminに設定済みでないかチェック処理を追加する
-        _admins[msg.sender] = true;
+        _setAdmin(msg.sender);
     }
     
     function reservation(address account_) external override onlyAdmin returns(bool listed_) {
