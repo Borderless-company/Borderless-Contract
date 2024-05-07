@@ -62,61 +62,6 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
         listed_ = _whitelist[account_];
     }
-
-    function setAdmin(address account_) external override onlyAdmin returns(bool assigned_){
-        if(account_ == address(0)) revert InvalidAddress(account_);
-        // TODO: adminの重複登録チェック処理を追加する
-        if(_admins[account_]) revert AlreadyAdmin(account_);
-
-        assigned_ = _setAdmin(account_);
-    }
-
-    function deleteAdmin(address account_) external override onlyAdmin returns(bool assigned_){
-        if(account_ == address(0)) revert InvalidAddress(account_);
-        // TODO: adminの重複登録チェック処理を追加する
-        if(!_admins[account_]) revert NotAdmin(account_);
-
-        assigned_ = _deleteAdmin(account_);
-    }
-
-
-    function _setAdmin(address account_) internal returns(bool assigned_){
-        bool _assigned;
-
-        _admins[account_] = true;
-
-        // TODO: 新規登録した管理者が正常に設定されたかの確認処理を追加する
-        _assigned = _admins[account_];
-
-        // TODO: Error-handlingの追加をする
-        // if(!_assigned) revert NotSetAdmin(account_);
-
-        // TODO: Event handlingの追加をする
-        emit NewAdmin(account_);
-
-        assigned_ = _assigned;
-    }
-
-    function _deleteAdmin(address account_) internal returns(bool assigned_){
-        bool _assigned;
-
-        delete _admins[account_];
-
-        // TODO: 管理者が正常に削除されたかの確認処理を追加する
-        _assigned = _admins[account_];
-
-        // TODO: Error-handlingの追加をする
-        // if(_assigned) revert NotDeleteAdmin(account_);
-
-        // TODO: Event handlingの追加をする
-        emit DeleteAdmin(account_);
-
-        assigned_ = !_assigned;
-    }
-
-    // function _getAdmin(address account_) internal view returns(bool assigned_){
-    //     assigned_ = _admins[account_];
-    // }
     
     function isWhitelisted(address account_) external view override returns(bool listed_){
         if(account_ == address(0)) revert InvalidAddress(account_);
@@ -138,11 +83,8 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
     function reserverOf(uint256 index_) external view onlyAdmin returns(address reserver_){
         if(index_ <= 0 || index_ > _lastIndex) revert InvalidIndex(index_);
-        reserver_ = _reserverOf(index_);
-    }
 
-    function _reserverOf(uint256 index_) internal view returns(address reserver_){
-        reserver_ = _reservers[index_];
+        reserver_ = _reserverOf(index_);
     }
 
     function reserversOf() external view onlyAdmin returns(address[] memory reservers_){
@@ -153,9 +95,58 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         }
     }
 
+    function _reserverOf(uint256 index_) internal view returns(address reserver_){
+        reserver_ = _reservers[index_];
+    }
+
+    function setAdmin(address account_) external override onlyAdmin returns(bool assigned_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+        if(_getAdmin(account_)) revert AlreadyAdmin(account_);
+
+        assigned_ = _setAdmin(account_);
+    }
+
+    function deleteAdmin(address account_) external override onlyAdmin returns(bool assigned_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+        if(!_getAdmin(account_)) revert NotAdmin(account_);
+
+        assigned_ = _deleteAdmin(account_);
+    }
+
+    function _setAdmin(address account_) internal returns(bool assigned_){
+        bool _assigned;
+
+        _admins[account_] = true;
+        _assigned = _getAdmin(account_);
+
+        // TODO: Error-handlingの追加をする
+        // if(!_assigned) revert NotSetAdmin(account_);
+
+        emit NewAdmin(account_);
+
+        assigned_ = _assigned;
+    }
+
+    function _deleteAdmin(address account_) internal returns(bool assigned_){
+        bool _assigned;
+
+        delete _admins[account_];
+        _assigned = _getAdmin(account_);
+
+        // TODO: Error-handlingの追加をする
+        // if(_assigned) revert NotDeleteAdmin(account_);
+
+        emit DeleteAdmin(account_);
+
+        assigned_ = !_assigned;
+    }
+
+    function _getAdmin(address account_) internal view returns(bool assigned_){
+        assigned_ = _admins[account_];
+    }
+
     modifier onlyAdmin() {
-        // TODO: CallerがAdminであるかのチェック処理を追加する
-        require(_admins[msg.sender] , "Error: Reserve/Only-Admin");
+        require(_getAdmin(msg.sender), "Error: Reserve/Only-Admin");
         _;
     }
 }
