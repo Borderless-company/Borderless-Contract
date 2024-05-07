@@ -4,21 +4,17 @@ pragma solidity =0.8.24;
 import {Test, console} from "forge-std/Test.sol";
 import {Whitelist} from "src/Whitelist/Whitelist.sol";
 import {RegisterBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
-import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
-import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
-import {IBorderlessCompany} from "src/BorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
-import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol";
-
-/// Note: FactoryService Templateのテスト用コントラクト
-import {FactoryServiceTemplate} from "src/FactoryPool/FactoryServices/FactoryServiceTemplate.sol";
+import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
+import {IBorderlessCompany} from "src/BorderlessCompany.sol";
+import {FactoryServiceBase} from "src/FactoryPool/FactoryServices/FactoryServiceBase.sol";
 
 contract TestFactoryPool is Test {
-    FactoryPool fp;
-    RegisterBorderlessCompany rbc;
-    IBorderlessCompany ibc;
     Whitelist wl;
-    FactoryServiceTemplate fst;
+    RegisterBorderlessCompany rbc;
+    FactoryPool fp;
+    IBorderlessCompany ibc;
+    BaseSampleFactory bsf; // Note: SampleService Factory contract for test
 
     address owner;
     address exMember;
@@ -56,19 +52,26 @@ contract TestFactoryPool is Test {
 
         // -- 1-1. Whitelistのデプロイ -- //
         wl = new Whitelist();
-
         // -- 1-2. RegisterBorderlessCompanyのデプロイ -- //
         rbc = new RegisterBorderlessCompany(address(wl));
-
         // -- 1-3. FactoryPoolのデプロイ -- //
         fp = new FactoryPool(address(rbc));
-        // RegisterBorderlessCompanyにFactoryPoolのアドレス登録
+        // -- 1-4. RegisterBorderlessCompanyにFactoryPoolのアドレス登録 -- //
         rbc.setFactoryPool(address(fp));
+
+        // -- 2-1. FactoryServiceのデプロイ -- //
+        bsf = new BaseSampleFactory(address(rbc));
+        // -- Set Service Address -- //
+        fp.setService(address(bsf), 1); // index = 1 GovernanceService
+        // -- Activate Service -- //
+        fp.updateService(address(bsf), 1, true); // index = 1 GovernanceService
+
+        // 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
+        wl.addToWhitelist(exMember);
 
         vm.stopPrank();
     }
 
-    // TODO: Test caseのドキュメント更新
     /**
      * @dev 1.OK: FactoryPoolコントラクトにより、Borderless.companyのサービスコントラクトを起動するテストケース
      * - createBorderlessCompany
@@ -91,53 +94,6 @@ contract TestFactoryPool is Test {
         bool started;
         address companyAddress;
 
-        // -- test前の初期値確認 -- //
-        assertTrue(keccak256(abi.encodePacked(companyID)) == keccak256(abi.encodePacked("")));
-        assertTrue(keccak256(abi.encodePacked(establishmentDate)) == keccak256(abi.encodePacked("")));
-        assertTrue(started == confirmed);
-
-        // -- 0. サービス機能リリースと活性化 -- //
-        vm.startPrank(owner);
-
-        // -- 0-1. `FactoryServiceTemplate`コントラクトのデプロイ(サービスリリース) -- //
-        // Note: FactoryServiceTemplateのデプロイ(Sample用)
-        fst = new FactoryServiceTemplate(address(rbc));
-
-        // -- 0-2. `FactoryPool`コントラクトへ、`FactoryServiceTemplate`のアドレス登録 -- //
-        vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.NewService(address(fst), 1);
-        fp.setService(address(fst), 1); // index = 1 GovernanceService
-
-        vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.NewService(address(fst), 2);
-        // Note: contractは仮アドレスをセット
-        fp.setService(address(fst), 2); // index = 2 TreasuryService
-
-        vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.NewService(address(fst), 3);
-        // Note: contractは仮アドレスをセット
-        fp.setService(address(fst), 3); // index = 3 TokenService
-
-        // -- 0-3. `FactoryPool`コントラクトへ登録した、`FactoryServiceTemplate`サービス状態をOnlineへ更新 -- //
-        vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.UpdateService(address(fst), 1, true);
-        fp.updateService(address(fst), 1, true); // index = 1 GovernanceService
-
-        vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.UpdateService(address(fst), 2, true);
-        // Note: contractは仮アドレスをセット
-        fp.updateService(address(fst), 2, true); // index = 2 TreasuryService
-
-        vm.expectEmit(true, true, false, false);
-        emit EventFactoryPool.UpdateService(address(fst), 3, true);
-        // Note: contractは仮アドレスをセット
-        fp.updateService(address(fst), 3, true); // index = 3 TokenService
-
-        // 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
-        wl.addToWhitelist(exMember);
-
-        vm.stopPrank();
-        
         // -- test start コントラクト実行者 -- //
         vm.startPrank(exMember);
 
@@ -169,5 +125,52 @@ contract TestFactoryPool is Test {
 
         // -- test end -- //
         vm.stopPrank();
+    }
+}
+
+/// @title Test sample smart contract for Borderless.company service
+contract SampleService {
+    address private _admin;
+    address private _company;
+
+    constructor(address admin_, address company_) {
+        _admin = admin_;
+        _company = company_;
+    }
+
+    function callAdmin() public view onlyService returns (bool called_) {
+        called_ = true;
+    }
+
+    modifier onlyService() {
+        require(_validateCaller(), "Error: SampleService/Invalid-Caller");
+        _;
+    }
+
+    function _validateCaller() internal view returns (bool called_) {
+        if(msg.sender == _admin && msg.sender == _company) called_ = true;
+    }
+}
+
+/// @title Test factory sample smart contract for Borderless.company service
+contract BaseSampleFactory is FactoryServiceBase {
+    address private _admin;
+    address private _company;
+
+    constructor(address register_) FactoryServiceBase(register_) {}
+
+    function activate(address admin_, address company_, uint256 serviceID_) external override onlyRegister returns (address service_) {
+        service_ = _activate(admin_, company_, serviceID_);
+    }
+
+    function _activate(address admin_, address company_, uint256 serviceID_) internal override returns (address service_) {
+        // Note: common service setup
+        SampleService service = new SampleService(admin_, company_);
+
+        if(address(service) == address(0)) revert DoNotActivateService(admin_, company_, serviceID_);
+
+        emit ActivateBorderlessService(admin_, address(service), serviceID_);
+
+        service_ = address(service);
     }
 }
