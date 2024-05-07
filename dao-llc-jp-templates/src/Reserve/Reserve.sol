@@ -92,7 +92,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         // if(!_assigned) revert NotSetAdmin(account_);
 
         // TODO: Event handlingの追加をする
-        // emit NewAdmin(account_);
+        emit NewAdmin(account_);
 
         assigned_ = _assigned;
     }
@@ -109,7 +109,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         // if(_assigned) revert NotDeleteAdmin(account_);
 
         // TODO: Event handlingの追加をする
-        // emit DeleteAdmin(account_);
+        emit DeleteAdmin(account_);
 
         assigned_ = !_assigned;
     }

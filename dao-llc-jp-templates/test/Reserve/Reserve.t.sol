@@ -200,12 +200,18 @@ contract TestReserve is Test {
         vm.startPrank(admin);
 
         // 1. コントラクトオーナーが、新規管理者のアドレスを追加できることを確認する。
+        // 新規管理者が登録されたイベントが発生することを確認する
+        vm.expectEmit(true, false, false, false);
+        emit EventReserve.NewAdmin(address(newAdmin));
         assigned = rs.setAdmin(newAdmin);
 
         // 2. assignedがtrueであることを確認する
         assertTrue(assigned);
 
         // 3. 管理者のアドレス削除をする
+        // 管理者が削除されたイベントが発生することを確認する
+        vm.expectEmit(true, false, false, false);
+        emit EventReserve.DeleteAdmin(address(newAdmin));
         assigned = rs.deleteAdmin(newAdmin);
 
         // 4. assignedがtrueであることを確認する

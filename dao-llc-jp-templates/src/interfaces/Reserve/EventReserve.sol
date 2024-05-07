@@ -16,4 +16,16 @@ interface EventReserve { // Note: EventReserve is an Event interface
     * @param index_ 新しく予約契約されたインデックス値
     */
     event CancelReserve(address indexed account_, uint256 indexed index_);
+
+    /**
+    * @dev コントラクト管理者が追加されたときに発生するイベント
+    * @param account_ 新しく追加された管理者アカウントのアドレス
+    */
+    event NewAdmin(address indexed account_);
+
+    /**
+    * @dev コントラクト管理者が削除されたときに発生するイベント
+    * @param account_ 削除された管理者アカウントのアドレス
+    */
+    event DeleteAdmin(address indexed account_);
 }
