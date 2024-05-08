@@ -12,6 +12,7 @@ import {BorderlessCompany, IBorderlessCompany} from "src/BorderlessCompany.sol";
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
     IFactoryPool private _facotryPool;
+
     mapping(address account_ => bool assigned_) private _admins;
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
@@ -91,6 +92,55 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         _facotryPool = IFactoryPool(factoryPool_);
 
         emit SetFactoryPool(msg.sender, factoryPool_);
+    }
+
+    // -- Access Control -- //
+    function addAdmin(address account_) external override onlyAdmin returns(bool assigned_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+        if(_isAdmin(account_)) revert AlreadyAdmin(account_);
+
+        assigned_ = _addAdmin(account_);
+    }
+
+    function removeAdmin(address account_) external override onlyAdmin returns(bool assigned_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+        if(!_isAdmin(account_)) revert NotAdmin(account_);
+
+        assigned_ = _removeAdmin(account_);
+    }
+
+    function _addAdmin(address account_) internal returns(bool assigned_){
+        bool _assigned;
+
+        _admins[account_] = true;
+        _assigned = _isAdmin(account_);
+
+        if(!_assigned) revert DoNotSetAdmin(account_);
+
+        emit NewAdmin(account_);
+
+        assigned_ = _assigned;
+    }
+
+    function _removeAdmin(address account_) internal returns(bool assigned_){
+        bool _assigned;
+
+        delete _admins[account_];
+        _assigned = _isAdmin(account_);
+
+        if(_assigned) revert DoNotRemoveAdmin(account_);
+
+        emit RemoveAdmin(account_);
+
+        assigned_ = !_assigned;
+    }
+
+    function isAdmin(address account_) external view onlyAdmin returns(bool assigned_){
+        assigned_ = _isAdmin(account_);
+    }
+
+    function _isAdmin(address account_) internal view returns(bool assigned_){
+        assigned_ = _admins[account_];
     }
 
     modifier onlyAdmin() {

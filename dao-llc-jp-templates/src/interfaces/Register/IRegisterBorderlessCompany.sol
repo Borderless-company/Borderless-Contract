@@ -28,4 +28,25 @@ interface IRegisterBorderlessCompany { // Note: IRegisterBorderlessCompany is an
     * @param factoryPool_ 設定するファクトリープールのアドレス
     */
     function setFactoryPool(address factoryPool_) external;
+
+    /**
+    * @dev 新しい管理者を追加する関数です。
+    * @param account_ 追加する新しい管理者のアドレスです。
+    * @return assigned_ 管理者が正常に追加された場合はtrueを返します。
+    */
+    function addAdmin(address account_) external returns(bool assigned_);
+
+    /**
+    * @dev 管理者を削除する関数です。
+    * @param account_ 削除する管理者のアドレスです。
+    * @return assigned_ 管理者が正常に削除された場合はtrueを返します。
+    */
+    function removeAdmin(address account_) external returns(bool assigned_);
+
+    /**
+    * @dev 指定されたアカウントが管理者であるかどうかを確認する関数です。
+    * @param account_ 確認したいアカウントのアドレスです。
+    * @return assigned_ 指定されたアカウントが管理者である場合はtrueを返します。
+    */
+    function isAdmin(address account_) external returns(bool assigned_);
 }
