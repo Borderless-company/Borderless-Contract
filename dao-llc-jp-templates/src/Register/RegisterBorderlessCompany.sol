@@ -12,21 +12,13 @@ import {BorderlessCompany, IBorderlessCompany} from "src/BorderlessCompany.sol";
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
     IWhitelist private _whitelist;
     IFactoryPool private _facotryPool;
-    address private _owner;
+    mapping(address account_ => bool assigned_) private _admins;
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
 
     constructor(address whitelist_) {
-        _owner = msg.sender;
+        _admins[msg.sender] = true;
         _whitelist = IWhitelist(whitelist_);
-    }
-
-    function setFactoryPool(address factoryPool_) external override onlyOwner {
-        if(factoryPool_ == address(0)) revert InvalidParam(factoryPool_);
-
-        _facotryPool = IFactoryPool(factoryPool_);
-
-        emit SetFactoryPool(msg.sender, factoryPool_);
     }
 
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override onlyFounder returns(bool started_, address companyAddress_) {
@@ -93,8 +85,16 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         return _lastIndex;
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == _owner, "Error: Register/Only-Owner");
+    function setFactoryPool(address factoryPool_) external override onlyAdmin {
+        if(factoryPool_ == address(0)) revert InvalidParam(factoryPool_);
+
+        _facotryPool = IFactoryPool(factoryPool_);
+
+        emit SetFactoryPool(msg.sender, factoryPool_);
+    }
+
+    modifier onlyAdmin() {
+        require(_admins[msg.sender], "Error: Register/Only-Admin");
         _;
     }
 
