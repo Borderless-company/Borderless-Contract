@@ -6,16 +6,16 @@ import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol"
 import {ErrorFactoryPool} from "src/interfaces/FactoryPool/ErrorFactoryPool.sol";
 
 contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
-    address private _owner;
+    mapping(address accout_ => bool assigned_) private _admins;
     address private _register;
     mapping(uint256 index_ => ServiceInfo info_) private _services;
 
     constructor(address register_) {
-        _owner = msg.sender;
+        _admins[msg.sender] = true;
         _register = register_;
     }
 
-    function setService(address service_, uint256 index_) external override onlyOwner {
+    function setService(address service_, uint256 index_) external override onlyAdmin {
         if(service_ == address(0) || index_ <= 0) revert InvalidParam(service_, index_, false);
         if(_services[index_].service != address(0)) revert InvalidParam(service_, index_, false);
         
@@ -41,7 +41,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         (service_, online_) = (_info.service, _info.online);
     }
 
-    function updateService(address service_, uint256 index_) external override onlyOwner{
+    function updateService(address service_, uint256 index_) external override onlyAdmin{
         ServiceInfo memory _info;
         if(index_ <= 0 || service_ == address(0)) revert InvalidParam(service_, index_, false);
 
@@ -53,7 +53,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         _updateService(_info, index_);
     }
 
-    function updateService(address service_, uint256 index_, bool online_) external override onlyOwner{
+    function updateService(address service_, uint256 index_, bool online_) external override onlyAdmin{
         ServiceInfo memory _info;
         if(index_ <= 0 || service_ == address(0)) revert InvalidParam(service_, index_, online_);
         if(online_ == _services[index_].online) revert InvalidParam(service_, index_, online_);
@@ -73,8 +73,8 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         emit UpdateService(info_.service, index_, info_.online);
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == _owner, "Error: FactoryPool/Only-Owner");
+    modifier onlyAdmin() {
+        require(_admins[msg.sender], "Error: FactoryPool/Only-Admin");
         _;
     }
 
@@ -84,6 +84,6 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     }
 
     function _validateCaller() internal view returns(bool valid_){
-        if(msg.sender == _owner || msg.sender == _register) valid_ = true;
+        if(_admins[msg.sender] || msg.sender == _register) valid_ = true;
     }
 }

@@ -7,8 +7,6 @@ import {TreasuryService} from "src/Services/TreasuryService.sol";
 
 /// @title Treasury smart contract for Borderless.company service
 contract TreasuryServiceFactory is FactoryServiceBase {
-    address private _admin;
-    address private _company;
 
     constructor(address register_) FactoryServiceBase(register_) {}
 
