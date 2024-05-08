@@ -73,6 +73,55 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         emit UpdateService(info_.service, index_, info_.online);
     }
 
+    // -- Access Control -- //
+    function addAdmin(address account_) external override onlyAdmin returns(bool assigned_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+        if(_isAdmin(account_)) revert AlreadyAdmin(account_);
+
+        assigned_ = _addAdmin(account_);
+    }
+
+    function removeAdmin(address account_) external override onlyAdmin returns(bool assigned_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+        if(!_isAdmin(account_)) revert NotAdmin(account_);
+
+        assigned_ = _removeAdmin(account_);
+    }
+
+    function _addAdmin(address account_) internal returns(bool assigned_){
+        bool _assigned;
+
+        _admins[account_] = true;
+        _assigned = _isAdmin(account_);
+
+        if(!_assigned) revert DoNotSetAdmin(account_);
+
+        emit NewAdmin(account_);
+
+        assigned_ = _assigned;
+    }
+
+    function _removeAdmin(address account_) internal returns(bool assigned_){
+        bool _assigned;
+
+        delete _admins[account_];
+        _assigned = _isAdmin(account_);
+
+        if(_assigned) revert DoNotRemoveAdmin(account_);
+
+        emit RemoveAdmin(account_);
+
+        assigned_ = !_assigned;
+    }
+
+    function isAdmin(address account_) external view onlyAdmin returns(bool assigned_){
+        assigned_ = _isAdmin(account_);
+    }
+
+    function _isAdmin(address account_) internal view returns(bool assigned_){
+        assigned_ = _admins[account_];
+    }
+
     modifier onlyAdmin() {
         require(_admins[msg.sender], "Error: FactoryPool/Only-Admin");
         _;

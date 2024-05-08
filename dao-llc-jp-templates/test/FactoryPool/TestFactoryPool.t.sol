@@ -126,6 +126,27 @@ contract TestFactoryPool is Test {
         // -- test end -- //
         vm.stopPrank();
     }
+
+    function test_Success_FactoryPool_admins() public {
+
+        // -- test start コントラクト実行者 -- //
+        vm.startPrank(owner);
+
+        // 1. newAdminを追加する
+        fp.addAdmin(exMember);
+
+        // 2. newAdminが追加されたことを確認する
+        assertTrue(fp.isAdmin(exMember));
+
+        // 3. newAdminを削除する
+        fp.removeAdmin(exMember);
+
+        // 4. newAdminが削除されたことを確認する
+        assertFalse(fp.isAdmin(exMember));
+
+        // -- test end -- //
+        vm.stopPrank();
+    }
 }
 
 /// @title Test sample smart contract for Borderless.company service
