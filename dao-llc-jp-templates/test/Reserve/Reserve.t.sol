@@ -8,15 +8,17 @@ import {ErrorReserve} from "src/interfaces/Reserve/ErrorReserve.sol";
 
 contract TestReserve is Test {
     Reserve rs;
-    address owner;
+    address admin;
+    address newAdmin;
     address reserver;
     address dummy;
 
     function setUp() public {
-        owner = makeAddr("OverlayAdmin");
+        admin = makeAddr("OverlayAdmin");
+        newAdmin = makeAddr("King");
         reserver = makeAddr("Queen");
 
-        vm.prank(address(owner));
+        vm.prank(address(admin));
         rs = new Reserve();
     }
 
@@ -34,15 +36,15 @@ contract TestReserve is Test {
      * 1. ホワイトリストに予約者のアカウントを追加する。
      * 2. ホワイトリストへ予約者アカウント追加が成功したことを確認する。
      * @notice テストケースの実行には、コントラクト実行者が必要です。
-     * 1. `owner` に `OverlayAdmin` を指定してコントラクトを実行します。
+     * 1. `admin` に `OverlayAdmin` を指定してコントラクトを実行します。
      * 2. `reserver` に `Queen`を指定してホワイトリストに追加します。
      */
-    function test_Success_Reserve_reservation_ByOwner() public {
+    function test_Success_Reserve_reservation_ByAdmin() public {
         // -- test用セットアップ -- //
         bool listed;
 
         // -- test start コントラクト実行者 -- //
-        vm.startPrank(owner);
+        vm.startPrank(admin);
 
         // 1. ホワイトリストに予約者アカウントが存在していないことを確認する
         assertTrue(!rs.isWhitelisted(reserver));
@@ -82,17 +84,17 @@ contract TestReserve is Test {
      * 1. ホワイトリストに予約者のアカウントを追加する。
      * 2. ホワイトリストへ予約者アカウント追加が失敗したことを確認する。
      * @notice テストケースの実行には、コントラクト実行者が必要です。
-     * 1. `owner` に `OverlayAdmin` を指定してコントラクトを実行します。
+     * 1. `admin` に `OverlayAdmin` を指定してコントラクトを実行します。
      * 2. `reserver`に、不正なアドレスを指定してリバートチェックをします
      * - address(0)アカウントであるケースのリバートチェックをします
      * - 登録済みの予約アカウントであるケースのリバートチェックをします 
      */
-    function test_Fail_Reserve_reservation_ByOwner() public {
+    function test_Fail_Reserve_reservation_ByAdmin() public {
         // -- test用セットアップ -- //
         bool listed;
 
         // -- test start コントラクト実行者 -- //
-        vm.startPrank(owner);
+        vm.startPrank(admin);
 
         // 1. ホワイトリストに予約者アカウントが存在していないことを確認する
         assertTrue(!rs.isWhitelisted(address(reserver)));
@@ -156,10 +158,10 @@ contract TestReserve is Test {
     //  * 1. ホワイトリストに予約者のアカウントを追加する。
     //  * 2. ホワイトリストへ予約者アカウント追加ができていないことを確認する。
     //  * @notice テストケースの実行には、コントラクト実行者が必要です。
-    //  * 1. `owner` に `dummy` を指定してコントラクトを実行します。
+    //  * 1. `admin` に `dummy` を指定してコントラクトを実行します。
     //  * 2. ランダムなアドレスを指定した`reserver`をホワイトリストに追加します。 
     //  */
-    function test_Fail_Reserve_reservation_ByDummyOwner() public {
+    function test_Fail_Reserve_reservation_ByDummyAdmin() public {
         // -- test用セットアップ -- //
         bool listed;
         dummy = makeAddr("Rabbit");
@@ -168,7 +170,7 @@ contract TestReserve is Test {
         vm.startPrank(dummy);
 
         // 1. dummyコントラクトオーナーが、ホワイトリストに予約者アカウントを追加できないことを確認する
-        vm.expectRevert(bytes("Error: Reserve/Only-Owner"));
+        vm.expectRevert(bytes("Error: Reserve/Only-Admin"));
         listed = rs.reservation(reserver);
 
         // 2. listedがfalseであることを確認する
@@ -181,4 +183,115 @@ contract TestReserve is Test {
         // -- test end -- //
         vm.stopPrank();
     }
+
+    /**
+    * @dev OK: 新しい管理者を設定する関数の正常な動作を確認する。
+    * テストケースの手順:
+    * 1. テスト用の管理者アカウントを指定して、setAdmin関数を呼び出す。
+    * 2. 管理者が正常に設定されたことを確認する。
+    * 3. テスト用の管理者アカウントを指定して、deleteAdmin関数を呼び出す。
+    * 4. 管理者が正常に削除されたことを確認する。
+    * @notice テストケースの実行には、コントラクト実行者が必要です。
+    * テスト用の管理者アカウントを指定して、setAdmin関数を呼び出し、管理者が正常に設定されたことを確認します。
+    * テスト用の管理者アカウントを指定して、delete関数を呼び出し、管理者が正常に削除されたことを確認します。
+    */
+    function test_Success_Reserve_setAdmin_ByAdmin() public {
+        // -- test用セットアップ -- //
+        bool assigned;
+
+        // -- test start コントラクト実行者 -- //
+        vm.startPrank(admin);
+
+        // 1. コントラクトオーナーが、新規管理者のアドレスを追加できることを確認する。
+        // 新規管理者が登録されたイベントが発生することを確認する
+        vm.expectEmit(true, false, false, false);
+        emit EventReserve.NewAdmin(address(newAdmin));
+        assigned = rs.setAdmin(newAdmin);
+
+        // 2. assignedがtrueであることを確認する
+        assertTrue(assigned);
+
+        // 3. 管理者のアドレス削除をする
+        // 管理者が削除されたイベントが発生することを確認する
+        vm.expectEmit(true, false, false, false);
+        emit EventReserve.DeleteAdmin(address(newAdmin));
+        assigned = rs.deleteAdmin(newAdmin);
+
+        // 4. assignedがtrueであることを確認する
+        assertTrue(assigned);
+
+        // -- test end -- //
+        vm.stopPrank();
+    }
+
+    /**
+    * @dev NG: 新しい管理者を設定する関数の異常な動作を確認する。
+    * テストケースの手順:
+    * 1. テスト用の管理者アカウントを指定して、setAdmin関数を呼び出す。
+    * 2. 管理者が正常に設定できないことを確認する。
+    * 3. テスト用の管理者アカウントを指定して、deleteAdmin関数を呼び出す。
+    * 2. 管理者が正常に削除できないことを確認する。
+    * @notice テストケースの実行には、コントラクト実行者が必要です。
+    * テスト用の管理者アカウントを指定して、setAdmin関数を呼び出し、管理者が正常に設定できないことを確認します。
+    * テスト用の管理者アカウントを指定して、delete関数を呼び出し、管理者が正常に削除できないことを確認します。
+    */
+    function test_Fail_Reserve_setAdmin_ByAdmin() public {
+        // -- test用セットアップ -- //
+        bool assigned;
+
+        // -- test start コントラクト実行者 -- //
+        vm.startPrank(admin);
+
+        // 1. 不正なアカウントアドレスはリバートされることを確認する
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorReserve.InvalidAddress.selector,
+                address(0)
+            )
+        );
+        assigned = rs.setAdmin(address(0));
+
+        // assignedがfalseであることを確認する
+        assertTrue(!assigned);
+
+        // 2. 登録済みの管理アカウントはリバートされることを確認する
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorReserve.AlreadyAdmin.selector,
+                address(admin)
+            )
+        );
+        assigned = rs.setAdmin(admin);
+
+        // assignedがfalseであることを確認する
+        assertTrue(!assigned);
+
+        // 3. 不正なアカウントアドレスはリバートされることを確認する
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorReserve.InvalidAddress.selector,
+                address(0)
+            )
+        );
+        assigned = rs.deleteAdmin(address(0));
+
+        // assignedがfalseであることを確認する
+        assertTrue(!assigned);
+
+        // 4. 登録されていない管理アカウントはリバートされることを確認する
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorReserve.NotAdmin.selector,
+                address(newAdmin)
+            )
+        );
+        assigned = rs.deleteAdmin(newAdmin);
+
+        // assignedがfalseであることを確認する
+        assertTrue(!assigned);
+
+        // -- test end -- //
+        vm.stopPrank();
+    }
+
 }
