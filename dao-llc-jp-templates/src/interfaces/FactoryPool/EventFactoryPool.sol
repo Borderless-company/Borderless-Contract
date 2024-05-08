@@ -17,4 +17,16 @@ interface EventFactoryPool {
    * @param online_ サービスのオンライン状態です。
    */
    event UpdateService(address indexed service_, uint256 indexed index_, bool online_);
+
+   /**
+    * @dev コントラクト管理者が追加されたときに発生するイベント
+    * @param account_ 新しく追加された管理者アカウントのアドレス
+    */
+    event NewAdmin(address indexed account_);
+
+    /**
+    * @dev コントラクト管理者が削除されたときに発生するイベント
+    * @param account_ 削除された管理者アカウントのアドレス
+    */
+    event RemoveAdmin(address indexed account_);
 }
