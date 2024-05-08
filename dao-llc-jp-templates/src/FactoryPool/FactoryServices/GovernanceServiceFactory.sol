@@ -6,8 +6,6 @@ import {GovernanceService} from "src/Services/GovernanceService.sol";
 
 /// @title Governance smart contract for Borderless.company service
 contract GovernanceServiceFactory is FactoryServiceBase {
-    address private _admin;
-    address private _company;
 
     constructor(address register_) FactoryServiceBase(register_) {}
 

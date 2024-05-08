@@ -6,8 +6,6 @@ import {TokenService} from "src/Services/TokenService.sol";
 
 /// @title Token smart contract for Borderless.company service
 contract TokenServiceFactory is FactoryServiceBase {
-    address private _admin;
-    address private _company;
 
     constructor(address register_) FactoryServiceBase(register_) {}
 
