@@ -17,4 +17,16 @@ interface EventRegisterBorderlessCompany { // Note: EventRegisterBorderlessCompa
     * @param pool_ 設定された新しいファクトリープールのアドレス
     */
     event SetFactoryPool(address indexed account_, address indexed pool_);
+
+    /**
+    * @dev コントラクト管理者が追加されたときに発生するイベント
+    * @param account_ 新しく追加された管理者アカウントのアドレス
+    */
+    event NewAdmin(address indexed account_);
+
+    /**
+    * @dev コントラクト管理者が削除されたときに発生するイベント
+    * @param account_ 削除された管理者アカウントのアドレス
+    */
+    event RemoveAdmin(address indexed account_);
 }
