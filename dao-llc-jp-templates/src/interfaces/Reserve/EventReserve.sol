@@ -20,12 +20,14 @@ interface EventReserve { // Note: EventReserve is an Event interface
     /**
     * @dev コントラクト管理者が追加されたときに発生するイベント
     * @param account_ 新しく追加された管理者アカウントのアドレス
+    * @param count_ 新しく追加された管理者アカウントのカウント数
     */
-    event NewAdmin(address indexed account_);
+    event NewAdmin(address indexed account_, uint256 indexed count_);
 
     /**
     * @dev コントラクト管理者が削除されたときに発生するイベント
     * @param account_ 削除された管理者アカウントのアドレス
+    * @param count_ 削除された管理者アカウントのカウント数
     */
-    event RemoveAdmin(address indexed account_);
+    event RemoveAdmin(address indexed account_, uint256 indexed count_);
 }

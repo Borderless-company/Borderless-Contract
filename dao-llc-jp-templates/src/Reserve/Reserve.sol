@@ -127,7 +127,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         if(!_assigned) revert DoNotAddAdmin(account_);
         _adminCount++;
 
-        emit NewAdmin(account_);
+        emit NewAdmin(account_, _adminCount);
 
         assigned_ = _assigned;
     }
@@ -141,7 +141,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         if(_assigned) revert DoNotRemoveAdmin(account_);
         _adminCount--;
 
-        emit RemoveAdmin(account_);
+        emit RemoveAdmin(account_, _adminCount);
 
         assigned_ = !_assigned;
     }

@@ -129,7 +129,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         if(!_assigned) revert DoNotAddAdmin(account_);
         _adminCount++;
 
-        emit NewAdmin(account_);
+        emit NewAdmin(account_, _adminCount);
 
         assigned_ = _assigned;
     }
@@ -143,7 +143,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         if(_assigned) revert DoNotRemoveAdmin(account_);
         _adminCount--;
 
-        emit RemoveAdmin(account_);
+        emit RemoveAdmin(account_, _adminCount);
 
         assigned_ = !_assigned;
     }
