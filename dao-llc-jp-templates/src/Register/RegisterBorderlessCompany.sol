@@ -14,8 +14,9 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     IFactoryPool private _facotryPool;
 
     mapping(address account_ => bool assigned_) private _admins;
-    uint256 private _lastIndex;
+    uint256 private _adminCount;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
+    uint256 private _lastIndex;
 
     constructor(address reserve_) {
         _addAdmin(msg.sender);
@@ -114,6 +115,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     function removeAdmin(address account_) external override onlyAdmin returns(bool assigned_){
         if(account_ == address(0)) revert InvalidAddress(account_);
         if(!_isAdmin(account_)) revert NotAdmin(account_);
+        if(_adminCount <= 1) revert LastAdmin(account_);
 
         assigned_ = _removeAdmin(account_);
     }
@@ -125,6 +127,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         _assigned = _isAdmin(account_);
 
         if(!_assigned) revert DoNotAddAdmin(account_);
+        _adminCount++;
 
         emit NewAdmin(account_);
 
@@ -138,6 +141,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         _assigned = _isAdmin(account_);
 
         if(_assigned) revert DoNotRemoveAdmin(account_);
+        _adminCount--;
 
         emit RemoveAdmin(account_);
 

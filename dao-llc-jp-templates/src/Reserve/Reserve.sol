@@ -7,8 +7,9 @@ import {ErrorReserve} from "src/interfaces/Reserve/ErrorReserve.sol";
 
 contract Reserve is IReserve, EventReserve, ErrorReserve {
     mapping(address account_ => bool) private _admins;
-    uint256 private _lastIndex;
+    uint256 private _adminCount;
     mapping(uint256 index_ => address account_) private _reservers;
+    uint256 private _lastIndex;
     mapping(address account_ => bool listed_) private _whitelist;
     
     constructor() {
@@ -112,6 +113,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
     function removeAdmin(address account_) external override onlyAdmin returns(bool assigned_){
         if(account_ == address(0)) revert InvalidAddress(account_);
         if(!_isAdmin(account_)) revert NotAdmin(account_);
+        if(_adminCount <= 1) revert LastAdmin(account_);
 
         assigned_ = _removeAdmin(account_);
     }
@@ -123,6 +125,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         _assigned = _isAdmin(account_);
 
         if(!_assigned) revert DoNotAddAdmin(account_);
+        _adminCount++;
 
         emit NewAdmin(account_);
 
@@ -136,6 +139,7 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         _assigned = _isAdmin(account_);
 
         if(_assigned) revert DoNotRemoveAdmin(account_);
+        _adminCount--;
 
         emit RemoveAdmin(account_);
 

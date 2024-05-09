@@ -290,6 +290,18 @@ contract TestReserve is Test {
         // assignedがfalseであることを確認する
         assertTrue(!assigned);
 
+        // 5. 最後の登録管理アカウントはリバートされることを確認する
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorReserve.LastAdmin.selector,
+                address(admin)
+            )
+        );
+        assigned = rs.removeAdmin(admin);
+
+        // assignedがfalseであることを確認する
+        assertTrue(!assigned);
+
         // -- test end -- //
         vm.stopPrank();
     }
