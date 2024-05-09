@@ -144,7 +144,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     }
 
     modifier onlyAdmin() {
-        require(_admins[msg.sender], "Error: Register/Only-Admin");
+        require(_isAdmin(msg.sender), "Error: Register/Only-Admin");
         _;
     }
 
