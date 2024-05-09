@@ -38,6 +38,14 @@ interface ErrorRegisterBorderlessCompany { // Note: ErrorRegisterBorderlessCompa
     * @param account_ 登録がない管理アカウント
     */
     error NotAdmin(address account_);
+
+    /**
+    * @dev 最後の管理者を削除できないことを示すエラーです。
+    * このエラーが発生するのは、システムに最低1人の管理者が必要であり、
+    * すべての管理者が削除されてしまう場合です。
+    * @param account_ 最後の管理者のアカウントです。
+    */
+    error LastAdmin(address account_);
     
     /**
     * @dev 管理者アカウントを追加できなかった場合に発生するエラー
