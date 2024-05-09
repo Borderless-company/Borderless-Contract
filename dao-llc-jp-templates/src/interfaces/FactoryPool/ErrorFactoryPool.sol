@@ -39,7 +39,7 @@ interface ErrorFactoryPool {
     * @dev 管理者アカウントを追加できなかった場合に発生するエラー
     * @param account_ 管理者に追加しようとしたが失敗したアカウント
     */
-    error DoNotSetAdmin(address account_);
+    error DoNotAddAdmin(address account_);
 
     /**
     * @dev 管理者アカウントを削除できなかった場合に発生するエラー
