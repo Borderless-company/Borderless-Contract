@@ -206,7 +206,7 @@ contract TestReserve is Test {
         // 新規管理者が登録されたイベントが発生することを確認する
         vm.expectEmit(true, false, false, false);
         emit EventReserve.NewAdmin(address(newAdmin));
-        assigned = rs.setAdmin(newAdmin);
+        assigned = rs.addAdmin(newAdmin);
 
         // 2. assignedがtrueであることを確認する
         assertTrue(assigned);
@@ -214,8 +214,8 @@ contract TestReserve is Test {
         // 3. 管理者のアドレス削除をする
         // 管理者が削除されたイベントが発生することを確認する
         vm.expectEmit(true, false, false, false);
-        emit EventReserve.DeleteAdmin(address(newAdmin));
-        assigned = rs.deleteAdmin(newAdmin);
+        emit EventReserve.RemoveAdmin(address(newAdmin));
+        assigned = rs.removeAdmin(newAdmin);
 
         // 4. assignedがtrueであることを確認する
         assertTrue(assigned);
@@ -249,7 +249,7 @@ contract TestReserve is Test {
                 address(0)
             )
         );
-        assigned = rs.setAdmin(address(0));
+        assigned = rs.addAdmin(address(0));
 
         // assignedがfalseであることを確認する
         assertTrue(!assigned);
@@ -261,7 +261,7 @@ contract TestReserve is Test {
                 address(admin)
             )
         );
-        assigned = rs.setAdmin(admin);
+        assigned = rs.addAdmin(admin);
 
         // assignedがfalseであることを確認する
         assertTrue(!assigned);
@@ -273,7 +273,7 @@ contract TestReserve is Test {
                 address(0)
             )
         );
-        assigned = rs.deleteAdmin(address(0));
+        assigned = rs.removeAdmin(address(0));
 
         // assignedがfalseであることを確認する
         assertTrue(!assigned);
@@ -285,7 +285,7 @@ contract TestReserve is Test {
                 address(newAdmin)
             )
         );
-        assigned = rs.deleteAdmin(newAdmin);
+        assigned = rs.removeAdmin(newAdmin);
 
         // assignedがfalseであることを確認する
         assertTrue(!assigned);
