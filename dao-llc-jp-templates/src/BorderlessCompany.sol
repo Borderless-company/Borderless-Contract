@@ -22,6 +22,28 @@ contract BorderlessCompany is IBorderlessCompany, EventBorderlessCompany, ErrorB
         completed_ = _initialService(services_);
     }
 
+    function getService(uint256 index_) external view override onlyAdmin returns(address service_) {
+        require(index_ >= 0 && _getService(index_) != address(0), "Error: BorderlessComapny/Invalid-Index");
+
+        service_ = _getService(index_);
+    }
+
+    function assignmentRole(address account_, bool isAdmin_) external override onlyAdmin returns(bool assigned_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+
+        if(!isAdmin_) assigned_ = _assignmentRoleMember(account_);
+        else assigned_ = _assignmentRoleAdmin(account_);
+    }
+
+    function releaseRole(address account_, bool isAdmin_) external override onlyAdmin returns(bool released_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+
+        if(!isAdmin_) released_ = _releaseRoleMember(account_);
+        else released_ = _releaseRoleAdmin(account_);
+    }
+
+    // -- Internal features -- //
+
     function _initialService(address[] calldata services_) internal returns(bool completed_){
         for(uint256 _index = 1; _index <= services_.length; _index++) {
             address activatedAddress = services_[_index - 1];
@@ -34,21 +56,8 @@ contract BorderlessCompany is IBorderlessCompany, EventBorderlessCompany, ErrorB
         completed_ = true;
     }
 
-    function getService(uint256 index_) external view override onlyAdmin returns(address service_) {
-        require(index_ >= 0 && _getService(index_) != address(0), "Error: BorderlessComapny/Invalid-Index");
-
-        service_ = _getService(index_);
-    }
-
     function _getService(uint256 index_) internal view returns(address service_) {
         service_ = _services[index_];
-    }
-
-    function assignmentRole(address account_, bool isAdmin_) external override onlyAdmin returns(bool assigned_){
-        if(account_ == address(0)) revert InvalidAddress(account_);
-
-        if(!isAdmin_) assigned_ = _assignmentRoleMember(account_);
-        else assigned_ = _assignmentRoleAdmin(account_);
     }
 
     function _assignmentRoleAdmin(address account_) internal returns(bool assigned_){
@@ -67,13 +76,6 @@ contract BorderlessCompany is IBorderlessCompany, EventBorderlessCompany, ErrorB
         emit AssignmentRoleMember(account_, _admins[account_]);
 
         assigned_ = _members[account_];
-    }
-
-    function releaseRole(address account_, bool isAdmin_) external override onlyAdmin returns(bool released_){
-        if(account_ == address(0)) revert InvalidAddress(account_);
-
-        if(!isAdmin_) released_ = _releaseRoleMember(account_);
-        else released_ = _releaseRoleAdmin(account_);
     }
 
     function _releaseRoleAdmin(address account_) internal returns(bool released_){

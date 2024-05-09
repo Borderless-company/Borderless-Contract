@@ -24,6 +24,41 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
         listed_ = true;
     }
 
+    function cancel(address account_) external override onlyAdmin returns(bool listed_) {
+        if(account_ == address(0)) revert InvalidAddress(account_);
+        if(!_isWhitelisted(account_)) revert NotyetReserve(account_);
+
+        if(_cancelWhitelist(account_)) revert DoNotToAddWhitelist(account_);
+
+        listed_ = _whitelist[account_];
+    }
+
+    function isWhitelisted(address account_) external view override returns(bool listed_){
+        if(account_ == address(0)) revert InvalidAddress(account_);
+
+        listed_ = _isWhitelisted(account_);
+    }
+
+    function lastIndexOf() external view onlyAdmin returns(uint256 index_){
+        index_ = _indexOf();
+    }
+
+    function reserverOf(uint256 index_) external view onlyAdmin returns(address reserver_){
+        if(index_ <= 0 || index_ > _lastIndex) revert InvalidIndex(index_);
+
+        reserver_ = _reserverOf(index_);
+    }
+
+    function reserversOf() external view onlyAdmin returns(address[] memory reservers_){
+        reservers_ = new address[](_lastIndex);
+    
+        for(uint256 i = 1; i <= _lastIndex; i++){
+            if(_reserverOf(i) != address(0)) reservers_[i -1] = _reserverOf(i);
+        }
+    }
+
+    // -- Internal features -- //
+
     function _addToWhitelist(address account_) internal returns(bool listed_) {
         _lastIndex++;
         _reservers[_indexOf()] = account_;
@@ -33,15 +68,6 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
             _whitelist[account_] = true;
         }
-
-        listed_ = _whitelist[account_];
-    }
-
-    function cancel(address account_) external override onlyAdmin returns(bool listed_) {
-        if(account_ == address(0)) revert InvalidAddress(account_);
-        if(!_isWhitelisted(account_)) revert NotyetReserve(account_);
-
-        if(_cancelWhitelist(account_)) revert DoNotToAddWhitelist(account_);
 
         listed_ = _whitelist[account_];
     }
@@ -62,44 +88,20 @@ contract Reserve is IReserve, EventReserve, ErrorReserve {
 
         listed_ = _whitelist[account_];
     }
-    
-    function isWhitelisted(address account_) external view override returns(bool listed_){
-        if(account_ == address(0)) revert InvalidAddress(account_);
-
-        listed_ = _isWhitelisted(account_);
-    }
 
     function _isWhitelisted(address account_) internal view returns(bool listed_){
         listed_ = _whitelist[account_];
-    }
-
-    function lastIndexOf() external view onlyAdmin returns(uint256 index_){
-        index_ = _indexOf();
     }
 
     function _indexOf() internal view returns(uint256 index_){
         index_ = _lastIndex;
     }
 
-    function reserverOf(uint256 index_) external view onlyAdmin returns(address reserver_){
-        if(index_ <= 0 || index_ > _lastIndex) revert InvalidIndex(index_);
-
-        reserver_ = _reserverOf(index_);
-    }
-
-    function reserversOf() external view onlyAdmin returns(address[] memory reservers_){
-        reservers_ = new address[](_lastIndex);
-    
-        for(uint256 i = 1; i <= _lastIndex; i++){
-            if(_reserverOf(i) != address(0)) reservers_[i -1] = _reserverOf(i);
-        }
-    }
-
     function _reserverOf(uint256 index_) internal view returns(address reserver_){
         reserver_ = _reservers[index_];
     }
 
-    // -- Access Control -- //
+    // -- Admin Access Control -- //
     function addAdmin(address account_) external override onlyAdmin returns(bool assigned_){
         if(account_ == address(0)) revert InvalidAddress(account_);
         if(_isAdmin(account_)) revert AlreadyAdmin(account_);

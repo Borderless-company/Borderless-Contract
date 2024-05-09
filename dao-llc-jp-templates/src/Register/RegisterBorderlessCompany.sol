@@ -4,22 +4,22 @@ pragma solidity =0.8.24;
 import {IRegisterBorderlessCompany} from "src/interfaces/Register/IRegisterBorderlessCompany.sol";
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
-import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol";
+import {IReserve} from "src/interfaces/Reserve/IReserve.sol";
 import {IFactoryPool} from "src/interfaces/FactoryPool/IFactoryPool.sol";
 import {IFactoryService} from "src/interfaces/FactoryPool/FactoryServices/IFactoryService.sol";
 import {BorderlessCompany, IBorderlessCompany} from "src/BorderlessCompany.sol";
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
-    IWhitelist private _whitelist;
+    IReserve private _reserve;
     IFactoryPool private _facotryPool;
 
     mapping(address account_ => bool assigned_) private _admins;
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
 
-    constructor(address whitelist_) {
+    constructor(address reserve_) {
         _addAdmin(msg.sender);
-        _whitelist = IWhitelist(whitelist_);
+        _reserve = IReserve(reserve_);
     }
 
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override onlyFounder returns(bool started_, address companyAddress_) {
@@ -35,6 +35,16 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
 
         (started_, companyAddress_) = _createBorderlessCompany(_info);
     }
+
+    function setFactoryPool(address factoryPool_) external override onlyAdmin {
+        if(factoryPool_ == address(0)) revert InvalidParam(factoryPool_);
+
+        _facotryPool = IFactoryPool(factoryPool_);
+
+        emit SetFactoryPool(msg.sender, factoryPool_);
+    }
+
+    // -- Internal features -- //
 
     function _createBorderlessCompany(CompanyInfo memory info_) private returns(bool started_, address companyAddress_) {
         bool _updated;
@@ -86,15 +96,14 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         return _lastIndex;
     }
 
-    function setFactoryPool(address factoryPool_) external override onlyAdmin {
-        if(factoryPool_ == address(0)) revert InvalidParam(factoryPool_);
+    // -- Register Access Control -- //
 
-        _facotryPool = IFactoryPool(factoryPool_);
-
-        emit SetFactoryPool(msg.sender, factoryPool_);
+    modifier onlyFounder() {
+        require(_reserve.isWhitelisted(msg.sender), "Error: Register/Only-Founder");
+        _;
     }
 
-    // -- Access Control -- //
+    // -- Admin Access Control -- //
     function addAdmin(address account_) external override onlyAdmin returns(bool assigned_){
         if(account_ == address(0)) revert InvalidAddress(account_);
         if(_isAdmin(account_)) revert AlreadyAdmin(account_);
@@ -148,8 +157,4 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         _;
     }
 
-    modifier onlyFounder() {
-        require(_whitelist.isWhitelisted(msg.sender) , "Error: Register/Only-Founder");
-        _;
-    }
 }

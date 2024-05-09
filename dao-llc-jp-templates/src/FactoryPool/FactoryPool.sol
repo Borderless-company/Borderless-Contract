@@ -22,25 +22,6 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         _setService(service_, index_);
     }
 
-    function _setService(address service_, uint256 index_) internal {
-        ServiceInfo memory _info;
-
-        _info.service = service_;
-        _info.createAt = block.timestamp;
-        _info.updateAt = block.timestamp;
-
-        _services[index_] = _info;
-
-        emit NewService(_info.service, index_);
-    }
-
-    function getService(uint256 index_) external view override onlyValidCaller returns(address service_, bool online_){
-        if(index_ <= 0) revert InvalidParam(msg.sender, index_, false);
-
-        ServiceInfo memory _info = _services[index_];
-        (service_, online_) = (_info.service, _info.online);
-    }
-
     function updateService(address service_, uint256 index_) external override onlyAdmin{
         ServiceInfo memory _info;
         if(index_ <= 0 || service_ == address(0)) revert InvalidParam(service_, index_, false);
@@ -66,6 +47,27 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         _updateService(_info, index_);
     }
 
+    function getService(uint256 index_) external view override onlyValidCaller returns(address service_, bool online_){
+        if(index_ <= 0) revert InvalidParam(msg.sender, index_, false);
+
+        ServiceInfo memory _info = _services[index_];
+        (service_, online_) = (_info.service, _info.online);
+    }
+
+    // -- Internal features -- //
+
+    function _setService(address service_, uint256 index_) internal {
+        ServiceInfo memory _info;
+
+        _info.service = service_;
+        _info.createAt = block.timestamp;
+        _info.updateAt = block.timestamp;
+
+        _services[index_] = _info;
+
+        emit NewService(_info.service, index_);
+    }
+
     function _updateService(ServiceInfo memory info_, uint256 index_) private {
         info_.updateAt = block.timestamp;
         _services[index_] = info_;
@@ -73,7 +75,18 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         emit UpdateService(info_.service, index_, info_.online);
     }
 
-    // -- Access Control -- //
+    // -- FactoryPool Access Control -- //
+
+    modifier onlyValidCaller() {
+        require(_validateCaller(), "Error: FactoryPool/Invalid-Caller");
+        _;
+    }
+
+    function _validateCaller() internal view returns(bool valid_){
+        if(_isAdmin(msg.sender) || msg.sender == _register) valid_ = true;
+    }
+
+    // -- Admin Access Control -- //
     function addAdmin(address account_) external override onlyAdmin returns(bool assigned_){
         if(account_ == address(0)) revert InvalidAddress(account_);
         if(_isAdmin(account_)) revert AlreadyAdmin(account_);
@@ -127,12 +140,4 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         _;
     }
 
-    modifier onlyValidCaller() {
-        require(_validateCaller(), "Error: FactoryPool/Invalid-Caller");
-        _;
-    }
-
-    function _validateCaller() internal view returns(bool valid_){
-        if(_isAdmin(msg.sender) || msg.sender == _register) valid_ = true;
-    }
 }

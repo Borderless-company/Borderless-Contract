@@ -3,7 +3,7 @@ pragma solidity =0.8.24;
 
 import {Script, console} from "forge-std/Script.sol";
 import {RegisterBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
-import {Whitelist} from "src/Whitelist/Whitelist.sol";
+import {Reserve} from "src/Reserve/Reserve.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
 // -- Initial Service Factory -- //
 import {GovernanceServiceFactory} from "src/FactoryPool/FactoryServices/GovernanceServiceFactory.sol";
@@ -11,9 +11,13 @@ import {TreasuryServiceFactory} from "src/FactoryPool/FactoryServices/TreasurySe
 import {TokenServiceFactory} from "src/FactoryPool/FactoryServices/TokenServiceFactory.sol";
 
 contract BorderlessCompanyScript is Script {
-    FactoryPool fp;
+    // -- Reserve -- //
+    Reserve rs;
+    // -- Register -- //
     RegisterBorderlessCompany rbc;
-    Whitelist wl;
+    // -- Service Factory Pool -- //
+    FactoryPool fp;
+    // -- Service Factory -- //
     GovernanceServiceFactory gnsf;
     TreasuryServiceFactory trsf;
     TokenServiceFactory tksf;
@@ -23,9 +27,9 @@ contract BorderlessCompanyScript is Script {
     function run() public {
         vm.startBroadcast();
 
-        wl = new Whitelist();
+        rs = new Reserve();
 
-        rbc = new RegisterBorderlessCompany(address(wl));
+        rbc = new RegisterBorderlessCompany(address(rs));
 
         fp = new FactoryPool(address(rbc));
 
