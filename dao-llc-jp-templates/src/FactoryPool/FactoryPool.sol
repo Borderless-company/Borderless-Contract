@@ -75,6 +75,8 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         emit UpdateService(info_.service, index_, info_.online);
     }
 
+    // -- FactoryPool Access Control -- //
+
     modifier onlyValidCaller() {
         require(_validateCaller(), "Error: FactoryPool/Invalid-Caller");
         _;

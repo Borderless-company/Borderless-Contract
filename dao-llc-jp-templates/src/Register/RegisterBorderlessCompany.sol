@@ -96,6 +96,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         return _lastIndex;
     }
 
+    // -- Register Access Control -- //
 
     modifier onlyFounder() {
         require(_reserve.isWhitelisted(msg.sender), "Error: Register/Only-Founder");
