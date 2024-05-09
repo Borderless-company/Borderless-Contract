@@ -2,7 +2,7 @@
 pragma solidity =0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
-import {Whitelist} from "src/Whitelist/Whitelist.sol";
+import {Reserve} from "src/Reserve/Reserve.sol";
 import {RegisterBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
@@ -13,7 +13,7 @@ import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol"
 contract TestRegisterBorderlessCompany is Test {
     RegisterBorderlessCompany rbc;
     IBorderlessCompany ibc;
-    Whitelist wl;
+    Reserve rs;
     FactoryPool fp;
 
     address owner;
@@ -31,9 +31,9 @@ contract TestRegisterBorderlessCompany is Test {
         exMember = makeAddr("Queen");
 
         vm.startPrank(owner);
-        wl = new Whitelist();
+        rs = new Reserve();
 
-        rbc = new RegisterBorderlessCompany(address(wl));
+        rbc = new RegisterBorderlessCompany(address(rs));
 
         fp = new FactoryPool(address(rbc));
 
@@ -59,7 +59,7 @@ contract TestRegisterBorderlessCompany is Test {
      * - createBorderlessCompany
      * 
      * テストケースに含まれるオペレーション:
-     * 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
+     * 0. `Reserve`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
      * 1. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyのためのCompanyInfoを入力する。
      * 2. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyを起動する
      * 3. 新しい`BorderlessCompany`(Borderless.company)コントラクトが起動（設立）が成功したことを確認する。
@@ -79,9 +79,9 @@ contract TestRegisterBorderlessCompany is Test {
         assertTrue(keccak256(abi.encodePacked(establishmentDate)) == keccak256(abi.encodePacked("")));
         assertTrue(started == confirmed);
 
-        // 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
+        // 0. `Reserve`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
         vm.prank(owner);
-        wl.addToWhitelist(exMember);
+        rs.reservation(exMember);
         
         // -- test start コントラクト実行者 -- //
         vm.startPrank(exMember);
@@ -155,7 +155,7 @@ contract TestRegisterBorderlessCompany is Test {
 
         // 2. サービス予約を完了した業務執行社員（代表社員）により、不正なCompanyInfoを入力
         vm.prank(owner);
-        wl.addToWhitelist(exMember);
+        rs.reservation(exMember);
  
         vm.startPrank(exMember);
 

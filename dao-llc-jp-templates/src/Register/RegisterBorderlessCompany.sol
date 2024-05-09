@@ -4,22 +4,25 @@ pragma solidity =0.8.24;
 import {IRegisterBorderlessCompany} from "src/interfaces/Register/IRegisterBorderlessCompany.sol";
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
-import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol";
+// import {IWhitelist} from "src/interfaces/Whitelist/IWhitelist.sol";
+import {IReserve} from "src/interfaces/Reserve/IReserve.sol";
 import {IFactoryPool} from "src/interfaces/FactoryPool/IFactoryPool.sol";
 import {IFactoryService} from "src/interfaces/FactoryPool/FactoryServices/IFactoryService.sol";
 import {BorderlessCompany, IBorderlessCompany} from "src/BorderlessCompany.sol";
 
 contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterBorderlessCompany, ErrorRegisterBorderlessCompany {
-    IWhitelist private _whitelist;
+    // IWhitelist private _whitelist;
+    IReserve private _reserve;
     IFactoryPool private _facotryPool;
 
     mapping(address account_ => bool assigned_) private _admins;
     uint256 private _lastIndex;
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
 
-    constructor(address whitelist_) {
+    constructor(address reserve_) {
         _addAdmin(msg.sender);
-        _whitelist = IWhitelist(whitelist_);
+        _reserve = IReserve(reserve_);
+        // _whitelist = IWhitelist(whitelist_);
     }
 
     function createBorderlessCompany(bytes calldata companyID_, bytes calldata establishmentDate_, bool confirmed_) external override onlyFounder returns(bool started_, address companyAddress_) {
@@ -149,7 +152,8 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     }
 
     modifier onlyFounder() {
-        require(_whitelist.isWhitelisted(msg.sender) , "Error: Register/Only-Founder");
+        require(_reserve.isWhitelisted(msg.sender), "Error: Register/Only-Founder");
+        // require(_whitelist.isWhitelisted(msg.sender) , "Error: Register/Only-Founder");
         _;
     }
 }

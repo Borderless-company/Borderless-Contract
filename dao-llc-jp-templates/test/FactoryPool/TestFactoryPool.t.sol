@@ -2,7 +2,7 @@
 pragma solidity =0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
-import {Whitelist} from "src/Whitelist/Whitelist.sol";
+import {Reserve} from "src/Reserve/Reserve.sol";
 import {RegisterBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
@@ -10,7 +10,7 @@ import {IBorderlessCompany} from "src/BorderlessCompany.sol";
 import {FactoryServiceBase} from "src/FactoryPool/FactoryServices/FactoryServiceBase.sol";
 
 contract TestFactoryPool is Test {
-    Whitelist wl;
+    Reserve rs;
     RegisterBorderlessCompany rbc;
     FactoryPool fp;
     IBorderlessCompany ibc;
@@ -29,11 +29,11 @@ contract TestFactoryPool is Test {
     // =================== Test Cases ===================
     // OK: FactoryPoolコントラクトにより、Borderless.companyのサービスコントラクトを起動するテストケース
     // 1. `OverlayAG Admin` オペレーションによるデプロイ（サービス提供者）
-    //    1. `Whitelist`コントラクトのデプロイ
-    //       1. `Whitelist`は、`業務執行社員・代表社員`のホワイトリスト管理と、その登録機能を有する
+    //    1. `Reserve`コントラクトのデプロイ
+    //       1. `Reserve`は、`業務執行社員・代表社員`のホワイトリスト管理と、その登録機能を有する
     //    2. `FactoryPool`コントラクトのデプロイする。
     //       1. `FactoryPool`は、`各Serviceリリース用のFacotry`の ID・アドレス管理と、その登録機能を有する
-    //    3. `Register`コントラクトのデプロイし、その時に、`Whitelist`コントラクトのアドレスを登録する。
+    //    3. `Register`コントラクトのデプロイし、その時に、`Reserve`コントラクトのアドレスを登録する。
     //    4. `各Serviceリリース用のFacotry`コントラクトをデプロイし、その時に、`Register`コントラクトのアドレスを登録する。
     //    5. `FactoryPool`コントラクトへデプロイした、`各Serviceリリース用のFacotry`コントラクトのアドレスを登録する。
     //       1. `Register`コントラクトで、`createBorderlessCompany`機能をコールする時にアドレスを参照する。
@@ -50,10 +50,10 @@ contract TestFactoryPool is Test {
 
         vm.startPrank(owner);
 
-        // -- 1-1. Whitelistのデプロイ -- //
-        wl = new Whitelist();
+        // -- 1-1. Reserveのデプロイ -- //
+        rs = new Reserve();
         // -- 1-2. RegisterBorderlessCompanyのデプロイ -- //
-        rbc = new RegisterBorderlessCompany(address(wl));
+        rbc = new RegisterBorderlessCompany(address(rs));
         // -- 1-3. FactoryPoolのデプロイ -- //
         fp = new FactoryPool(address(rbc));
         // -- 1-4. RegisterBorderlessCompanyにFactoryPoolのアドレス登録 -- //
@@ -66,8 +66,8 @@ contract TestFactoryPool is Test {
         // -- Activate Service -- //
         fp.updateService(address(bsf), 1, true); // index = 1 GovernanceService
 
-        // 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
-        wl.addToWhitelist(exMember);
+        // 0. `Reserve`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
+        rs.reservation(exMember);
 
         vm.stopPrank();
     }
