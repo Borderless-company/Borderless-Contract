@@ -11,7 +11,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     mapping(uint256 index_ => ServiceInfo info_) private _services;
 
     constructor(address register_) {
-        _admins[msg.sender] = true;
+        _addAdmin(msg.sender);
         _register = register_;
     }
 
@@ -94,7 +94,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
         _admins[account_] = true;
         _assigned = _isAdmin(account_);
 
-        if(!_assigned) revert DoNotSetAdmin(account_);
+        if(!_assigned) revert DoNotAddAdmin(account_);
 
         emit NewAdmin(account_);
 
@@ -123,7 +123,7 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     }
 
     modifier onlyAdmin() {
-        require(_admins[msg.sender], "Error: FactoryPool/Only-Admin");
+        require(_isAdmin(msg.sender), "Error: FactoryPool/Only-Admin");
         _;
     }
 
@@ -133,6 +133,6 @@ contract FactoryPool is IFactoryPool, EventFactoryPool, ErrorFactoryPool {
     }
 
     function _validateCaller() internal view returns(bool valid_){
-        if(_admins[msg.sender] || msg.sender == _register) valid_ = true;
+        if(_isAdmin(msg.sender) || msg.sender == _register) valid_ = true;
     }
 }

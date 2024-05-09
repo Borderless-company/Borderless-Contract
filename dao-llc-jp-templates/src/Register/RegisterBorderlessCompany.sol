@@ -18,7 +18,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
     mapping (uint256 index_ => CompanyInfo companyInfo_) private _companies;
 
     constructor(address whitelist_) {
-        _admins[msg.sender] = true;
+        _addAdmin(msg.sender);
         _whitelist = IWhitelist(whitelist_);
     }
 
@@ -115,7 +115,7 @@ contract RegisterBorderlessCompany is IRegisterBorderlessCompany, EventRegisterB
         _admins[account_] = true;
         _assigned = _isAdmin(account_);
 
-        if(!_assigned) revert DoNotSetAdmin(account_);
+        if(!_assigned) revert DoNotAddAdmin(account_);
 
         emit NewAdmin(account_);
 
