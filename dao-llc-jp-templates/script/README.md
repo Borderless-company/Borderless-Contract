@@ -16,8 +16,18 @@
 2. `/.env`ファイルへ、作成した script ファイルを指定する
 3. `make`cli で、スマートコントラクトのデプロイ
    1. `Local-net`でデプロイ・動作テスト
-   2. `Test-net`でデプロイ・動作テスト ※(1)を pass してデプロイする
+      ```bash
+      $ make run-localchain
+      $ make deploy-localnet
+      ```
+   2. `Test-net`でデプロイ・動作テスト ※(1)を pass してデプロイす
+      ```bash
+      $ make deploy-testnet-metis-sepolia
+      ```
    3. `Main-net`でデプロイ・動作テスト ※(2)を pass してデプロイする
+      ```bash
+      $ make deploy-testnet-metis-sepolia-vf
+      ```
 
 ---
 

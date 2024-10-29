@@ -20,24 +20,32 @@ test:
 
 .PHONY: deploy-localnet
 deploy-localnet:
-	forge script script/${DEPLOY} --fork-url ${LOCAL_RPC_URL} --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --broadcast -vvvv
+	forge script script/${DEPLOY} --fork-url ${LOCAL_RPC_URL} --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80  --broadcast -vvvv
 
 ## TEST-NET
 
 .PHONY: deploy-testnet-sepolia
-deploy-testnet-sepolia: 
+deploy-testnet-sepolia:
 	forge script script/${DEPLOY} --fork-url $(ETH_SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvv
 
 .PHONY: deploy-testnet-sepolia-vf
-deploy-testnet-sepolia-vf: 
+deploy-testnet-sepolia-vf:
 	forge script script/${TEST_DEPLOY} --fork-url $(ETH_SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast --etherscan-api-key $(DEV_ETHERSCAN_API_KEY) --verify -vvvv
 
+.PHONY: deploy-testnet-metis-sepolia
+deploy-testnet-metis-sepolia:
+	forge script script/${DEPLOY} --fork-url $(ETH_SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvv
+
+.PHONY: deploy-testnet-metis-sepolia-vf
+deploy-testnet-metis-sepolia-vf:
+	forge script script/${TEST_DEPLOY} --fork-url "https://sepolia.metisdevops.link" --private-key $(PRIVATE_KEY) --broadcast --verify --verifier blockscout --verifier-url https://sepolia-explorer.metisdevops.link/api/ --etherscan-api-key $(DEV_ETHERSCAN_API_KEY) --legacy -vvvv
+
 .PHONY: deploy-testnet-mumbai
-deploy-testnet-mumbai: 
+deploy-testnet-mumbai:
 	forge script script/${DEPLOY} --fork-url $(POLY_AMOY_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast -vvvv
 
 .PHONY: deploy-testnet-mumbai-vf
-deploy-testnet-mumbai-vf: 
+deploy-testnet-mumbai-vf:
 	forge script script/${TEST_DEPLOY} --fork-url $(POLY_AMOY_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast --etherscan-api-key $(DEV_POLYGONSCAN_API_KEY) --verify -vvvv
 
 ## Forking test
