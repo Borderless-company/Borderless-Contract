@@ -7,3 +7,12 @@
 [submodule "dao-llc-jp-templates/lib/openzeppelin-contracts"]
 	path = dao-llc-jp-templates/lib/openzeppelin-contracts
 	url = https://github.com/openzeppelin/openzeppelin-contracts
+[submodule "contract/packages/hardhat/lib/openzeppelin-foundry-upgrades"]
+	path = contract/packages/hardhat/lib/openzeppelin-foundry-upgrades
+	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades
+[submodule "contract/packages/hardhat/lib/openzeppelin-contracts-upgradeable"]
+	path = contract/packages/hardhat/lib/openzeppelin-contracts-upgradeable
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
+[submodule "contract/packages/hardhat/lib/openzeppelin-contracts"]
+	path = contract/packages/hardhat/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
