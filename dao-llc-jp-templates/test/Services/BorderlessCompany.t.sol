@@ -6,7 +6,7 @@ import {Reserve} from "src/Reserve/Reserve.sol";
 import {RegisterBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
-import {IBorderlessCompany} from "src/BorderlessCompany.sol";
+import {ISCT} from "src/BorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
 import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol";
 import {GovernanceServiceFactory} from "src/FactoryPool/FactoryServices/GovernanceServiceFactory.sol";
@@ -14,14 +14,14 @@ import {IGovernanceService} from "src/interfaces/Services/GovernanceService/IGov
 import {TreasuryServiceFactory} from "src/FactoryPool/FactoryServices/TreasuryServiceFactory.sol";
 import {ITreasuryService} from "src/interfaces/Services/TreasuryService/ITreasuryService.sol";
 import {TokenServiceFactory} from "src/FactoryPool/FactoryServices/TokenServiceFactory.sol";
-import {ITokenService} from "src/interfaces/Services/TokenService/ITokenService.sol";
-import {EventBorderlessCompany} from "src/interfaces/EventBorderlessCompany.sol";
+import {ILETSService} from "src/interfaces/Services/LETSService/ILETSService.sol";
+import {EventSCT} from "src/interfaces/EventSCT.sol";
 import {NonFungibleTokenTYPE721} from "src/Services/TokenStandards/NonFungibleTokenTYPE721.sol";
 
 contract TestBorderlessCompany is Test {
     FactoryPool fp;
     RegisterBorderlessCompany rbc;
-    IBorderlessCompany ibc;
+    ISCT ibc;
     Reserve rs;
     GovernanceServiceFactory gnsf;
     TreasuryServiceFactory trsf;
@@ -87,7 +87,7 @@ contract TestBorderlessCompany is Test {
      * - activate
      * - getService
      * - 各Serviceコントラクトの機能実行`callAdmin()`
-     * 
+     *
      * テストケースに含まれるオペレーション:
      * 0. `Reserve`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
      * 1. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyのためのCompanyInfoを入力する。
@@ -100,14 +100,22 @@ contract TestBorderlessCompany is Test {
      * 2. `exMember` に `Queen`を指定して実行します。
      * 3. `admin` は、 `exMember`(Queen)を代入して実行します。
      */
-    function test_Success_BorderlessCompany_createBorderlessCompany_byExManaer() public {
+    function test_Success_BorderlessCompany_createBorderlessCompany_byExManaer()
+        public
+    {
         // -- test用セットアップ -- //
         bool started;
         address companyAddress;
 
         // -- test前の初期値確認 -- //
-        assertTrue(keccak256(abi.encodePacked(companyID)) == keccak256(abi.encodePacked("")));
-        assertTrue(keccak256(abi.encodePacked(establishmentDate)) == keccak256(abi.encodePacked("")));
+        assertTrue(
+            keccak256(abi.encodePacked(companyID)) ==
+                keccak256(abi.encodePacked(""))
+        );
+        assertTrue(
+            keccak256(abi.encodePacked(establishmentDate)) ==
+                keccak256(abi.encodePacked(""))
+        );
         assertTrue(started == confirmed);
 
         // -- 0. サービス機能リリースと活性化 -- //
@@ -137,7 +145,7 @@ contract TestBorderlessCompany is Test {
         vm.expectEmit(true, true, false, false);
         emit EventFactoryPool.NewService(address(tksf), 3);
         // Note: contractは仮アドレスをセット
-        fp.setService(address(tksf), 3); // index = 3 TokenService
+        fp.setService(address(tksf), 3); // index = 3 LETSService
 
         // -- 0-3. `FactoryPool`コントラクトへ登録した、`FactoryServiceTemplate`サービス状態をOnlineへ更新 -- //
         // Governance
@@ -155,14 +163,14 @@ contract TestBorderlessCompany is Test {
         vm.expectEmit(true, true, false, false);
         emit EventFactoryPool.UpdateService(address(tksf), 3, true);
         // Note: contractは仮アドレスをセット
-        fp.updateService(address(tksf), 3, true); // index = 3 TokenService
+        fp.updateService(address(tksf), 3, true); // index = 3 LETSService
 
         // -- Reservation -- //
         // -- 0. `Reserve`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。 -- //
         rs.reservation(exMember);
 
         vm.stopPrank();
-        
+
         // -- test start コントラクト実行者 -- //
         vm.startPrank(exMember);
 
@@ -174,9 +182,17 @@ contract TestBorderlessCompany is Test {
         // 2. Borderless.companyを起動する
         // MEMO: contractのaddressはテストログより参照した値です
         vm.expectEmit(true, true, true, false);
-        emit EventRegisterBorderlessCompany.NewBorderlessCompany(address(exMember), address(0x5fadc320561EED0887d2A7df9C6Dd71d94655C0b), 1);
+        emit EventRegisterBorderlessCompany.NewSmartCompany(
+            address(exMember),
+            address(0x5fadc320561EED0887d2A7df9C6Dd71d94655C0b),
+            1
+        );
 
-        (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
+        (started, companyAddress) = rbc.createBorderlessCompany(
+            companyID,
+            establishmentDate,
+            confirmed
+        );
 
         // 3. Borderless.companyの起動（設立）が成功したことを確認する
         assertTrue(started);
@@ -188,7 +204,7 @@ contract TestBorderlessCompany is Test {
         vm.startPrank(admin);
 
         // -- 4. Service contract 機能のcallをする -- //
-        ibc = IBorderlessCompany(companyAddress);
+        ibc = ISCT(companyAddress);
 
         // GovernanceService
         address gs = ibc.getService(1);
@@ -198,23 +214,33 @@ contract TestBorderlessCompany is Test {
         address ts = ibc.getService(2);
         ITreasuryService(ts).callAdmin();
 
-        // TokenService
+        // LETSService
         address tos = ibc.getService(3);
-        ITokenService(tos).activateStandard721Token("Dynamo token", "DYN", "https://dynamo.com", true);
-        assertTrue(1 == ITokenService(tos).getLastIndexStandard721Token());
+        ILETSService(tos).activateStandard721Token(
+            "Dynamo token",
+            "DYN",
+            "https://dynamo.com",
+            true
+        );
+        assertTrue(1 == ILETSService(tos).getLastIndexStandard721Token());
 
         // -- SBT -- //
         address token_;
-        (token_,,,) = ITokenService(tos).getInfoStandard721token(1);
+        (token_, , , ) = ILETSService(tos).getInfoStandard721token(1);
 
         NonFungibleTokenTYPE721(token_).mint();
         NonFungibleTokenTYPE721(token_).mint(member);
 
         // -- NFT -- //
-        ITokenService(tos).activateStandard721Token("Kaba token", "KAB", "https://kaba.com", false);
-        assertTrue(2 == ITokenService(tos).getLastIndexStandard721Token());
+        ILETSService(tos).activateStandard721Token(
+            "Kaba token",
+            "KAB",
+            "https://kaba.com",
+            false
+        );
+        assertTrue(2 == ILETSService(tos).getLastIndexStandard721Token());
 
-        (token_,,,) = ITokenService(tos).getInfoStandard721token(2);
+        (token_, , , ) = ILETSService(tos).getInfoStandard721token(2);
         NonFungibleTokenTYPE721(token_).mint();
         // NonFungibleTokenTYPE721(token_).mint(member);
         NonFungibleTokenTYPE721(token_).transferFrom(admin, member, 1);
@@ -222,22 +248,22 @@ contract TestBorderlessCompany is Test {
         // -- 5. Role付与(追加) -- //
         // Admin
         vm.expectEmit(true, true, false, false);
-        emit EventBorderlessCompany.AssignmentRoleAdmin(address(newAdmin), true);
+        emit EventSCT.AssignmentRoleAdmin(address(newAdmin), true);
         ibc.assignmentRole(address(newAdmin), true);
 
         // Member
         vm.expectEmit(true, true, false, false);
-        emit EventBorderlessCompany.AssignmentRoleMember(address(member), true);
+        emit EventSCT.AssignmentRoleMember(address(member), true);
         ibc.assignmentRole(address(member), false);
 
         // -- 6. Role解除(削除) -- //
         // Admin
         vm.expectEmit(true, true, false, false);
-        emit EventBorderlessCompany.ReleaseRoleAdmin(address(newAdmin), true);
+        emit EventSCT.ReleaseRoleAdmin(address(newAdmin), true);
         ibc.releaseRole(address(newAdmin), true);
         // Member
         vm.expectEmit(true, true, false, false);
-        emit EventBorderlessCompany.ReleaseRoleMember(address(member), true);
+        emit EventSCT.ReleaseRoleMember(address(member), true);
         ibc.releaseRole(address(member), false);
 
         // -- test end -- //

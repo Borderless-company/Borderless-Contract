@@ -6,14 +6,14 @@ import {Reserve} from "src/Reserve/Reserve.sol";
 import {RegisterBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
-import {IBorderlessCompany} from "src/BorderlessCompany.sol";
+import {ISCT} from "src/BorderlessCompany.sol";
 import {FactoryServiceBase} from "src/FactoryPool/FactoryServices/FactoryServiceBase.sol";
 
 contract TestFactoryPool is Test {
     Reserve rs;
     RegisterBorderlessCompany rbc;
     FactoryPool fp;
-    IBorderlessCompany ibc;
+    ISCT ibc;
     BaseSampleFactory bsf; // Note: SampleService Factory contract for test
 
     address owner;
@@ -77,7 +77,7 @@ contract TestFactoryPool is Test {
      * - createBorderlessCompany
      * - activate
      * - getService
-     * 
+     *
      * テストケースに含まれるオペレーション:
      * 0. `Whitelist`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
      * 1. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyのためのCompanyInfoを入力する。
@@ -89,7 +89,9 @@ contract TestFactoryPool is Test {
      * 2. `exMember` に `Queen`を指定して実行します。
      * 3. `admin` は、 `exMember`(Queen)を代入して実行します。
      */
-    function test_Success_FactoryPoolService_createBorderlessCompany_byExManaer() public {
+    function test_Success_FactoryPoolService_createBorderlessCompany_byExManaer()
+        public
+    {
         // -- test用セットアップ -- //
         bool started;
         address companyAddress;
@@ -105,9 +107,17 @@ contract TestFactoryPool is Test {
         // 2. Borderless.companyを起動する
         // MEMO: contractのaddressはテストログより参照した値です
         vm.expectEmit(true, true, true, false);
-        emit EventRegisterBorderlessCompany.NewBorderlessCompany(address(exMember), address(0x5fadc320561EED0887d2A7df9C6Dd71d94655C0b), 1);
+        emit EventRegisterBorderlessCompany.NewSmartCompany(
+            address(exMember),
+            address(0x5fadc320561EED0887d2A7df9C6Dd71d94655C0b),
+            1
+        );
 
-        (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
+        (started, companyAddress) = rbc.createBorderlessCompany(
+            companyID,
+            establishmentDate,
+            confirmed
+        );
 
         // 3. Borderless.companyの起動（設立）が成功したことを確認する
         assertTrue(started);
@@ -119,7 +129,7 @@ contract TestFactoryPool is Test {
         vm.startPrank(admin);
 
         // 1. 新しい`BorderlessCompany`(Borderless.company)コントラクトの機能を、admin(`exMember`)が実行できることを確認する
-        ibc = IBorderlessCompany(companyAddress);
+        ibc = ISCT(companyAddress);
         address serviceAddress = ibc.getService(1);
         assertTrue(serviceAddress != address(0));
 
@@ -128,7 +138,6 @@ contract TestFactoryPool is Test {
     }
 
     function test_Success_FactoryPool_admins() public {
-
         // -- test start コントラクト実行者 -- //
         vm.startPrank(owner);
 
@@ -169,7 +178,7 @@ contract SampleService {
     }
 
     function _validateCaller() internal view returns (bool called_) {
-        if(msg.sender == _admin && msg.sender == _company) called_ = true;
+        if (msg.sender == _admin && msg.sender == _company) called_ = true;
     }
 }
 
@@ -180,15 +189,24 @@ contract BaseSampleFactory is FactoryServiceBase {
 
     constructor(address register_) FactoryServiceBase(register_) {}
 
-    function activate(address admin_, address company_, uint256 serviceID_) external override onlyRegister returns (address service_) {
+    function activate(
+        address admin_,
+        address company_,
+        uint256 serviceID_
+    ) external override onlyRegister returns (address service_) {
         service_ = _activate(admin_, company_, serviceID_);
     }
 
-    function _activate(address admin_, address company_, uint256 serviceID_) internal override returns (address service_) {
+    function _activate(
+        address admin_,
+        address company_,
+        uint256 serviceID_
+    ) internal override returns (address service_) {
         // Note: common service setup
         SampleService service = new SampleService(admin_, company_);
 
-        if(address(service) == address(0)) revert DoNotActivateService(admin_, company_, serviceID_);
+        if (address(service) == address(0))
+            revert DoNotActivateService(admin_, company_, serviceID_);
 
         emit ActivateBorderlessService(admin_, address(service), serviceID_);
 

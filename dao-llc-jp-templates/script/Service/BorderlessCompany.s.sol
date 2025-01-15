@@ -42,12 +42,12 @@ contract BorderlessCompanyScript is Script {
         // -- Set Service Address -- //
         fp.setService(address(gnsf), 1); // index = 1 GovernanceService
         fp.setService(address(trsf), 2); // index = 2 TreasuryService
-        fp.setService(address(tksf), 3); // index = 3 TokenService
+        fp.setService(address(tksf), 3); // index = 3 LETSService
 
         // -- Activate Service Address -- //
         fp.updateService(address(gnsf), 1, true); // index = 1 GovernanceService
         fp.updateService(address(trsf), 2, true); // index = 2 TreasuryService
-        fp.updateService(address(tksf), 3, true); // index = 3 TokenService
+        fp.updateService(address(tksf), 3, true); // index = 3 LETSService
 
         vm.stopBroadcast();
     }

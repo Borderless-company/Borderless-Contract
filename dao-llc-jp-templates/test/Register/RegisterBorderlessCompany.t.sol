@@ -6,13 +6,13 @@ import {Reserve} from "src/Reserve/Reserve.sol";
 import {RegisterBorderlessCompany} from "src/Register/RegisterBorderlessCompany.sol";
 import {EventRegisterBorderlessCompany} from "src/interfaces/Register/EventRegisterBorderlessCompany.sol";
 import {ErrorRegisterBorderlessCompany} from "src/interfaces/Register/ErrorRegisterBorderlessCompany.sol";
-import {IBorderlessCompany} from "src/BorderlessCompany.sol";
+import {ISCT} from "src/BorderlessCompany.sol";
 import {FactoryPool} from "src/FactoryPool/FactoryPool.sol";
 import {EventFactoryPool} from "src/interfaces/FactoryPool/EventFactoryPool.sol";
 
 contract TestRegisterBorderlessCompany is Test {
     RegisterBorderlessCompany rbc;
-    IBorderlessCompany ibc;
+    ISCT ibc;
     Reserve rs;
     FactoryPool fp;
 
@@ -57,7 +57,7 @@ contract TestRegisterBorderlessCompany is Test {
     /**
      * @dev 1.OK: Borderless.companyのサービスコントラクトの起動成功のテストケース
      * - createBorderlessCompany
-     * 
+     *
      * テストケースに含まれるオペレーション:
      * 0. `Reserve`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
      * 1. サービス予約を完了した業務執行社員（代表社員）により、Borderless.companyのためのCompanyInfoを入力する。
@@ -69,20 +69,28 @@ contract TestRegisterBorderlessCompany is Test {
      * 2. `exMember` に `Queen`を指定して実行します。
      * 3. `admin` は、 `exMember`(Queen)を代入して実行します。
      */
-    function test_Success_RegisterBorderlessCompany_createBorderlessCompany_byExManaer() public {
+    function test_Success_RegisterBorderlessCompany_createBorderlessCompany_byExManaer()
+        public
+    {
         // -- test用セットアップ -- //
         bool started;
         address companyAddress;
 
         // -- test前の初期値確認 -- //
-        assertTrue(keccak256(abi.encodePacked(companyID)) == keccak256(abi.encodePacked("")));
-        assertTrue(keccak256(abi.encodePacked(establishmentDate)) == keccak256(abi.encodePacked("")));
+        assertTrue(
+            keccak256(abi.encodePacked(companyID)) ==
+                keccak256(abi.encodePacked(""))
+        );
+        assertTrue(
+            keccak256(abi.encodePacked(establishmentDate)) ==
+                keccak256(abi.encodePacked(""))
+        );
         assertTrue(started == confirmed);
 
         // 0. `Reserve`コントラクトへ、サービスを利用予約する業務執行社員（代表社員）を登録する。
         vm.prank(owner);
         rs.reservation(exMember);
-        
+
         // -- test start コントラクト実行者 -- //
         vm.startPrank(exMember);
 
@@ -94,9 +102,17 @@ contract TestRegisterBorderlessCompany is Test {
         // 2. Borderless.companyを起動する
         // MEMO: contractのaddressはテストログより参照した値です
         vm.expectEmit(true, true, true, false);
-        emit EventRegisterBorderlessCompany.NewBorderlessCompany(address(exMember), address(0x5fadc320561EED0887d2A7df9C6Dd71d94655C0b), 1);
+        emit EventRegisterBorderlessCompany.NewSmartCompany(
+            address(exMember),
+            address(0x5fadc320561EED0887d2A7df9C6Dd71d94655C0b),
+            1
+        );
 
-        (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
+        (started, companyAddress) = rbc.createBorderlessCompany(
+            companyID,
+            establishmentDate,
+            confirmed
+        );
 
         // 3. Borderless.companyの起動（設立）が成功したことを確認する
         assertTrue(started);
@@ -108,8 +124,8 @@ contract TestRegisterBorderlessCompany is Test {
         vm.startPrank(admin);
 
         // 1. 新しい`BorderlessCompany`(Borderless.company)コントラクトの機能を、admin(`exMember`)が実行できることを確認する
-        ibc = IBorderlessCompany(companyAddress);
-        
+        ibc = ISCT(companyAddress);
+
         assertTrue(address(ibc) != address(0));
 
         // -- test end -- //
@@ -119,7 +135,7 @@ contract TestRegisterBorderlessCompany is Test {
     /**
      * @dev 1.NG: 不正な呼び出し者により、Borderless.companyのサービスコントラクト起動失敗ケース
      * - createBorderlessCompany
-     * 
+     *
      * テストケースに含まれるオペレーション:
      * 1. サービス予約を完了していない実行者により、Borderless.companyを起動する。
      * 2. サービス予約を完了した業務執行社員（代表社員）により、不正なCompanyInfoを入力して、Borderless.companyを起動する。
@@ -132,15 +148,23 @@ contract TestRegisterBorderlessCompany is Test {
      * 3. `admin` は、 `exMember`(Queen)を代入して実行します。
      * 4. `dummy` は、 `Rabbit`を代入して実行します。
      */
-     function test_Fail_RegisterBorderlessCompany_createBorderlessCompany_byDummyExMember() public {
+    function test_Fail_RegisterBorderlessCompany_createBorderlessCompany_byDummyExMember()
+        public
+    {
         // -- test用セットアップ -- //
         bool started;
         address companyAddress;
         dummy = makeAddr("Rabbit");
 
         // -- test前の初期値確認 -- //
-        assertTrue(keccak256(abi.encodePacked(companyID)) == keccak256(abi.encodePacked("")));
-        assertTrue(keccak256(abi.encodePacked(establishmentDate)) == keccak256(abi.encodePacked("")));
+        assertTrue(
+            keccak256(abi.encodePacked(companyID)) ==
+                keccak256(abi.encodePacked(""))
+        );
+        assertTrue(
+            keccak256(abi.encodePacked(establishmentDate)) ==
+                keccak256(abi.encodePacked(""))
+        );
         assertTrue(started == confirmed);
 
         // -- test start コントラクト実行者 -- //
@@ -148,7 +172,11 @@ contract TestRegisterBorderlessCompany is Test {
 
         // 1. サービス予約を完了していない実行者により、Borderless.companyを起動する
         vm.expectRevert(bytes("Error: Register/Only-Founder"));
-        (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
+        (started, companyAddress) = rbc.createBorderlessCompany(
+            companyID,
+            establishmentDate,
+            confirmed
+        );
         assertTrue(!started);
 
         vm.stopPrank();
@@ -156,7 +184,7 @@ contract TestRegisterBorderlessCompany is Test {
         // 2. サービス予約を完了した業務執行社員（代表社員）により、不正なCompanyInfoを入力
         vm.prank(owner);
         rs.reservation(exMember);
- 
+
         vm.startPrank(exMember);
 
         // Note: 不正なCompanyInfoを入力してテストを実行する
@@ -170,15 +198,18 @@ contract TestRegisterBorderlessCompany is Test {
                 address(exMember)
             )
         );
-        (started, companyAddress) = rbc.createBorderlessCompany(companyID, establishmentDate, confirmed);
+        (started, companyAddress) = rbc.createBorderlessCompany(
+            companyID,
+            establishmentDate,
+            confirmed
+        );
         assertTrue(!started);
 
         // -- test end -- //
         vm.stopPrank();
-     }
+    }
 
-     function test_Success_Register_admins() public {
-
+    function test_Success_Register_admins() public {
         // -- test start コントラクト実行者 -- //
         vm.startPrank(owner);
 

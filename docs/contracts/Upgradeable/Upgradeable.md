@@ -2,8 +2,8 @@
 
 ## Overview
 
-- UUPS Proxyを使用してUpgradeableなコントラクトを作成。
-- FactoryコントラクトはBeacon Proxy Patternでデプロイ。
+- UUPS Proxy を使用して Upgradeable なコントラクトを作成。
+- Factory コントラクトは Beacon Proxy Pattern でデプロイ。
 
 ## Reserve
 
@@ -13,7 +13,7 @@
 
 ![Screenshot 2024-11-10 at 22 53 31](https://github.com/user-attachments/assets/90b8b16d-1780-4f44-b3d8-9ef573cc3f3e)
 
-## GovernanceService & TokenService & TreasuryService
+## GovernanceService & LETSService & TreasuryService
 
 ![Screenshot 2024-11-10 at 22 56 35](https://github.com/user-attachments/assets/c0f64276-712d-4aed-aaa0-0c175a3ba7ef)
 
