@@ -22,18 +22,18 @@
 [submodule "contract/packages/hardhat/lib/solady"]
 	path = contract/packages/hardhat/lib/solady
 	url = https://github.com/vectorized/solady
-[submodule "contract/lib/forge-std"]
-	path = contract/lib/forge-std
+[submodule "contract/packages/hardhat/lib/forge-std"]
+	path = contract/packages/hardhat/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
-[submodule "contract/lib/openzeppelin-contracts"]
-	path = contract/lib/openzeppelin-contracts
+[submodule "contract/packages/hardhat/lib/openzeppelin-contracts"]
+	path = contract/packages/hardhat/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
-[submodule "contract/lib/openzeppelin-contracts-upgradeable"]
-	path = contract/lib/openzeppelin-contracts-upgradeable
+[submodule "contract/packages/hardhat/lib/openzeppelin-contracts-upgradeable"]
+	path = contract/packages/hardhat/lib/openzeppelin-contracts-upgradeable
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
-[submodule "contract/lib/openzeppelin-foundry-upgrades"]
-	path = contract/lib/openzeppelin-foundry-upgrades
+[submodule "contract/packages/hardhat/lib/openzeppelin-foundry-upgrades"]
+	path = contract/packages/hardhat/lib/openzeppelin-foundry-upgrades
 	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades
-[submodule "contract/lib/solady"]
-	path = contract/lib/solady
+[submodule "contract/packages/hardhat/lib/solady"]
+	path = contract/packages/hardhat/lib/solady
 	url = https://github.com/vectorized/solady
