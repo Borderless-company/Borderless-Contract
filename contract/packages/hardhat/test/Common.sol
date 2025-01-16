@@ -2,19 +2,19 @@
 pragma solidity 0.8.27;
 
 import {Test} from "forge-std/Test.sol";
-import {SCR} from "../src/SCR/SCR.sol";
-import {SC_JP_DAOLLC} from "../src/SCT/extentions/SC_JP_DAOLLC.sol";
-import {ServiceFactory} from "../src/Factory/ServiceFactory.sol";
-import {LETS_JP_LLC_EXE} from "../src/Services/LETS/extentions/LETS_JP_LLC/LETS_JP_LLC_EXE.sol";
-import {LETS_JP_LLC_NON_EXE} from "../src/Services/LETS/extentions/LETS_JP_LLC/LETS_JP_LLC_NON_EXE.sol";
-import {Governance_JP_LLC} from "../src/Services/Governance/extentions/Governance_JP_LLC.sol";
+import {SCR} from "../contracts/SCR/SCR.sol";
+import {SC_JP_DAOLLC} from "../contracts/SCT/extentions/SC_JP_DAOLLC.sol";
+import {ServiceFactory} from "../contracts/Factory/ServiceFactory.sol";
+import {LETS_JP_LLC_EXE} from "../contracts/Services/LETS/extentions/LETS_JP_LLC/LETS_JP_LLC_EXE.sol";
+import {LETS_JP_LLC_NON_EXE} from "../contracts/Services/LETS/extentions/LETS_JP_LLC/LETS_JP_LLC_NON_EXE.sol";
+import {Governance_JP_LLC} from "../contracts/Services/Governance/extentions/Governance_JP_LLC.sol";
 
 // interfaces
-import {IServiceFactory} from "../src/Factory/interfaces/IServiceFactory.sol";
+import {IServiceFactory} from "../contracts/Factory/interfaces/IServiceFactory.sol";
 
 import {ECDSA} from "solady/utils/ECDSA.sol";
 // Upgrades
-import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
+import {Upgrades} from "@openzeppelin/foundry-upgrades/Upgrades.sol";
 import {UpgradeableBeacon} from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 import "forge-std/console.sol";
 

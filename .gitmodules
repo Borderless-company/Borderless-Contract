@@ -37,3 +37,6 @@
 [submodule "contract/packages/hardhat/lib/solady"]
 	path = contract/packages/hardhat/lib/solady
 	url = https://github.com/vectorized/solady
+[submodule "openzeppelin-foundry-upgrades"]
+	path = openzeppelin-foundry-upgrades
+	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades

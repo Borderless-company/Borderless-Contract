@@ -1,3 +1,6 @@
-@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts
-@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
-@openzeppelin-foundry-upgrades/=lib/openzeppelin-foundry-upgrades/src/
+@openzeppelin/contracts/=node_modules/@openzeppelin/contracts
+@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable
+@openzeppelin/foundry-upgrades/=node_modules/@openzeppelin/foundry-upgrades/src/
+solady/=node_modules/solady/src/
+forge-std/=node_modules/forge-std/src/
+solidity-stringutils/=lib/solidity-stringutils/

@@ -1829,10 +1829,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts@npm:~5.0.2":
-  version: 5.0.2
-  resolution: "@openzeppelin/contracts@npm:5.0.2"
-  checksum: 0cce6fc284bd1d89e2a447027832a62f1356b44ee31088899453e10349a63a62df2f07da63d76e4c41aad9c86b96b650b2b6fc85439ef276850dda1170a047fd
+"@openzeppelin/contracts-upgradeable@npm:latest":
+  version: 5.2.0
+  resolution: "@openzeppelin/contracts-upgradeable@npm:5.2.0"
+  peerDependencies:
+    "@openzeppelin/contracts": 5.2.0
+  checksum: 5736d40287899e72e240acdcddd72961f792a0c90a22a96f2a6705aa01286ab99ca96e800567d763d66cf90b40d814fa1f1ff48844dfa0676b96a85edf9854b3
+  languageName: node
+  linkType: hard
+
+"@openzeppelin/contracts@npm:latest":
+  version: 5.2.0
+  resolution: "@openzeppelin/contracts@npm:5.2.0"
+  checksum: badff8c3be46b099c331e90ba27f75e36f7af681279952cf0b123c7448bc53cd541ef447de8e6ebc38e7b29aed8f17dacf0756aac5891eed03fe96a0a4eba1a0
   languageName: node
   linkType: hard
 
@@ -1865,6 +1874,16 @@ __metadata:
     axios: ^1.7.2
     lodash: ^4.17.21
   checksum: 7ef060e93f3025c797deb5c4af7ff83c1f08ee084ab4ac071064ebe17be73fd9fb053e2772d240cd5d84d39cdcc79548ff3d686aaeb95106b199153de875f927
+  languageName: node
+  linkType: hard
+
+"@openzeppelin/foundry-upgrades@npm:^0.3.7":
+  version: 0.3.7
+  resolution: "@openzeppelin/foundry-upgrades@npm:0.3.7"
+  peerDependencies:
+    "@openzeppelin/defender-deploy-client-cli": 0.0.1-alpha.10
+    "@openzeppelin/upgrades-core": ^1.37.0
+  checksum: 791e9191592f003a905c67068afa35de0af89fed9306ed6f91b5422b9843f1574bb9bbd61cb47f898dbf65b94985e7d346aee6c7e8a6195fb1e699434035b3a7
   languageName: node
   linkType: hard
 
@@ -2279,7 +2298,9 @@ __metadata:
     "@nomicfoundation/hardhat-foundry": ^1.1.2
     "@nomicfoundation/hardhat-network-helpers": ~1.0.11
     "@nomicfoundation/hardhat-verify": ~2.0.10
-    "@openzeppelin/contracts": ~5.0.2
+    "@openzeppelin/contracts": latest
+    "@openzeppelin/contracts-upgradeable": latest
+    "@openzeppelin/foundry-upgrades": ^0.3.7
     "@openzeppelin/hardhat-upgrades": ^3.5.0
     "@typechain/ethers-v5": ~11.1.2
     "@typechain/ethers-v6": ~0.5.1
@@ -2297,13 +2318,16 @@ __metadata:
     eslint-config-prettier: ~8.10.0
     eslint-plugin-prettier: ~5.2.1
     ethers: ~6.13.2
+    forge-std: "https://github.com/foundry-rs/forge-std.git"
     hardhat: ~2.22.10
     hardhat-deploy: ~0.12.4
     hardhat-deploy-ethers: ~0.4.2
     hardhat-gas-reporter: ~2.2.1
     prettier: ~3.3.3
     qrcode: ~1.5.4
+    solady: ^0.0.295
     solidity-coverage: ~0.8.13
+    solidity-string-utils: ^0.0.8-0
     ts-node: ~10.9.1
     typechain: ~8.3.2
     typescript: <5.6.0
@@ -7608,6 +7632,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"forge-std@https://github.com/foundry-rs/forge-std.git":
+  version: 1.9.5
+  resolution: "forge-std@https://github.com/foundry-rs/forge-std.git#commit=726a6ee5fc8427a0013d6f624e486c9130c0e336"
+  checksum: 419c3d41641737fc4a573e0923d5d8a56d1863e53e265305f408b4345601ec53d2b9290d6b01dc7e2652c911af2c5aa51897a62dfc7910eff476e8260ff73c60
+  languageName: node
+  linkType: hard
+
 "form-data@npm:^4.0.0":
   version: 4.0.1
   resolution: "form-data@npm:4.0.1"
@@ -12458,6 +12489,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"solady@npm:^0.0.295":
+  version: 0.0.295
+  resolution: "solady@npm:0.0.295"
+  checksum: 691a2ebeea604f3026babc8135ae61221ab127acb89378158c2665baa662fcfef3a702bd453ba3fed12009b14b0c74e2591181ff1e45f4c98f5ad91128a6c9f3
+  languageName: node
+  linkType: hard
+
 "solc@npm:0.8.26":
   version: 0.8.26
   resolution: "solc@npm:0.8.26"
@@ -12510,6 +12548,13 @@ __metadata:
   bin:
     solidity-coverage: plugins/bin.js
   checksum: aa18bf332bae4256753e24c6e866beecc35adbc694a285dac3947433c708f488cb18f11026b4e00250af8eadb910b642b1532d21137444cf00666b44ac0f8366
+  languageName: node
+  linkType: hard
+
+"solidity-string-utils@npm:^0.0.8-0":
+  version: 0.0.8-0
+  resolution: "solidity-string-utils@npm:0.0.8-0"
+  checksum: 1d243d6f0afc8de4fa52dec5337644cb96a1a105bc84ce2534e2f48eb52f9fd5a0de7baaa89e260146e60e10b2e35b640f6affee4759afd382ac2e58b58f343f
   languageName: node
   linkType: hard
 

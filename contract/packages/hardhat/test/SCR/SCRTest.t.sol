@@ -2,8 +2,8 @@
 pragma solidity 0.8.27;
 
 import {Common} from "../Common.sol";
-import {SCR} from "../../src/SCR/SCR.sol";
-import {ErrorSCR} from "../../src/SCR/interfaces/ErrorSCR.sol";
+import {SCR} from "../../contracts/SCR/SCR.sol";
+import {ErrorSCR} from "../../contracts/SCR/interfaces/ErrorSCR.sol";
 import {console} from "forge-std/console.sol";
 
 contract SCRTest is Common {
