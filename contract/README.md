@@ -54,12 +54,15 @@ $ yarn hardhat-verify --network metis_sepolia --contract contracts/FactoryPool/F
 
 ## Contract Addresses
 
-|Service|Implementation Address|Proxy Address|Explorer Link|
-|--------|----------------------|-------------|-------------|
-|Reserve Contract|-| 0x7b3D6D013525CE19F1686451287de295071F9880 | [Explorer](https://sepolia-explorer.metisdevops.link/address/0x7b3D6D013525CE19F1686451287de295071F9880) |
-|Borderless Company| 0xB1e22330d1DD3F411E2c02bf5bC016740c52d959 | 0x6EeB8AF621D8c35C05dEb759A813B4Af9B58E613 | [Explorer](https://sepolia-explorer.metisdevops.link/address/0x6EeB8AF621D8c35C05dEb759A813B4Af9B58E613) |
-|Factory Pool Beacon| 0xbdA28953fB1cEc9b11beEb764FD1fA3da0f698Cc | 0xaE7637761A24916061d5e20683f6Da91E86A0D33 | [Explorer](https://sepolia-explorer.metisdevops.link/address/0xaE7637761A24916061d5e20683f6Da91E86A0D33) |
-|Governance Service| 0x3f289A88dca5D00037626F2E9b10FB5eB7554B5F | 0xa7575Da6Dc92FaC730C9F1b9F266B9DdA495fA96 | [Explorer](https://sepolia-explorer.metisdevops.link/address/0xa7575Da6Dc92FaC730C9F1b9F266B9DdA495fA96) |
-|Treasury Service| 0xD199ec2892C8E2370773777C8efB4220c6dCeE2e | 0x86Ec265360b0a8C9AB02e700Bc783c76277B96cB | [Explorer](https://sepolia-explorer.metisdevops.link/address/0x86Ec265360b0a8C9AB02e700Bc783c76277B96cB) |
-|Token Service| 0xa7B7Cb3906a18101F5FBFd9126583A13C1A0545A | 0xFaA6b0F372f8effcc95f1581AaAaa4Afd8419ad5 | [Explorer](https://sepolia-explorer.metisdevops.link/address/0xFaA6b0F372f8effcc95f1581AaAaa4Afd8419ad5) |
---------------------------------
+```bash
+┌─────────────────────┬────────────────────────────────────────────┐
+│        ContractName │                                    Address │
+├─────────────────────┼────────────────────────────────────────────┤
+│      ServiceFactory │ 0x65aEE29e90CFC1A529b810056721E6A60fd8AC63 │
+│                 SCR │ 0x40D1Eb8fCc5b56744850C371237Fee8a6b91c868 │
+│        SC_JP_DAOLLC │ 0xf8eBFC5618c3CbD237D50F4eb08f79Dccb96A66D │
+│     LETS_JP_LLC_EXE │ 0xc7759E7A160079149F5ae5F6DF97d8E688bcCE3d │
+│ LETS_JP_LLC_NON_EXE │ 0xbFC5Ec106001Cea080585C661E7F058Af6A0128D │
+│   Governance_JP_LLC │ 0xf3148E7075A616461A7BffeFda990a08f668f08E │
+└─────────────────────┴────────────────────────────────────────────┘
+```
