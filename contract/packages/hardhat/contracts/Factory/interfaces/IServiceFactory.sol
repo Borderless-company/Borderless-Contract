@@ -61,7 +61,8 @@ interface IServiceFactory {
         address _admin,
         address _company,
         address _serviceImplementation,
-        bytes memory _extraParams
+        bytes memory _extraParams,
+        ServiceType _serviceType
     ) external returns (address service_);
 
     // ============================================== //

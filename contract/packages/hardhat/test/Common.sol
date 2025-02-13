@@ -8,7 +8,7 @@ import {ServiceFactory} from "../contracts/Factory/ServiceFactory.sol";
 import {LETS_JP_LLC_EXE} from "../contracts/Services/LETS/extentions/LETS_JP_LLC/LETS_JP_LLC_EXE.sol";
 import {LETS_JP_LLC_NON_EXE} from "../contracts/Services/LETS/extentions/LETS_JP_LLC/LETS_JP_LLC_NON_EXE.sol";
 import {Governance_JP_LLC} from "../contracts/Services/Governance/extentions/Governance_JP_LLC.sol";
-
+import {Vote} from "../contracts/Vote/Vote.sol";
 // interfaces
 import {IServiceFactory} from "../contracts/Factory/interfaces/IServiceFactory.sol";
 
@@ -32,6 +32,7 @@ contract Common is Test {
     LETS_JP_LLC_EXE public lets_jp_llc_exe;
     LETS_JP_LLC_NON_EXE public lets_jp_llc_non_exe;
     Governance_JP_LLC public governance_jp_llc;
+    Vote public vote;
 
     // contract address
     address public scrContractAddress;
@@ -40,6 +41,7 @@ contract Common is Test {
     address public lets_jp_llc_exeContractAddress;
     address public lets_jp_llc_non_exeContractAddress;
     address public governance_jp_llcContractAddress;
+    address public voteContractAddress;
 
     // user
     address public admin;
@@ -91,12 +93,21 @@ contract Common is Test {
         );
 
         /**********************************/
+        /*               Vote             */
+        /**********************************/
+
+        vote = new Vote();
+        voteContractAddress = address(vote);
+
+        console.log("voteContractAddress", voteContractAddress);
+
+        /**********************************/
         /*              SCR               */
         /**********************************/
 
         scrProxy = Upgrades.deployUUPSProxy(
             "SCR.sol:SCR",
-            abi.encodeCall(SCR.initialize, (serviceFactoryContractAddress))
+            abi.encodeCall(SCR.initialize, (serviceFactoryContractAddress, voteContractAddress))
         );
         scr = SCR(scrProxy);
         scrContractAddress = address(scr);

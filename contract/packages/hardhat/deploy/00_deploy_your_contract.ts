@@ -23,8 +23,12 @@ const deployBorderlessCompanyContract: DeployFunction = async function (hre: Har
   const { proxyContractAddress: serviceFactoryAddress } = await deployUUPS(hre, "ServiceFactory");
   const serviceFactory = await hre.ethers.getContractAt("ServiceFactory", serviceFactoryAddress);
 
+  // -- Vote -- //
+  const { contractAddress: voteContractAddress } = await deploy(hre, "Vote");
+  await hre.ethers.getContractAt("Vote", voteContractAddress);
+
   // -- SCR -- //
-  const { proxyContractAddress: scrContractAddress } = await deployUUPS(hre, "SCR", [serviceFactoryAddress]);
+  const { proxyContractAddress: scrContractAddress } = await deployUUPS(hre, "SCR", [serviceFactoryAddress, voteContractAddress]);
   const scr = await hre.ethers.getContractAt("SCR", scrContractAddress);
 
   // Set SCR contract in ServiceFactory
@@ -127,6 +131,7 @@ const deployBorderlessCompanyContract: DeployFunction = async function (hre: Har
     { ContractName: "LETS_JP_LLC_EXE", Address: letsJpLlcExeContractAddress },
     { ContractName: "LETS_JP_LLC_NON_EXE", Address: letsJpLlcNonExeContractAddress },
     { ContractName: "Governance_JP_LLC", Address: governanceJpLlcContractAddress },
+    { ContractName: "Vote", Address: voteContractAddress },
   ]);
 
   // -- Verify Contracts -- //
@@ -137,6 +142,7 @@ const deployBorderlessCompanyContract: DeployFunction = async function (hre: Har
     await verify(hre, letsJpLlcExeContractAddress, []);
     await verify(hre, letsJpLlcNonExeContractAddress, []);
     await verify(hre, governanceJpLlcContractAddress, []);
+    await verify(hre, voteContractAddress, []);
   }
 };
 

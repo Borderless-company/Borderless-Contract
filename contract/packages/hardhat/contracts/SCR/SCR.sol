@@ -28,6 +28,10 @@ interface ISCTInitialize {
     ) external returns (bool completed_);
 }
 
+interface IVoteInitialize {
+    function initialize(address nftContract_) external;
+}
+
 /// @title SmartCompany Registry
 contract SCR is
     ISCR,
@@ -45,6 +49,7 @@ contract SCR is
 
     IServiceFactory private _serviceFactory;
     uint256 private _scContractCount;
+    address public voteContract;
 
     /// @dev legal entity code => country info field
     mapping(string legalEntityCode => string[] countryInfoFields)
@@ -56,6 +61,8 @@ contract SCR is
         private _companiesOtherInfo;
     /// @dev founder => smart company number
     mapping(address founder => bytes _scid) private _founderCompanies;
+
+    mapping(address founder => address _vote) public _votes;
 
     // ============================================== //
     //                  Modifiers                     //
@@ -94,10 +101,12 @@ contract SCR is
 
     /// @notice Initialize the SCR
     /// @param serviceFactory_ The factory pool address
-    function initialize(address serviceFactory_) external initializer {
+    function initialize(address serviceFactory_, address voteContract_) external initializer {
         __BeaconUpgradeableBase_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _serviceFactory = IServiceFactory(serviceFactory_);
+        _createBeaconProxy(voteContract_, "Vote");
+        voteContract = voteContract_;
     }
 
     // ============================================== //
@@ -121,7 +130,7 @@ contract SCR is
         override
         onlyRole(FOUNDER_ROLE)
         onlyOnceEstablish(msg.sender)
-        returns (bool started_, address companyAddress_)
+        returns (bool started_, address companyAddress_, address[] memory services_)
     {
         // check params
         require(
@@ -152,7 +161,7 @@ contract SCR is
             _companiesOtherInfo[_scid][_fields[i]] = _otherInfo[i];
         }
 
-        (started_, companyAddress_) = _createSmartCompany(
+        (started_, companyAddress_, services_) = _createSmartCompany(
             _scid,
             _info,
             _scImplementation,
@@ -249,6 +258,7 @@ contract SCR is
      * @param _scsExtraParams SCs extra params
      * @return started_ Whether the new SmartCompany is created
      * @return companyAddress_ New SmartCompany address
+     * @return services_ Deployed services addresses
      */
     function _createSmartCompany(
         bytes calldata _scid,
@@ -257,7 +267,7 @@ contract SCR is
         bytes calldata _scExtraParams,
         address[] calldata _scsAddresses,
         bytes[] calldata _scsExtraParams
-    ) private returns (bool started_, address companyAddress_) {
+    ) private returns (bool started_, address companyAddress_, address[] memory services_) {
         bool _completed;
         uint256 _index;
 
@@ -272,7 +282,7 @@ contract SCR is
         );
 
         // Deploy new sc contract
-        address _beacon = address(beacons[_scImplementation].beacon);
+        address _beacon = address(_scInfo.beacon);
         BeaconProxy proxy = new BeaconProxy(_beacon, initData);
         address _company = address(proxy);
         require(_company != address(0), DoNotCreateSmartCompany(msg.sender));
@@ -282,14 +292,14 @@ contract SCR is
         _founderCompanies[_info.founder] = _scid;
         _addProxy(_scImplementation, address(proxy));
 
-        _completed = _setupService(
+        (_completed, services_) = _setupService(
             _info.founder,
             _company,
             _scsAddresses,
             _scsExtraParams
         );
 
-        if (_completed) emit NewSmartCompany(_info.founder, _company, _index);
+        if (_completed) emit NewSmartCompany(_info.founder, _company, _index, _scid);
 
         (started_, companyAddress_) = (_completed, _info.companyAddress);
     }
@@ -301,16 +311,16 @@ contract SCR is
      * @param _scsAddresses SCs addresses
      * @param _scsExtraParams SCs extra params
      * @return completed_ Whether the service setup is completed
+     * @return services_ Deployed services addresses
      */
     function _setupService(
         address _founder,
         address _company,
         address[] calldata _scsAddresses,
         bytes[] calldata _scsExtraParams
-    ) internal returns (bool completed_) {
+    ) internal returns (bool completed_, address[] memory services_) {
         // deploy services address
-        address[] memory _services = new address[](_scsAddresses.length);
-        address _service;
+        services_ = new address[](_scsAddresses.length);
         bool _online;
         uint256 _scsType;
         // デプロイ済みのServiceコントラクトのタイプの配列（同じタイプのコントラクトはデプロイできない）
@@ -340,18 +350,33 @@ contract SCR is
                 _founder,
                 _company,
                 _scsAddresses[_index],
-                _scsExtraParams[_index]
+                _scsExtraParams[_index],
+                IServiceFactory.ServiceType(_scsType)
             );
             // Serviceコントラクトのアドレスを保存
-            _services[_index] = activatedAddress;
+            services_[_index] = activatedAddress;
             // デプロイ済みのServiceコントラクトのタイプを設定
             _deployedScsTypes[_index] = _scsType;
+
+            // prepare init data
+            BeaconUpgradeableBase.Beacon memory _voteInfo = beacons[voteContract];
+            bytes memory initData = abi.encodeWithSelector(
+                IVoteInitialize(_voteInfo.beacon).initialize.selector,
+                activatedAddress
+            );
+
+            // Deploy vote contract
+            if (_scsType == uint256(IServiceFactory.ServiceType.LETS_EXE)) {
+                BeaconProxy proxy = new BeaconProxy(_voteInfo.beacon, initData);
+                address _vote = address(proxy);
+                _votes[_founder] = _vote;
+            }
         }
 
         // SCコントラクトを初期化
         completed_ = ISCTInitialize(_company).initialService(
             _founder,
-            _services
+            services_
         );
     }
 
@@ -392,6 +417,10 @@ contract SCR is
 
     function getServiceFactory() external view returns (address) {
         return address(_serviceFactory);
+    }
+
+    function getVoteContract(address founder_) external view returns (address) {
+        return _votes[founder_];
     }
 
     // ============================================== //

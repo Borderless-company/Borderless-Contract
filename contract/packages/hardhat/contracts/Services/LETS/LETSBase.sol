@@ -58,6 +58,14 @@ contract LETSBase is
         _;
     }
 
+    modifier onlyFounder() {
+        require(
+            _sc.hasRole(_sc.DEFAULT_ADMIN_ROLE(), msg.sender),
+            NotFounder(msg.sender)
+        );
+        _;
+    }
+
     // ============================================== //
     //                  Constructor                   //
     // ============================================== //
@@ -114,9 +122,12 @@ contract LETSBase is
     // ============================================== //
 
     function mint(address to, uint256 tokenId) public virtual {
-        _safeMint(to, tokenId);
-        string memory _uri = string.concat(tokenId.toString(), extension);
-        _setTokenURI(tokenId, _uri);
+        mint_(to, tokenId);
+    }
+
+    function mint(address to) public override onlyFounder {
+        uint256 tokenId = _nextTokenId++;
+        mint_(to, tokenId);
     }
 
     function freezeToken(uint256 tokenId) public onlyGovernance {
@@ -138,6 +149,12 @@ contract LETSBase is
         uint128 amount
     ) internal override(ERC721Upgradeable, ERC721EnumerableUpgradeable) {
         super._increaseBalance(account, amount);
+    }
+
+    function mint_(address to, uint256 tokenId) internal {
+        _safeMint(to, tokenId);
+        string memory _uri = string.concat(tokenId.toString(), extension);
+        _setTokenURI(tokenId, _uri);
     }
 
     function _update(

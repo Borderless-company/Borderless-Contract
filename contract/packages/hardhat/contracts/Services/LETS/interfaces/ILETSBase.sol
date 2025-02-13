@@ -15,6 +15,12 @@ interface ILETSBase {
     function mint(address to, uint256 tokenId) external;
 
     /**
+     * @dev Mint a token to the given address
+     * @param to The address to mint the token to
+     */
+    function mint(address to) external;
+
+    /**
      * @dev Freeze the token with the given ID
      * @param tokenId The token ID to freeze
      */

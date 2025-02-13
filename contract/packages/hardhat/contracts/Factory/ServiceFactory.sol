@@ -13,7 +13,6 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {BeaconProxy} from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import {BeaconUpgradeableBase} from "../upgradeable/BeaconUpgradeableBase.sol";
-import {console} from "forge-std/console.sol";
 
 interface IServiceInitialize {
     function initialize(
@@ -41,6 +40,8 @@ contract ServiceFactory is
     /// @dev Service implementation => Service type
     mapping(address serviceImplementation => ServiceType serviceType)
         private _serviceTypes;
+
+    mapping(address founder => mapping(ServiceType serviceType => address service)) private _founderServices;
 
     // ============================================== //
     //                   Modifier                     //
@@ -123,27 +124,23 @@ contract ServiceFactory is
     }
 
     function activate(
-        address _admin,
+        address founder_,
         address _company,
         address _serviceImplementation,
-        bytes memory _extraParams
+        bytes memory _extraParams,
+        ServiceType _serviceType
     ) external override onlySTR returns (address _service) {
-        console.log("Activating service");
         BeaconUpgradeableBase.Beacon memory _serviceInfo = beacons[
             _serviceImplementation
         ];
 
-        console.log("Done getting beacons");
-
         // prepare init data
         bytes memory initData = abi.encodeWithSelector(
             IServiceInitialize(_serviceInfo.beacon).initialize.selector,
-            _admin,
-            address(this),
+            founder_,
+            _company,
             _extraParams
         );
-
-        console.log("initData");
 
         // Deploy new sc contract
         address _beacon = address(_serviceInfo.beacon);
@@ -154,8 +151,10 @@ contract ServiceFactory is
             DoNotActivateService(msg.sender, _company, _serviceImplementation)
         );
 
-        _addProxy(_serviceImplementation, address(proxy));
-        emit ActivateService(_serviceImplementation, address(proxy));
+        _addProxy(_serviceImplementation, _service);
+        _founderServices[founder_][_serviceType] = _service;
+
+        emit ActivateService(_serviceImplementation, _service);
         return _service;
     }
 
@@ -192,6 +191,10 @@ contract ServiceFactory is
             _serviceInfo.proxyCount,
             uint256(_serviceTypes[_serviceImplementation])
         );
+    }
+
+    function getFounderServices(address founder_, ServiceType serviceType_) external view returns (address) {
+        return _founderServices[founder_][serviceType_];
     }
 
     // ============================================== //

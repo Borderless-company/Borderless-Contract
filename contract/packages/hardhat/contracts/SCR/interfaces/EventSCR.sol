@@ -9,11 +9,13 @@ interface EventSCR {
 	 * @param founder_ SmartCompanyを起動した呼び出し元のアドレスです。
 	 * @param company_ 新しく作成されたSmartCompanyのアドレスです。
 	 * @param companyIndex_ 新しく作成されたBorderless.companyのインデックスです。
+	 * @param scid_ 新しく作成されたSmartCompanyのSCIDです。
 	 */
 	event NewSmartCompany(
 		address indexed founder_,
 		address indexed company_,
-		uint256 indexed companyIndex_
+		uint256 indexed companyIndex_,
+		bytes scid_
 	);
 
 	/**

@@ -35,4 +35,10 @@ interface ErrorLETSBase {
 	 * @dev not transferable error
 	 */
 	error NotTransferable();
+
+	/**
+	 * @dev not founder error
+	 * @param caller caller address
+	 */
+	error NotFounder(address caller);
 }

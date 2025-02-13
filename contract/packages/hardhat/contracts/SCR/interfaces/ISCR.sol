@@ -62,7 +62,7 @@ interface ISCR {
         string[] calldata _otherInfo,
         address[] calldata _scsAddresses,
         bytes[] calldata _scsExtraParams
-    ) external returns (bool started_, address companyAddress_);
+    ) external returns (bool started_, address companyAddress_, address[] memory services_);
 
     /**
      * @notice Set the factory pool address

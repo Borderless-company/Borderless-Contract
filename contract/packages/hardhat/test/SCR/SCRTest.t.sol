@@ -3,9 +3,12 @@ pragma solidity 0.8.27;
 
 import {Common} from "../Common.sol";
 import {SCR} from "../../contracts/SCR/SCR.sol";
+import {SCT} from "../../contracts/SCT/SCT.sol";
 import {ErrorSCR} from "../../contracts/SCR/interfaces/ErrorSCR.sol";
+import {IServiceFactory} from "../../contracts/Factory/interfaces/IServiceFactory.sol";
+import {LETSBase} from "../../contracts/Services/LETS/LETSBase.sol";
 import {console} from "forge-std/console.sol";
-
+import {IVote} from "../../contracts/Vote/interfaces/IVote.sol";
 contract SCRTest is Common {
     bytes public scid = "TEST_DAO";
     string public legalEntityCode = "SC_JP_DAOLLC";
@@ -75,7 +78,7 @@ contract SCRTest is Common {
         console.log("pre_scsAddresses[0]", scsAddresses[0]);
         console.log("pre_scsAddresses[1]", scsAddresses[1]);
         console.log("pre_scsAddresses[2]", scsAddresses[2]);
-        (bool started, address companyAddress) = scr.createSmartCompany(
+        (bool started, address companyAddress, address[] memory services) = scr.createSmartCompany(
             scid,
             sc_jp_daollcContractAddress,
             legalEntityCode,
@@ -94,6 +97,39 @@ contract SCRTest is Common {
             companyAddress != address(0),
             "Company address should be valid"
         );
+
+        console.log("companyAddress", companyAddress);
+        for (uint256 i = 0; i < services.length; i++) {
+            console.log("services[i]", services[i]);
+        }
+
+        assertTrue(SCT(companyAddress).hasRole(SCT(companyAddress).DEFAULT_ADMIN_ROLE(), founder), "Founder should have DEFAULT_ADMIN_ROLE");
+
+        address exeService = serviceFactory.getFounderServices(founder, IServiceFactory.ServiceType.LETS_EXE);
+
+        assertEq(LETSBase(exeService).balanceOf(executionMember), 0, "EXE service should have 0 token");
+
+        vm.startPrank(founder);
+        LETSBase(exeService).mint(executionMember);
+        vm.stopPrank();
+
+        assertEq(LETSBase(exeService).balanceOf(executionMember), 1, "EXE service should have 1 token");
+
+        // create proposal
+        address voteProxy = scr.getVoteContract(founder);
+        vm.prank(founder);
+        IVote(voteProxy).createProposal(
+            executionMember,
+            "1",
+            10,
+            10,
+            block.timestamp,
+            block.timestamp + 100
+        );
+
+        // vote
+        vm.prank(executionMember);
+        IVote(voteProxy).vote("1", IVote.VoteType.Agree);
     }
 
     // function testCreateSmartCompany_Fail_AlreadyEstablished() public {

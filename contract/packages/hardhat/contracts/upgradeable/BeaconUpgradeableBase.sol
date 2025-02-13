@@ -33,7 +33,7 @@ abstract contract BeaconUpgradeableBase is
         _;
     }
 
-    modifier beaconNameNotEmpty(string calldata _name) {
+    modifier beaconNameNotEmpty(string memory _name) {
         require(
             keccak256(bytes(_name)) != keccak256(bytes("")),
             InvalidName(_name)
@@ -62,7 +62,7 @@ abstract contract BeaconUpgradeableBase is
 
     function _createBeaconProxy(
         address _implementation,
-        string calldata _name
+        string memory _name
     )
         internal
         invalidImplementation(_implementation)
@@ -85,7 +85,7 @@ abstract contract BeaconUpgradeableBase is
 
     function _updateBeaconName(
         address _implementation,
-        string calldata _name
+        string memory _name
     )
         internal
         invalidImplementation(_implementation)
