@@ -6,6 +6,7 @@ import { ILETS_JP_LLC_EXE } from "./interfaces/ILETS_JP_LLC_EXE.sol";
 
 // upgradeable
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "forge-std/console.sol";
 
 /// @title Legal Embedded Token Service
 contract LETS_JP_LLC_EXE is
@@ -32,6 +33,8 @@ contract LETS_JP_LLC_EXE is
     }
 
 	modifier restrictTransfer(uint256 tokenId) {
+        console.log("tokenId", tokenId);
+        console.log("_ownerOf(tokenId)", _ownerOf(tokenId));
         if (_ownerOf(tokenId) != address(0)) {
             require(
                 msg.sender == _governance,
@@ -60,7 +63,8 @@ contract LETS_JP_LLC_EXE is
 		bytes calldata _extraParams
 	) external initializer {
 		__LETSBase_initialize(_owner, _register, _extraParams);
-        _mint(_owner, 1);
+       uint256 tokenId = ++_nextTokenId;
+       mint_(_owner, tokenId);
 	}
 
 	// ============================================== //

@@ -20,7 +20,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 
 // library
 import {LibString} from "solady/utils/LibString.sol";
-
+import "forge-std/console.sol";
 /// @title Legal Embedded Token Service
 contract LETSBase is
     Initializable,
@@ -126,7 +126,8 @@ contract LETSBase is
     }
 
     function mint(address to) public override onlyFounder {
-        uint256 tokenId = _nextTokenId++;
+        uint256 tokenId = ++_nextTokenId;
+        console.log("tokenId", tokenId);
         mint_(to, tokenId);
     }
 

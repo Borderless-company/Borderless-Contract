@@ -109,11 +109,17 @@ contract SCRTest is Common {
 
         assertEq(LETSBase(exeService).balanceOf(executionMember), 0, "EXE service should have 0 token");
 
+        vm.prank(founder);
+        LETSBase(exeService).mint(executionMember);
+
+        assertEq(LETSBase(exeService).balanceOf(executionMember), 1, "EXE service should have 1 token");
+
         vm.startPrank(founder);
+        LETSBase(exeService).mint(executionMember);
         LETSBase(exeService).mint(executionMember);
         vm.stopPrank();
 
-        assertEq(LETSBase(exeService).balanceOf(executionMember), 1, "EXE service should have 1 token");
+        assertEq(LETSBase(exeService).balanceOf(executionMember), 3, "EXE service should have 3 token");
 
         // create proposal
         address voteProxy = scr.getVoteContract(founder);
