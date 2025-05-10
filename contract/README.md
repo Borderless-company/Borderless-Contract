@@ -1,73 +1,49 @@
-# Borderless Company
+# Borderless
 
-## Setup
-
-```bash
-$ yarn compile
-```
-
-## Test
+## Compile
 
 ```bash
-$ cd packages/hardhat
-$ forge test
+bun run build
 ```
 
 ## Deploy
 
-- Local
+- run local node
 
 ```bash
-$ yarn chain
-$ yarn deploy
+bun run localhost
 ```
 
-- Metis Sepolia
+- deploy contract
 
 ```bash
-$ yarn deploy --network metis_sepolia --tags DeployBorderlessCompanyContract
-$ yarn deploy --network metis_sepolia --tags DeployVoteContract
+# bun run deploy:module --network localhost
 ```
-
-## Verify
 
 ```bash
-$ yarn hardhat-verify --network metis_sepolia <contract address>
+bun run deploy --network localhost
 ```
 
-- Governance Service
+## Deploy Base Sepolia
 
 ```bash
-$ yarn hardhat-verify --network metis_sepolia --contract contracts/Vote/Vote.sol:Vote <contract address>
+```bash
+bun run deploy --network base-sepolia
 ```
 
-- Treasury Service
+## Contract
 
 ```bash
-$ yarn hardhat-verify --network metis_sepolia --contract contracts/FactoryPool/FactoryServices/TreasuryServiceFactory.sol:TreasuryServiceFactory <contract address>
+┌───────────────────────────┬──────────────────────────────────────────────┐
+│ (index)                   │ Values                                       │
+├───────────────────────────┼──────────────────────────────────────────────┤
+│ proxy                     │ '0xC3e233F29c6D7f61EBD1Ac407916aAeC0176E597' │
+│ dictionary                │ '0xfa830a0269F4cc639ee65cF371DE684A48226a2a' │
+│ sct                       │ '0x0222b7cED728653D05c6Ea9F13554Fef9E697fF3' │
+│ sctBeacon                 │ '0x520C4017c1A2f159bAC1202e4CDf669eDDA25616' │
+│ governanceBeacon          │ '0xF20C888519A556e3AB104015f506ABf58a97bde5' │
+│ lets_jp_llc_exeBeacon     │ '0xE8E66B118e93d0d790252CD1e3e4b774Ca4a363D' │
+│ lets_jp_llc_non_exeBeacon │ '0x918068FD6E3E0c29919DF7a65E6718646d41ff5D' │
+│ lets_jp_llc_saleBeacon    │ '0xb394E94Fe0C7958B3B6a413589D2b7EDaf993434' │
+└───────────────────────────┴──────────────────────────────────────────────┘
 ```
-
-- Token Service
-
-```bash
-$ yarn hardhat-verify --network metis_sepolia --contract contracts/FactoryPool/FactoryServices/TokenServiceFactory.sol:TokenServiceFactory <contract address>
-```
-
-
-
-## Contract Addresses
-
-```bash
-┌─────────────────────┬────────────────────────────────────────────┐
-│        ContractName │                                    Address │
-├─────────────────────┼────────────────────────────────────────────┤
-│      ServiceFactory │ 0xFDb81CcBB51003C84cAa40266a69baDB52503206 │
-│                 SCR │ 0xBC5104DAe6F28AF74A58fef0FeAdA6e69a7C08e6 │
-│        SC_JP_DAOLLC │ 0x7540b4Df437868939e44a52C1A36123Cd31AEFD6 │
-│     LETS_JP_LLC_EXE │ 0x3C04183324dCeDd7784a0a052c2c1c811d82889D │
-│ LETS_JP_LLC_NON_EXE │ 0x26FF3d340b98eB3c5126dBBF2E0C41Ed97b7aCAd │
-│   Governance_JP_LLC │ 0x28991b6120a010509AA7Fa99b638AFF508e13880 │
-│                Vote │ 0x185dE225F3E97A17CF64658aa79fb35919a131DC │
-└─────────────────────┴────────────────────────────────────────────┘
-```
-

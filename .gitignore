@@ -23,6 +23,7 @@ node_modules
 # Hardhat files
 /cache
 /artifacts
+.DS_Store
 
 # TypeChain files
 /typechain
