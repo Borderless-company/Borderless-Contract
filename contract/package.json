@@ -4,7 +4,8 @@
     "build": "hardhat compile",
     "localhost": "hardhat node",
     "deploy:module": "hardhat ignition deploy ./ignition/modules/Borderless.ts",
-    "deploy": "hardhat run ./scripts/deploy.ts",
+    "deploy": "hardhat run ./scripts/deploy.ts  --verify",
+    "deploy:create-company": "hardhat run ./scripts/deploy-create-company.ts",
     "test": "hardhat test",
     "coverage": "hardhat coverage",
     "typechain": "typechain --target=ethers-v5 --out-dir=typechain --extract-types"

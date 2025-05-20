@@ -6,6 +6,12 @@
 bun run build
 ```
 
+## Test
+
+```bash
+bun run test
+```
+
 ## Deploy
 
 - run local node
@@ -31,19 +37,31 @@ bun run deploy --network localhost
 bun run deploy --network base-sepolia
 ```
 
+## Verify contract
+
+
+```bash
+hardhat ignition verify chain-{chainId} --include-unrelated-contracts
+```
+
+- 例
+
+```bash
+hardhat ignition verify chain-84532 --include-unrelated-contracts
+```
+
 ## Contract
 
 ```bash
-┌───────────────────────────┬──────────────────────────────────────────────┐
 │ (index)                   │ Values                                       │
 ├───────────────────────────┼──────────────────────────────────────────────┤
-│ proxy                     │ '0xC3e233F29c6D7f61EBD1Ac407916aAeC0176E597' │
-│ dictionary                │ '0xfa830a0269F4cc639ee65cF371DE684A48226a2a' │
-│ sct                       │ '0x0222b7cED728653D05c6Ea9F13554Fef9E697fF3' │
-│ sctBeacon                 │ '0x520C4017c1A2f159bAC1202e4CDf669eDDA25616' │
-│ governanceBeacon          │ '0xF20C888519A556e3AB104015f506ABf58a97bde5' │
-│ lets_jp_llc_exeBeacon     │ '0xE8E66B118e93d0d790252CD1e3e4b774Ca4a363D' │
-│ lets_jp_llc_non_exeBeacon │ '0x918068FD6E3E0c29919DF7a65E6718646d41ff5D' │
-│ lets_jp_llc_saleBeacon    │ '0xb394E94Fe0C7958B3B6a413589D2b7EDaf993434' │
+│ proxy                     │ '0x900DD5Fc08eb610Bd54A157D3107273DE012E7E1' │
+│ dictionary                │ '0x94bB86136Dc8059572f8A18d49e52E1c3c3C32E6' │
+│ sct                       │ '0xaDd6aD437580959ef4C9dc05398a57085e1A4715' │
+│ sctBeacon                 │ '0x5017b05025A6Fb3c0EFB788ea7a40EA86078Caa8' │
+│ governanceBeacon          │ '0x014D4dcb8EC83Be08d0C7A393d31fCbD18d8c32E' │
+│ lets_jp_llc_exeBeacon     │ '0x798CbA8427C799963e604490292d892446326AA1' │
+│ lets_jp_llc_non_exeBeacon │ '0x0f1402300456900581093A577BB3c7eD0e457FF1' │
+│ lets_jp_llc_saleBeacon    │ '0x208F26af5ad959dd672350dd757939DA7C8bE197' │
 └───────────────────────────┴──────────────────────────────────────────────┘
 ```

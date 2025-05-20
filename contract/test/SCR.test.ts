@@ -6,16 +6,75 @@ import { Interface } from "ethers";
 import type {
   SCR,
   ServiceFactory,
-  LETSBase,
-  SCT,
   LETS_JP_LLC_EXE,
   BorderlessAccessControl,
-  Initialize,
+  Dictionary,
+  SCRInitialize,
 } from "../typechain-types";
 import { SCR__factory } from "../typechain-types";
 
+// ヘルパー：関数セレクタ登録
+const registerFunctions = async (
+  dictionary: Dictionary,
+  factory: Awaited<ReturnType<typeof ethers.getContractFactory>>,
+  implAddress: string
+) => {
+  const selectors = [];
+  for (const frag of factory.interface.fragments) {
+    if (!(frag instanceof FunctionFragment)) continue;
+    const selector = FunctionFragment.getSelector(
+      frag.name,
+      frag.inputs.map((i) => i.type)
+    );
+    selectors.push(selector);
+  }
+  const implAddresses = Array(selectors.length).fill(implAddress);
+  await dictionary.bulkSetImplementation(selectors, implAddresses);
+};
+
+const getBeaconAddress = (receipt: any | null) => {
+  const iface = new Interface(SCR__factory.abi);
+  let beaconAddress: string | undefined = undefined;
+
+  for (const log of receipt?.logs ?? []) {
+    try {
+      const parsed = iface.parseLog(log);
+      if (parsed?.name === "DeployBeaconProxy") {
+        beaconAddress = parsed?.args[0]; // 例: address beacon
+        break;
+      }
+    } catch (e) {
+      // 対象外のイベントは無視
+    }
+  }
+
+  return beaconAddress;
+};
+
+const getDeploySmartCompanyAddress = (receipt: any | null) => {
+  const iface = new Interface(SCR__factory.abi);
+  let beaconAddress: string | undefined = undefined;
+
+  for (const log of receipt?.logs ?? []) {
+    try {
+      const parsed = iface.parseLog(log);
+      if (parsed?.name === "DeploySmartCompany") {
+        beaconAddress = parsed?.args[1]; // 例: address beacon
+        break;
+      }
+    } catch (e) {
+      // 対象外のイベントは無視
+    }
+  }
+
+  return beaconAddress;
+};
+
 describe("Full Deployment and Registration", function () {
   async function deployFullFixture() {
+    // ============================================== //
+    //                   アドレスの準備                  //
+    // ============================================== //
     const [deployer, founder, executionMember, executionMember2] =
       await ethers.getSigners();
 
@@ -30,6 +89,9 @@ describe("Full Deployment and Registration", function () {
     const dictionary = await Dictionary.deploy(deployer.address);
     await dictionary.waitForDeployment();
 
+    // ============================================== //
+    //             SCR関連のコントラクトのデプロイ            //
+    // ============================================== //
     // 各コントラクト
     const BorderlessAccessControl = await ethers.getContractFactory(
       "BorderlessAccessControl"
@@ -40,15 +102,6 @@ describe("Full Deployment and Registration", function () {
     console.log(
       "borderlessAccessControl",
       await borderlessAccessControl.getAddress()
-    );
-
-    const AddressManager = await ethers.getContractFactory("AddressManager");
-    const addressManager = await AddressManager.deploy();
-    await addressManager.waitForDeployment();
-
-    console.log(
-      "✅ Deployed addressManager",
-      await addressManager.getAddress()
     );
 
     const SCRBeacon = await ethers.getContractFactory("SCRBeaconUpgradeable");
@@ -83,51 +136,63 @@ describe("Full Deployment and Registration", function () {
 
     console.log("✅ Deployed scr", await scr.getAddress());
 
-    const InitializeContract = await ethers.getContractFactory("Initialize");
-    const initializeContract = await InitializeContract.deploy();
-    await initializeContract.waitForDeployment();
+    const SCRInitialize = await ethers.getContractFactory("SCRInitialize");
+    const scrInitialize = await SCRInitialize.deploy();
+    await scrInitialize.waitForDeployment();
 
-    console.log(
-      "✅ Deployed initializeContract",
-      await initializeContract.getAddress()
-    );
+    console.log("✅ Deployed scrInitialize", await scrInitialize.getAddress());
 
-    // ヘルパー：関数セレクタ登録
-    async function registerFunctions(
-      factory: Awaited<ReturnType<typeof ethers.getContractFactory>>,
-      implAddress: string
-    ) {
-      for (const frag of factory.interface.fragments) {
-        if (!(frag instanceof FunctionFragment)) continue;
-        const selector = FunctionFragment.getSelector(
-          frag.name,
-          frag.inputs.map((i) => i.type)
-        );
-        await dictionary.setImplementation(selector, implAddress);
-      }
-    }
+    // ============================================== //
+    //             関数セレクタ登録権限の付与            //
+    // ============================================== //
+
+    await dictionary
+      .connect(deployer)
+      .setOnceInitialized(
+        await borderlessAccessControl.getAddress(),
+        await borderlessAccessControl.getAddress()
+      );
+
+    // ============================================== //
+    //                  関数セレクタの登録                //
+    // ============================================== //
+
+    // await registerFunctions(
+    //   dictionary,
+    //   BorderlessAccessControl,
+    //   await borderlessAccessControl.getAddress()
+    // );
 
     await registerFunctions(
-      BorderlessAccessControl,
-      await borderlessAccessControl.getAddress()
+      dictionary,
+      SCRBeacon,
+      await scrBeacon.getAddress()
     );
-    await registerFunctions(AddressManager, await addressManager.getAddress());
-    await registerFunctions(SCRBeacon, await scrBeacon.getAddress());
     await registerFunctions(
+      dictionary,
       ServiceFactoryBeacon,
       await serviceFactoryBeacon.getAddress()
     );
-    await registerFunctions(ServiceFactory, await serviceFactory.getAddress());
-    await registerFunctions(SCR, await scr.getAddress());
     await registerFunctions(
-      InitializeContract,
-      await initializeContract.getAddress()
+      dictionary,
+      ServiceFactory,
+      await serviceFactory.getAddress()
+    );
+    await registerFunctions(dictionary, SCR, await scr.getAddress());
+    await registerFunctions(
+      dictionary,
+      SCRInitialize,
+      await scrInitialize.getAddress()
     );
 
     console.log("✅ Registered functions in Dictionary");
 
+    // ============================================== //
+    //            BorderlessProxyのデプロイ         //
+    // ============================================== //
+
     // SCRProxy
-    const SCRProxy = await ethers.getContractFactory("SCRProxy");
+    const SCRProxy = await ethers.getContractFactory("BorderlessProxy");
     const proxy = await SCRProxy.deploy(dictionary.getAddress(), "0x");
     await proxy.waitForDeployment();
 
@@ -135,9 +200,22 @@ describe("Full Deployment and Registration", function () {
 
     // initialize
     const initializeConn = (
-      await ethers.getContractAt("Initialize", await proxy.getAddress())
-    ).connect(deployer) as Initialize;
+      await ethers.getContractAt("SCRInitialize", await proxy.getAddress())
+    ).connect(deployer) as SCRInitialize;
     await initializeConn.initialize(deployer.address);
+
+    const borderlessAccessControlConn = (
+      await ethers.getContractAt(
+        "BorderlessAccessControl",
+        await borderlessAccessControl.getAddress()
+      )
+    ).connect(deployer) as BorderlessAccessControl;
+    await borderlessAccessControlConn.initialize(dictionary.getAddress());
+    console.log("✅ Initialized BorderlessAccessControl");
+
+    // ============================================== //
+    //            _JP_DAOLLCコントラクトのデプロイ           //
+    // ============================================== //
 
     // Deploy SCT
     const SCT = await ethers.getContractFactory("SC_JP_DAOLLC");
@@ -145,6 +223,10 @@ describe("Full Deployment and Registration", function () {
     await sct.waitForDeployment();
 
     console.log("✅ Deployed SCT", await sct.getAddress());
+
+    // ============================================== //
+    //                    ロールの確認                   //
+    // ============================================== //
 
     // Check Role
     const accessControlConn = (
@@ -160,26 +242,9 @@ describe("Full Deployment and Registration", function () {
       )
     ).to.be.true;
 
-    // get beacon address
-
-    function getBeaconAddress(receipt: any | null) {
-      let beaconAddress: string | undefined = undefined;
-
-      for (const log of receipt?.logs ?? []) {
-        try {
-          const parsed = iface.parseLog(log);
-          if (parsed?.name === "DeployBeaconProxy") {
-            beaconAddress = parsed?.args[0]; // 例: address beacon
-            break;
-          }
-        } catch (e) {
-          // 対象外のイベントは無視
-        }
-      }
-
-      return beaconAddress;
-    }
-
+    // ============================================== //
+    //            JP_DAOLLCコントラクトを設定           //
+    // ============================================== //
     // Set SCT
     const scrConn = (
       await ethers.getContractAt("SCR", await proxy.getAddress())
@@ -189,9 +254,12 @@ describe("Full Deployment and Registration", function () {
       "SC_JP_DAOLLC"
     );
     const receipt = await sctBeacon.wait();
-    const iface = new Interface(SCR__factory.abi);
     const sctBeaconAddress = getBeaconAddress(receipt);
     console.log("✅ Set SCT", sctBeaconAddress);
+
+    // ============================================== //
+    //              会社情報のフィールドを設定              //
+    // ============================================== //
 
     await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "zip_code");
     await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "prefecture");
@@ -200,8 +268,11 @@ describe("Full Deployment and Registration", function () {
 
     console.log("✅ Set CompanyInfoFields");
 
-    // Deploy Services
+    // ============================================== //
+    //            Serviceコントラクトのデプロイ              //
+    // ============================================== //
 
+    // LETS_JP_LLC_EXE
     const lets_jp_llc_exe = await ethers.getContractFactory("LETS_JP_LLC_EXE");
     const lets_jp_llc_exeContractAddress = await lets_jp_llc_exe.deploy();
     await lets_jp_llc_exeContractAddress.waitForDeployment();
@@ -211,6 +282,7 @@ describe("Full Deployment and Registration", function () {
       await lets_jp_llc_exeContractAddress.getAddress()
     );
 
+    // LETS_JP_LLC_NON_EXE
     const lets_jp_llc_non_exe = await ethers.getContractFactory(
       "LETS_JP_LLC_NON_EXE"
     );
@@ -222,8 +294,10 @@ describe("Full Deployment and Registration", function () {
       await lets_jp_llc_non_exeContractAddress.getAddress()
     );
 
-    const governance_jp_llc =
-      await ethers.getContractFactory("Governance_JP_LLC");
+    // Governance_JP_LLC
+    const governance_jp_llc = await ethers.getContractFactory(
+      "Governance_JP_LLC"
+    );
     const governance_jp_llcContractAddress = await governance_jp_llc.deploy();
     await governance_jp_llcContractAddress.waitForDeployment();
     console.log(
@@ -231,13 +305,20 @@ describe("Full Deployment and Registration", function () {
       await governance_jp_llcContractAddress.getAddress()
     );
 
-    const lets_jp_llc_sale = await ethers.getContractFactory("LETS_JP_LLC_SALE");
+    // LETS_JP_LLC_SALE
+    const lets_jp_llc_sale = await ethers.getContractFactory(
+      "LETS_JP_LLC_SALE"
+    );
     const lets_jp_llc_saleContractAddress = await lets_jp_llc_sale.deploy();
     await lets_jp_llc_saleContractAddress.waitForDeployment();
     console.log(
       "✅ Deployed lets_jp_llc_saleContractAddress",
       await lets_jp_llc_saleContractAddress.getAddress()
     );
+
+    // ============================================== //
+    //                 FOUNDERロールの設定               //
+    // ============================================== //
 
     // Set Role
     const founderRole =
@@ -246,7 +327,10 @@ describe("Full Deployment and Registration", function () {
 
     console.log("✅ Set Role");
 
-    // set Service
+    // ============================================== //
+    //        ServiceFactoryにServiceコントラクトを設定     //
+    // ============================================== //
+
     const serviceFactoryConn = (
       await ethers.getContractAt("ServiceFactory", await proxy.getAddress())
     ).connect(deployer) as ServiceFactory;
@@ -298,6 +382,20 @@ describe("Full Deployment and Registration", function () {
       lets_jp_llc_saleReceipt
     );
     console.log("✅ Set lets_jp_llc_saleBeacon", lets_jp_llc_saleBeaconAddress);
+
+    // ============================================== //
+    //            LETSとSaleコントラクトの紐付け             //
+    // ============================================== //
+
+    await serviceFactoryConn.setLetsSaleBeacon(
+      lets_jp_llc_exeBeaconAddress ?? "",
+      lets_jp_llc_saleBeaconAddress ?? ""
+    );
+
+    await serviceFactoryConn.setLetsSaleBeacon(
+      lets_jp_llc_non_exeBeaconAddress ?? "",
+      lets_jp_llc_saleBeaconAddress ?? ""
+    );
 
     return {
       deployer,
@@ -367,58 +465,44 @@ describe("Full Deployment and Registration", function () {
     const companyInfo = ["100-0001", "Tokyo", "Shinjuku-ku", "Shinjuku 1-1-1"];
     const scsBeaconProxy = [
       governance_jp_llcBeaconAddress,
-      lets_jp_llc_saleBeaconAddress,
-      lets_jp_llc_saleBeaconAddress,
       lets_jp_llc_exeBeaconAddress,
       lets_jp_llc_non_exeBeaconAddress,
     ];
-
-    // Common から持ってくる各サービスの実装アドレス
-    const serviceFactoryContract = await ethers.getContractAt(
-      "ServiceFactory",
-      await proxy.getAddress()
-    );
 
     // Forge の encodeParams 相当を実装
     function encodeParams(
       name: string,
       symbol: string,
       baseURI: string,
-      extension: string,
-      letsSale: string,
-      governance: string
+      extension: string
     ): string {
       return ethers.AbiCoder.defaultAbiCoder().encode(
-        ["string", "string", "string", "string", "address", "address"],
-        [name, symbol, baseURI, extension, letsSale, governance]
+        ["string", "string", "string", "string"],
+        [name, symbol, baseURI, extension]
       );
     }
 
     const scsExtraParams = [
       "0x",
-      "0x",
-      "0x",
       encodeParams(
         "LETS_JP_LLC_EXE",
         "LETS_JP_LLC_EXE",
         "https://example.com/metadata/",
-        ".json",
-        lets_jp_llc_saleBeaconAddress,
-        governance_jp_llcBeaconAddress
+        ".json"
       ),
       encodeParams(
         "LETS_JP_LLC_NON_EXE",
         "LETS_JP_LLC_NON_EXE",
         "https://example.com/metadata/",
-        ".json",
-        lets_jp_llc_saleBeaconAddress,
-        governance_jp_llcBeaconAddress
+        ".json"
       ),
     ];
 
     console.log("✅ prepare params");
 
-    // コントラクト呼び出し（founder プリテンド）
+    // ============================================== //
+    //            createSmartCompany の実行             //
+    // ============================================== //
     const scrConn = (
       await ethers.getContractAt("SCR", await proxy.getAddress())
     ).connect(founder) as SCR;
@@ -438,38 +522,20 @@ describe("Full Deployment and Registration", function () {
     );
     const receipt = await call.wait();
     console.log(`receipt: ${receipt}`);
-    function getBeaconAddress(receipt: any | null) {
-      const iface = new Interface(SCR__factory.abi);
-      let beaconAddress: string | undefined = undefined;
 
-      for (const log of receipt?.logs ?? []) {
-        try {
-          const parsed = iface.parseLog(log);
-          if (parsed?.name === "DeploySmartCompany") {
-            beaconAddress = parsed?.args[1]; // 例: address beacon
-            break;
-          }
-        } catch (e) {
-          // 対象外のイベントは無視
-        }
-      }
-
-      return beaconAddress;
-    }
-
-    const companyAddress = getBeaconAddress(receipt);
+    const companyAddress = getDeploySmartCompanyAddress(receipt);
     console.log(`companyAddress: ${companyAddress}`);
 
     // アサーション
     expect(companyAddress).to.match(/^0x[0-9a-fA-F]{40}$/);
     if (!companyAddress) throw new Error("Company address not found in logs");
 
-    console.log(`companyAddress: ${companyAddress}`);
-
-    // SCT プロキシ経由でのアクセス
-    const sct = (await ethers.getContractAt("SCT", companyAddress)).connect(
-      founder
-    ) as SCT;
+    // ============================================== //
+    //            SCT プロキシ経由でのアクセス              //
+    // ============================================== //
+    const sct = (
+      await ethers.getContractAt("BorderlessAccessControl", companyAddress)
+    ).connect(founder) as BorderlessAccessControl;
     console.log("founder", await founder.getAddress());
     expect(
       await sct.hasRole(
@@ -478,24 +544,48 @@ describe("Full Deployment and Registration", function () {
       )
     ).to.be.true;
 
-    // EXEサービスの残高検証
-    // const exeService = (await serviceFactoryContract.getFounderService(
-    //   founder.address,
-    //   3
-    // )) as string;
-    // const letsExe = (
-    //   await ethers.getContractAt("LETSBase", exeService)
-    // ).connect(founder) as LETSBase;
+    console.log("✅ BorderlessAccessControl のロール検証");
 
-    // expect(await letsExe.balanceOf(await executionMember.getAddress())).to.equal(0);
+    // ============================================== //
+    //            LETS_JP_LLC_EXEの残高検証             //
+    // ============================================== //
+
+    // EXEサービスの残高検証
+    const letsExe = (
+      await ethers.getContractAt("LETS_JP_LLC_EXE", companyAddress)
+    ).connect(founder) as LETS_JP_LLC_EXE;
+
+    expect(
+      await letsExe.balanceOf(await executionMember.getAddress())
+    ).to.equal(0);
+
+    console.log("✅ LETS_JP_LLC_EXEの残高検証");
+
+    // ============================================== //
+    //            LETS_JP_LLC_EXEのmint を実行             //
+    // ============================================== //
 
     // // mint を実行
-    // await letsExe.getFunction("mint(address)")(await executionMember.getAddress());
-    // expect(await letsExe.balanceOf(await executionMember.getAddress())).to.equal(1);
+    await letsExe.getFunction("mint(address)")(
+      await executionMember.getAddress()
+    );
+    expect(
+      await letsExe.balanceOf(await executionMember.getAddress())
+    ).to.equal(1);
+
+    console.log("✅ LETS_JP_LLC_EXEのmint を実行");
 
     // // さらにまとめて mint
-    // await letsExe.getFunction("mint(address)")(await executionMember.getAddress());
-    // await letsExe.getFunction("mint(address)")(await executionMember.getAddress());
-    // expect(await letsExe.balanceOf(await executionMember.getAddress())).to.equal(3);
+    await letsExe.getFunction("mint(address)")(
+      await executionMember.getAddress()
+    );
+    await letsExe.getFunction("mint(address)")(
+      await executionMember.getAddress()
+    );
+    expect(
+      await letsExe.balanceOf(await executionMember.getAddress())
+    ).to.equal(3);
+
+    console.log("✅ LETS_JP_LLC_EXEのmint をさらに実行");
   });
 });
