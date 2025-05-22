@@ -48,13 +48,16 @@ const config: HardhatUserConfig = {
         network: "base-sepolia",
         chainId: 84532,
         urls: {
-          // apiURL: "https://base-sepolia.blockscout.com/api",
-          // browserURL: "https://base-sepolia.blockscout.com/",
-          apiURL: "https://api-sepolia.basescan.org/api",
-          browserURL: "https://sepolia.basescan.org",
+          apiURL: "https://base-sepolia.blockscout.com/api",
+          browserURL: "https://base-sepolia.blockscout.com/",
+          // apiURL: "https://api-sepolia.basescan.org/api",
+          // browserURL: "https://sepolia.basescan.org",
         }
       }
     ]
+  },
+  sourcify: {
+    enabled: false,
   },
 };
 

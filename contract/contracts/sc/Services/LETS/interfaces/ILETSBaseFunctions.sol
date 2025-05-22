@@ -7,11 +7,10 @@ interface ILETSBaseFunctions {
     // ============================================== //
 
     /**
-     * @notice Mint a token to the given address
-     * @param to The address to mint the token to
-     * @return tokenId The token ID to mint
+     * @notice Initialize the contract
+     * @param dictionary The dictionary address
      */
-    function mint(address to) external returns (uint256 tokenId);
+    function initialize(address dictionary) external;
 
     /**
      * @notice Freeze the token with the given ID

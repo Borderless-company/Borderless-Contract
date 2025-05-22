@@ -10,7 +10,6 @@ import {
   RegisterLetsServiceModule,
   RegisterLetsNonExeServiceModule,
   RegisterLetsSaleServiceModule,
-  CreateSmartCompanyModule
 } from "../ignition/modules/Borderless";
 
 dotenv.config();
@@ -42,7 +41,7 @@ const registerFunctions = async (name: string, implAddress: string) => {
   return { selectors, implementations };
 };
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function main() {
   const { deployer, deployerWallet } = await getDeployerAddress();
@@ -63,10 +62,8 @@ async function main() {
     dictionary,
     proxy,
     sct,
-    governance_jp_llc,
-    lets_jp_llc_exe,
-    lets_jp_llc_non_exe,
-    lets_jp_llc_sale,
+    scrProxy,
+    scProxy,
   } = await hre.ignition.deploy(BorderlessModule, {
     parameters: parameters,
   });
@@ -283,6 +280,8 @@ async function main() {
 
   console.table({
     proxy: await proxy.getAddress(),
+    scProxy: await scProxy.getAddress(),
+    scrProxy: await scrProxy.getAddress(),
     dictionary: await dictionary.getAddress(),
     sct: await sct.getAddress(),
     sctBeacon: await sctBeaconConn.getAddress(),
@@ -291,6 +290,7 @@ async function main() {
     lets_jp_llc_non_exeBeacon: await lets_jp_llc_non_exeBeacon.getAddress(),
     lets_jp_llc_saleBeacon: await lets_jp_llc_saleBeacon.getAddress(),
   });
+
 }
 
 main().catch(console.error);

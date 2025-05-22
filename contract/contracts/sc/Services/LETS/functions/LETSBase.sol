@@ -19,16 +19,13 @@ contract LETSBase is ERC721, ILETSBase {
     //                Initialization                  //
     // ============================================== //
 
-    function initialize(address dictionary) external {
+    function initialize(address dictionary) public virtual {
         LETSBaseInitializeLib.initialize(dictionary);
     }
+
     // ============================================== //
     //             Eternal Write Functions            //
     // ============================================== //
-
-    function mint(address to) external override returns (uint256 tokenId) {
-        tokenId = LETSBaseLib.mint(to);
-    }
 
     function freezeToken(uint256 tokenId) external override {
         LETSBaseLib.freezeToken(tokenId);

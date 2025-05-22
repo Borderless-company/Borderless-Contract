@@ -27,7 +27,7 @@ bun run localhost
 ```
 
 ```bash
-bun run deploy --network localhost
+bun run deploy:create-company --network localhost
 ```
 
 ## Deploy Base Sepolia
@@ -41,27 +41,46 @@ bun run deploy --network base-sepolia
 
 
 ```bash
-hardhat ignition verify chain-{chainId} --include-unrelated-contracts
+npx hardhat ignition verify chain-{chainId} --include-unrelated-contracts
 ```
 
 - 例
 
 ```bash
-hardhat ignition verify chain-84532 --include-unrelated-contracts
+npx hardhat ignition verify chain-84532 --include-unrelated-contracts
 ```
+
+- 単体コントラクトVerify
+
+```bash
+npx hardhat verify --network base-sepolia \
+  --contract "contracts/core/Dictionary/Dictionary.sol:Dictionary" \
+  0x7134A5f0EbE54ef1b5966CB54Ab72ACc24193590
+```
+
+```bash
+npx hardhat verify --network base-sepolia "0xA960bD38Dcfa44c6e13832bFeC92462cAC3b3326" "0x"  \
+  --contract "contracts/core/Proxy/interfaces/SCRProxy.sol:SCRProxy" \
+  0x1CaC7D630776c87AA2d250DBf1C6796F322352FB
+```
+
+
 
 ## Contract
 
 ```bash
+┌───────────────────────────┬──────────────────────────────────────────────┐
 │ (index)                   │ Values                                       │
 ├───────────────────────────┼──────────────────────────────────────────────┤
-│ proxy                     │ '0x900DD5Fc08eb610Bd54A157D3107273DE012E7E1' │
-│ dictionary                │ '0x94bB86136Dc8059572f8A18d49e52E1c3c3C32E6' │
-│ sct                       │ '0xaDd6aD437580959ef4C9dc05398a57085e1A4715' │
-│ sctBeacon                 │ '0x5017b05025A6Fb3c0EFB788ea7a40EA86078Caa8' │
-│ governanceBeacon          │ '0x014D4dcb8EC83Be08d0C7A393d31fCbD18d8c32E' │
-│ lets_jp_llc_exeBeacon     │ '0x798CbA8427C799963e604490292d892446326AA1' │
-│ lets_jp_llc_non_exeBeacon │ '0x0f1402300456900581093A577BB3c7eD0e457FF1' │
-│ lets_jp_llc_saleBeacon    │ '0x208F26af5ad959dd672350dd757939DA7C8bE197' │
+│ proxy                     │ '0x669f5e400Ea2FE4A352eD8E20EfD032f7d54CB26' │
+│ scProxy                   │ '0xbFFf5C2aB3873490578b4da18d3cb48Bad3e3673' │
+│ scrProxy                  │ '0xa8e2325031b0701D894d1FEA90B0C0087FAD318B' │
+│ dictionary                │ '0x63bf4c793e32453053f3c4befdC86a83667056f9' │
+│ sct                       │ '0x28b1Fa13bd017E7Fd57a4bE5188B0e71951Ea038' │
+│ sctBeacon                 │ '0x6BDb0FFD1aa4a3E68ea93d23A2F39D231BE8CF7E' │
+│ governanceBeacon          │ '0xCbFdb59302761532974D04aC46836aCd45cf7A27' │
+│ lets_jp_llc_exeBeacon     │ '0x2a20f5FdAFcded0741E79728a6c04B993e2949e4' │
+│ lets_jp_llc_non_exeBeacon │ '0x1c0Eb7851b765bddA54d942DA358c7F8779e5AeC' │
+│ lets_jp_llc_saleBeacon    │ '0xb17f4fEb61f0674E6e96A45122dE6ca0b5BD72c9' │
 └───────────────────────────┴──────────────────────────────────────────────┘
 ```

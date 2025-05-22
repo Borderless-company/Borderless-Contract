@@ -18,15 +18,16 @@ library LETSSaleBaseInitializeLib {
         InitializeSchema.InitializeLayout storage $init = InitializeStorage
             .InitializeSlot();
         require(!$init.initialized, InitializeErrors.AlreadyInitialized());
-        bytes4[] memory selectors = new bytes4[](6);
-        selectors[0] = bytes4(keccak256("offerToken(address)"));
-        selectors[1] = bytes4(keccak256("withdraw()"));
-        selectors[2] = bytes4(keccak256("updateSalePeriod(uint256,uint256)"));
-        selectors[3] = bytes4(keccak256("updateHasSalePeriod(bool)"));
-        selectors[4] = bytes4(
+        bytes4[] memory selectors = new bytes4[](7);
+        selectors[0] = bytes4(keccak256("setSaleInfo(uint256,uint256,uint256,uint256,uint256)"));
+        selectors[1] = bytes4(keccak256("offerToken(address)"));
+        selectors[2] = bytes4(keccak256("withdraw()"));
+        selectors[3] = bytes4(keccak256("updateSalePeriod(uint256,uint256)"));
+        selectors[4] = bytes4(keccak256("updateHasSalePeriod(bool)"));
+        selectors[5] = bytes4(
             keccak256("updatePrice(uint256,uint256,uint256)")
         );
-        selectors[5] = bytes4(keccak256("updateIsPriceRange(bool)"));
+        selectors[6] = bytes4(keccak256("updateIsPriceRange(bool)"));
         for (uint256 i = 0; i < selectors.length; i++) {
             Dictionary(dictionary).setImplementation(
                 selectors[i],

@@ -8,6 +8,7 @@ import {Storage as LETSSaleBaseStorage} from "../storages/Storage.sol";
 // lib
 import {Constants} from "../../../../core/lib/Constants.sol";
 import {LETSBaseLib} from "../libs/LETSBaseLib.sol";
+import {LETSSaleBaseLib} from "../libs/LETSSaleBaseLib.sol";
 import {LETSSaleBaseInitializeLib} from "../../../../core/Initialize/libs/LETSSaleBaseInitializeLib.sol";
 import {ERC721Lib} from "../../../../sc/ERC721/libs/ERC721Lib.sol";
 import {BorderlessAccessControlLib} from "../../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
@@ -31,17 +32,20 @@ contract LETSSaleBase is ILETSSaleBase {
     //                   Modifier                     //
     // ============================================== //
 
+    modifier onlySaleActive() {
+        LETSSaleBaseSchema.LETSSaleBaseLayout storage $ = LETSSaleBaseStorage
+            .LETSSaleBaseSlot();
+        require($.isSaleActive, SaleNotActive());
+        _;
+    }
+
     modifier onlyDuringSale() {
         LETSSaleBaseSchema.LETSSaleBaseLayout storage $ = LETSSaleBaseStorage
             .LETSSaleBaseSlot();
-        if ($.hasSalePeriod) {
+        if ($.saleStart != 0 && $.saleEnd != 0) {
             require(
-                block.timestamp >= $.saleStart &&
-                    block.timestamp <= $.saleEnd,
-                NotSaleActive(
-                    $.saleStart,
-                    $.saleEnd
-                )
+                block.timestamp >= $.saleStart && block.timestamp <= $.saleEnd,
+                NotSaleActive($.saleStart, $.saleEnd)
             );
         }
         _;
@@ -49,7 +53,10 @@ contract LETSSaleBase is ILETSSaleBase {
 
     modifier onlyTreasuryRole() {
         require(
-            BorderlessAccessControlLib.hasRole(Constants.TREASURY_ROLE, msg.sender),
+            BorderlessAccessControlLib.hasRole(
+                Constants.TREASURY_ROLE,
+                msg.sender
+            ),
             IErrors.NotTreasuryRole(msg.sender)
         );
         _;
@@ -59,11 +66,36 @@ contract LETSSaleBase is ILETSSaleBase {
     //             External Write Functions           //
     // ============================================== //
 
-    function offerToken(address to) external payable override onlyDuringSale {
+    function setSaleInfo(
+        uint256 saleStart,
+        uint256 saleEnd,
+        uint256 fixedPrice,
+        uint256 minPrice,
+        uint256 maxPrice
+    ) external {
+        require(
+            BorderlessAccessControlLib.hasRole(
+                Constants.DEFAULT_ADMIN_ROLE,
+                msg.sender
+            ),
+            IErrors.NotFounder(msg.sender)
+        );
+        LETSSaleBaseSchema.LETSSaleBaseLayout storage $ = LETSSaleBaseStorage
+            .LETSSaleBaseSlot();
+        if ($.saleStart != 0 && $.saleEnd != 0) {
+            LETSSaleBaseLib.setSalePeriod(saleStart, saleEnd);
+        }
+        LETSSaleBaseLib.setPrice(fixedPrice, minPrice, maxPrice);
+        $.isSaleActive = true;
+    }
+
+    function offerToken(
+        address to
+    ) external payable override onlyDuringSale onlySaleActive {
         LETSSaleBaseSchema.LETSSaleBaseLayout storage $ = LETSSaleBaseStorage
             .LETSSaleBaseSlot();
         require(ERC721Lib.balanceOf(to) == 0, AlreadyPurchased(to));
-        if ($.isPriceRange) {
+        if ($.minPrice != 0 && $.maxPrice != 0) {
             require(
                 msg.value >= $.minPrice && msg.value <= $.maxPrice,
                 InsufficientFunds($.minPrice, $.maxPrice, msg.value)
@@ -88,17 +120,7 @@ contract LETSSaleBase is ILETSSaleBase {
         uint256 saleStart,
         uint256 saleEnd
     ) external onlyTreasuryRole {
-        require(saleEnd > saleStart, InvalidSalePeriod());
-        LETSSaleBaseSchema.LETSSaleBaseLayout storage $ = LETSSaleBaseStorage
-            .LETSSaleBaseSlot();
-        $.saleStart = saleStart;
-        $.saleEnd = saleEnd;
-    }
-
-    function updateHasSalePeriod(
-        bool hasSalePeriod
-    ) external override onlyTreasuryRole {
-        LETSSaleBaseStorage.LETSSaleBaseSlot().hasSalePeriod = hasSalePeriod;
+        LETSSaleBaseLib.setSalePeriod(saleStart, saleEnd);
     }
 
     function updatePrice(
@@ -106,16 +128,6 @@ contract LETSSaleBase is ILETSSaleBase {
         uint256 minPrice,
         uint256 maxPrice
     ) external onlyTreasuryRole {
-        LETSSaleBaseSchema.LETSSaleBaseLayout storage $ = LETSSaleBaseStorage
-            .LETSSaleBaseSlot();
-        $.fixedPrice = fixedPrice;
-        $.minPrice = minPrice;
-        $.maxPrice = maxPrice;
-    }
-
-    function updateIsPriceRange(
-        bool isPriceRange
-    ) external override onlyTreasuryRole {
-        LETSSaleBaseStorage.LETSSaleBaseSlot().isPriceRange = isPriceRange;
+        LETSSaleBaseLib.setPrice(fixedPrice, minPrice, maxPrice);
     }
 }

@@ -10,7 +10,7 @@ import {
   RegisterLetsServiceModule,
   RegisterLetsNonExeServiceModule,
   RegisterLetsSaleServiceModule,
-  CreateSmartCompanyModule
+  CreateSmartCompanyModule,
 } from "../ignition/modules/Borderless";
 
 dotenv.config();
@@ -42,7 +42,7 @@ const registerFunctions = async (name: string, implAddress: string) => {
   return { selectors, implementations };
 };
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function main() {
   const { deployer, deployerWallet } = await getDeployerAddress();
@@ -348,22 +348,20 @@ async function main() {
   //            createSmartCompany の実行             //
   // ============================================== //
 
-  const { scProxyConn } = await hre.ignition.deploy(
-    CreateSmartCompanyModule,
-    {
-      parameters: {
-        ...parameters,
-        CreateSmartCompanyModule: {
-          SCTBeaconAddress: await sctBeaconConn.getAddress(),
-          GovernanceBeaconAddress: await governanceBeacon.getAddress(),
-          LetsJpLlCExeBeaconAddress: await lets_jp_llc_exeBeacon.getAddress(),
-          LetsJpLlCNonExeBeaconAddress: await lets_jp_llc_non_exeBeacon.getAddress(),
-          LetsJpLlCExeParams: scsExtraParams[0],
-          LetsJpLlCNonExeParams: scsExtraParams[1],
-        },
+  const { scProxyConn } = await hre.ignition.deploy(CreateSmartCompanyModule, {
+    parameters: {
+      ...parameters,
+      CreateSmartCompanyModule: {
+        SCTBeaconAddress: await sctBeaconConn.getAddress(),
+        GovernanceBeaconAddress: await governanceBeacon.getAddress(),
+        LetsJpLlCExeBeaconAddress: await lets_jp_llc_exeBeacon.getAddress(),
+        LetsJpLlCNonExeBeaconAddress:
+          await lets_jp_llc_non_exeBeacon.getAddress(),
+        LetsJpLlCExeParams: scsExtraParams[0],
+        LetsJpLlCNonExeParams: scsExtraParams[1],
       },
-    }
-  );
+    },
+  });
   console.log(`scProxyConn: ${scProxyConn.target}`);
 
   // ────────────────────────────────────────────────
@@ -371,13 +369,62 @@ async function main() {
   // ────────────────────────────────────────────────
   await delay(10000); // 10秒待機
 
+  const executionMember = await hre.ethers.getSigner(
+    "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+  );
+
   const lets_jp_llc_exeConn = await hre.ethers.getContractAt(
     "LETS_JP_LLC_EXE",
     scProxyConn.target ?? ""
   );
-  await lets_jp_llc_exeConn.mint(deployer);
-  const balance = await lets_jp_llc_exeConn.balanceOf(deployer);
-  console.log(`balance: ${balance}`);
+  await lets_jp_llc_exeConn.initialMint([deployer, executionMember]);
+  const deployerBalance = await lets_jp_llc_exeConn.balanceOf(deployer);
+  console.log(`deployerBalance: ${deployerBalance}`);
+  const executionMemberBalance = await lets_jp_llc_exeConn.balanceOf(
+    executionMember
+  );
+  console.log(`executionMemberBalance: ${executionMemberBalance}`);
+
+  // ============================================== //
+  //                Saleコントラクトの設定               //
+  // ============================================== //
+
+  await delay(10000); // 10秒待機
+
+  const executionMember2 = await hre.ethers.getSigner(
+    "0x90F79bf6EB2c4f870365E785982E1f101E93b906"
+  );
+
+  // Saleコントラクトの設定
+  const letsSaleConn = await hre.ethers.getContractAt(
+    "LETS_JP_LLC_SALE",
+    scProxyConn.target ?? ""
+  );
+
+  // Saleコントラクトの設定
+  await letsSaleConn.getFunction(
+    "setSaleInfo(uint256,uint256,uint256,uint256,uint256)"
+  )(
+    0,
+    0,
+    hre.ethers.parseEther("0.1"), // 1 ETH
+    0,
+    0
+  );
+
+  await letsSaleConn
+    .connect(executionMember2)
+    .getFunction("offerToken(address)")(
+    executionMember2,
+    { value: hre.ethers.parseEther("0.1") } // 1 ETHを送付
+  );
+
+  const executionMember2Balance = await lets_jp_llc_exeConn.balanceOf(
+    executionMember2
+  );
+  console.log(`executionMember2Balance: ${executionMember2Balance}`);
+
+  console.log("✅ Saleコントラクトの設定");
 }
 
 main().catch(console.error);

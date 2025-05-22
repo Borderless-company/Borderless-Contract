@@ -5,6 +5,8 @@ import {LETSBase} from "../../LETSBase.sol";
 import {ILETS_JP_LLC_EXE} from "./interfaces/ILETS_JP_LLC_EXE.sol";
 
 // lib
+import {LETSSaleBaseInitializeLib} from "./initialize/libs/LETS_JP_LLC_EXEInitializeLib.sol";
+import {LETSBaseLib} from "../../../libs/LETSBaseLib.sol";
 import {BorderlessAccessControlLib} from "../../../../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
 import {Constants} from "../../../../../../core/lib/Constants.sol";
 
@@ -19,14 +21,18 @@ contract LETS_JP_LLC_EXE is LETSBase, ILETS_JP_LLC_EXE {
 
     bool private _initialMintExecuteMemberCompleted;
 
+    function initialize(address dictionary) public override {
+        super.initialize(dictionary);
+        LETSSaleBaseInitializeLib.initialize(dictionary);
+    }
+
     // ============================================== //
     //             External Write Functions           //
     // ============================================== //
 
     function initialMint(
-        address[] calldata tos,
-        uint256 tokenId
-    ) external override {
+        address[] calldata tos
+    ) external {
         require(
             BorderlessAccessControlLib.hasRole(
                 Constants.FOUNDER_ROLE,
@@ -35,7 +41,7 @@ contract LETS_JP_LLC_EXE is LETSBase, ILETS_JP_LLC_EXE {
             NotFounder(msg.sender)
         );
         for (uint256 i = 0; i < tos.length; i++) {
-            _safeMint(tos[i], tokenId);
+            LETSBaseLib.mint(tos[i]);
         }
         _initialMintExecuteMemberCompleted = true;
         emit InitialMint(address(this), tos);

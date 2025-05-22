@@ -10,6 +10,7 @@ import type {
   BorderlessAccessControl,
   Dictionary,
   SCRInitialize,
+  LETS_JP_LLC_SALE,
 } from "../typechain-types";
 import { SCR__factory } from "../typechain-types";
 
@@ -75,7 +76,7 @@ describe("Full Deployment and Registration", function () {
     // ============================================== //
     //                   アドレスの準備                  //
     // ============================================== //
-    const [deployer, founder, executionMember, executionMember2] =
+    const [deployer, founder, executionMember, executionMember2, executionMember3] =
       await ethers.getSigners();
 
     console.log("🤖 deployer", deployer.address);
@@ -405,6 +406,7 @@ describe("Full Deployment and Registration", function () {
       founder,
       executionMember,
       executionMember2,
+      executionMember3,
       serviceFactory,
       sctBeaconAddress: sctBeaconAddress ?? "",
       lets_jp_llc_exeBeaconAddress: lets_jp_llc_exeBeaconAddress ?? "",
@@ -445,11 +447,12 @@ describe("Full Deployment and Registration", function () {
       proxy,
       founder,
       executionMember,
+      executionMember2,
+      executionMember3,
       sctBeaconAddress,
       lets_jp_llc_exeBeaconAddress,
       lets_jp_llc_non_exeBeaconAddress,
       governance_jp_llcBeaconAddress,
-      lets_jp_llc_saleBeaconAddress,
     } = await loadFixture(deployFullFixture);
 
     console.log(`SCTBeaconAddress: ${sctBeaconAddress}`);
@@ -562,30 +565,49 @@ describe("Full Deployment and Registration", function () {
     console.log("✅ LETS_JP_LLC_EXEの残高検証");
 
     // ============================================== //
-    //            LETS_JP_LLC_EXEのmint を実行             //
+    //            LETS_JP_LLC_EXEのmint を実行          //
     // ============================================== //
 
     // // mint を実行
-    await letsExe.getFunction("mint(address)")(
-      await executionMember.getAddress()
+    await letsExe.connect(founder).getFunction("initialMint(address[])")(
+      [await executionMember.getAddress(), await executionMember2.getAddress()]
     );
     expect(
       await letsExe.balanceOf(await executionMember.getAddress())
     ).to.equal(1);
+    expect(
+      await letsExe.balanceOf(await executionMember2.getAddress())
+    ).to.equal(1);
 
     console.log("✅ LETS_JP_LLC_EXEのmint を実行");
 
-    // // さらにまとめて mint
-    await letsExe.getFunction("mint(address)")(
-      await executionMember.getAddress()
+    // ============================================== //
+    //                Saleコントラクトの設定               //
+    // ============================================== //
+
+    // Saleコントラクトの設定
+    const letsSale = (
+      await ethers.getContractAt("LETS_JP_LLC_SALE", companyAddress)
+    ).connect(founder) as LETS_JP_LLC_SALE;
+
+    // Saleコントラクトの設定
+    await letsSale.getFunction("setSaleInfo(uint256,uint256,uint256,uint256,uint256)")(
+      0,
+      0,
+      ethers.parseEther("0.1"), // 1 ETH
+      0,
+      0
     );
-    await letsExe.getFunction("mint(address)")(
-      await executionMember.getAddress()
+
+    await letsSale.connect(executionMember3).getFunction("offerToken(address)")(
+      await executionMember3.getAddress(),
+      { value: ethers.parseEther("0.1") }  // 1 ETHを送付
     );
+
     expect(
       await letsExe.balanceOf(await executionMember.getAddress())
-    ).to.equal(3);
+    ).to.equal(1);
 
-    console.log("✅ LETS_JP_LLC_EXEのmint をさらに実行");
+    console.log("✅ Saleコントラクトの設定");
   });
 });

@@ -21,7 +21,7 @@ library LETSBaseInitializeLib {
             !$init.initialized,
             InitializeErrors.AlreadyInitialized()
         );
-        bytes4[] memory selectors = new bytes4[](22);
+        bytes4[] memory selectors = new bytes4[](21);
         selectors[0] = bytes4(keccak256("getUpdatedToken(uint256)"));
         selectors[1] = bytes4(keccak256("tokenURI(uint256)"));
         selectors[2] = bytes4(keccak256("totalSupply()"));
@@ -40,10 +40,9 @@ library LETSBaseInitializeLib {
         selectors[15] = bytes4(keccak256("tokenByIndex(uint256)"));
         selectors[16] = bytes4(keccak256("tokenOfOwnerByIndex(address,uint256)"));
         selectors[17] = bytes4(keccak256("getTokensOfOwner(address)"));
-        selectors[18] = bytes4(keccak256("mint(address)"));
-        selectors[19] = bytes4(keccak256("freezeToken(uint256)"));
-        selectors[20] = bytes4(keccak256("unfreezeToken(uint256)"));
-        selectors[21] = bytes4(keccak256("getUpdatedToken(uint256)"));
+        selectors[18] = bytes4(keccak256("freezeToken(uint256)"));
+        selectors[19] = bytes4(keccak256("unfreezeToken(uint256)"));
+        selectors[20] = bytes4(keccak256("getUpdatedToken(uint256)"));
         for (uint256 i = 0; i < selectors.length; i++) {
             Dictionary(dictionary).setImplementation(
                 selectors[i],

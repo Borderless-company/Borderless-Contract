@@ -36,8 +36,7 @@ library Schema {
         uint256 fixedPrice;
         uint256 minPrice;
         uint256 maxPrice;
-        bool hasSalePeriod;
-        bool isPriceRange;
+        bool isSaleActive;
         /**
          * @dev index => function selector
          */

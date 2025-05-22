@@ -22,9 +22,10 @@ interface ILETS_JP_LLC_EXE {
     /**
      * @dev Initial mint the given addresses
      * @param tos The addresses to mint
-     * @param tokenId The token id to mint
      */
-    function initialMint(address[] calldata tos, uint256 tokenId) external;
+    function initialMint(
+        address[] calldata tos
+    ) external;
 
     // ============================================== //
     //             External Read Functions            //

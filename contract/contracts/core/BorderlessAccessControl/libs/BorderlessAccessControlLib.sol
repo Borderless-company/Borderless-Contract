@@ -8,6 +8,10 @@ import {Storage as ACStorage} from "../storages/Storage.sol";
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 library BorderlessAccessControlLib {
+    function DEFAULT_ADMIN_ROLE() internal pure returns (bytes32) {
+        return bytes32(0);
+    }
+
     /**
      * @notice check if account has role
      * @param role role

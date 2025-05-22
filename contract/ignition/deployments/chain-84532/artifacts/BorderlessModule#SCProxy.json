@@ -1,0 +1,1239 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "SCProxy",
+  "sourceName": "contracts/core/Proxy/mock/SCProxy.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "transactionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "approveTransaction",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4[]",
+          "name": "selectors",
+          "type": "bytes4[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "implementations",
+          "type": "address[]"
+        }
+      ],
+      "name": "bulkSetImplementation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "transactionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "cancelTransaction",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "transactionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "execute",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "freezeToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getApproved",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "articleId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "paragraphId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "itemId",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAOIStructs.ItemLocation",
+          "name": "location",
+          "type": "tuple"
+        }
+      ],
+      "name": "getEncryptedItem",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "encryptedData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "plaintextHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "masterSaltHash",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct IAOIStructs.EncryptedItem",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getFacade",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "getInvestmentAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getSCR",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum ServiceType",
+          "name": "serviceType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getService",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "getTokensOfOwner",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getUpdatedToken",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "versionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getVersionRoot",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "articleId",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "paragraphId",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "itemId",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct IAOIStructs.ItemLocation",
+              "name": "location",
+              "type": "tuple"
+            },
+            {
+              "internalType": "bytes",
+              "name": "encryptedData",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "plaintextHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "masterSaltHash",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct IAOIStructs.EncryptedItemInput[]",
+          "name": "items",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "initialSetChapter",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "scr",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "dictionary",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "isApprovedForAll",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "ephemeralSalt",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isEphemeralSaltUsed",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        }
+      ],
+      "name": "mint",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        }
+      ],
+      "name": "offerToken",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "ownerOf",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum ServiceType[]",
+          "name": "serviceTypes",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "services",
+          "type": "address[]"
+        }
+      ],
+      "name": "registerService",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "executor",
+          "type": "address"
+        },
+        {
+          "internalType": "enum IGovernanceServiceStructs.ProposalLevel",
+          "name": "proposalLevel",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "voteStart",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "voteEnd",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address[]",
+          "name": "proposalMemberContracts",
+          "type": "address[]"
+        }
+      ],
+      "name": "registerTransaction",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "executor",
+          "type": "address"
+        },
+        {
+          "internalType": "enum IGovernanceServiceStructs.ProposalLevel",
+          "name": "proposalLevel",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "numerator",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "denominator",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "voteStart",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "voteEnd",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address[]",
+          "name": "proposalMemberContracts",
+          "type": "address[]"
+        }
+      ],
+      "name": "registerTransactionWithCustomThreshold",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "callerConfirmation",
+          "type": "address"
+        }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "approved",
+          "type": "bool"
+        }
+      ],
+      "name": "setApprovalForAll",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "ephemeralSalt",
+          "type": "bytes32"
+        }
+      ],
+      "name": "setEphemeralSalt",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        }
+      ],
+      "name": "setImplementation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "investmentAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "setInvestmentAmount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        }
+      ],
+      "name": "setOnceInitialized",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "saleStart",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "saleEnd",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "fixedPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxPrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "setSaleInfo",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "tokenByIndex",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "tokenOfOwnerByIndex",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "tokenURI",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "unfreezeToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "fixedPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minPrice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxPrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "updatePrice",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "saleStart",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "saleEnd",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateSalePeriod",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newFacade",
+          "type": "address"
+        }
+      ],
+      "name": "upgradeFacade",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "articleId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "paragraphId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "itemId",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAOIStructs.ItemLocation",
+          "name": "location",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "expectedHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "verifyDecryptionKeyHash",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "articleId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "paragraphId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "itemId",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IAOIStructs.ItemLocation",
+          "name": "location",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "ephemeralSalt",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "masterSaltHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "holder",
+          "type": "address"
+        }
+      ],
+      "name": "verifyDecryptionKeyHashWithSaltHash",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60808060405234601557610b60908161001b8239f35b600080fdfe608080604052600436101561001357600080fd5b60003560e01c90816301ffc9a71461080e57508063051e3f6b146107fb57806306fdde03146104b25780630815f6fd146107d9578063081812fc146104ad578063095ea7b3146106aa5780630f436129146107c65780630fb955331461032157806318160ddd1461042357806323b872dd146106a5578063242232d1146102a8578063248a9ca31461057757806325389b4b146107265780632d6fa4b21461061b5780632f2ff15d146103265780632f745c591461070d5780633380c0d8146102a857806336568abe146103265780633ccfd60b146106165780633dbaac63146106af5780634035c372146106aa57806342842e0e146106a5578063485cc955146102c55780634d787ea9146102a85780634f6ccce7146104ad5780635de6dc55146106475780636352211e146104ad578063651dc03d146102ca5780636a6278421461061b5780636c4cd58e146106205780636e4a923b1461057757806370a082311461061b578063715018a61461061657806374d8c2fe146105a75780637bef1c35146105935780637e2cd33c1461057757806386ec366f146104d05780638da5cb5b1461032157806391d14854146104b757806395d89b41146104b257806397294fea146104ad5780639b0595b81461043f578063a217fddf14610423578063a22cb465146103fc578063a35edd04146103db578063abd3c6e9146103c8578063b3e9074a14610398578063b6854f96146102a8578063b88d4fde14610354578063c4d66de8146102ca578063c87b56dd1461032b578063d547741f14610326578063dd41731814610321578063e8e56d26146102fd578063e985e9c5146102cf578063f2fde38b146102ca578063f6d81789146102c5578063fc7da9a9146102ad5763fe0d94c1146102a857600080fd5b6107fb565b346102c05760403660031901126102c057005b600080fd5b6109f0565b610a09565b346102c05760403660031901126102c0576102e86108c9565b506102f16108b3565b50602060405160008152f35b346102c0573660031901608081126102c0576060136102c057602060405160008152f35b610423565b610994565b346102c05760203660031901126102c05760405160208152806103506020820161086b565b0390f35b346102c05760803660031901126102c05761036d6108c9565b506103766108b3565b506064356001600160401b0381116102c057610396903690600401610a5d565b005b346102c05760203660031901126102c0576004356001600160401b0381116102c0576103969036906004016109c0565b346102c05760a03660031901126102c057005b346102c057366003190160c081126102c0576060136102c0576102f161090b565b346102c05760403660031901126102c0576104156108c9565b50602435801515036102c057005b346102c05760003660031901126102c057602060405160008152f35b346102c0576101003660031901126102c0576024356001600160401b0381116102c057610470903690600401610a5d565b506104796108df565b506104826108f5565b50600360843510156102c05760e4356001600160401b0381116102c057610396903690600401610ac6565b610577565b61088e565b346102c05760403660031901126102c0576102f16108b3565b346102c05760403660031901126102c0576004356001600160401b0381116102c057366023820112156102c0578060040135906024602061051861051385610aaf565b610a22565b848152019260051b820101903682116102c057602401915b818310610556576024356001600160401b0381116102c057610396903690600401610ac6565b82356001600160e01b0319811681036102c057815260209283019201610530565b346102c05760203660031901126102c057602060405160008152f35b60203660031901126102c0576103966108c9565b346102c0576101403660031901126102c0576024356001600160401b0381116102c0576105d8903690600401610a5d565b506105e16108df565b506105ea6108f5565b50600360843510156102c057610124356001600160401b0381116102c057610396903690600401610ac6565b6109ad565b61097b565b346102c05760203660031901126102c057600760043510156102c057602060405160008152f35b346102c05760203660031901126102c0576106606108c9565b50604051806020810160208252606051809152604082019060809060005b81811061068c575050500390f35b825184528594506020938401939092019160010161067e565b61093a565b610921565b346102c05760403660031901126102c0576004356001600160401b0381116102c0576106df9036906004016109c0565b50506024356001600160401b0381116102c0576107009036906004016109c0565b5050602060405160008152f35b346102c05760403660031901126102c0576102f16108c9565b346102c05760603660031901126102c0576000604051606081018181106001600160401b038211176107b25790602091604052606081528181018381526040820184815260806040519586948686525190606087870152506107968151809281858901528860a089019101610848565b601f801991011684010191516040840152516060830152030190f35b634e487b7160e01b83526041600452602483fd5b346102c05760603660031901126102c057005b346102c05760403660031901126102c0576107f2610831565b506103966108b3565b346102c05760203660031901126102c057005b346102c05760203660031901126102c05760209061082a610831565b5060008152f35b600435906001600160e01b0319821682036102c057565b60005b83811061085b5750506000910152565b818101518382015260200161084b565b602090606051808252610882818484016080610848565b601f01601f1916010190565b346102c05760003660031901126102c05760405160208152806103506020820161086b565b602435906001600160a01b03821682036102c057565b600435906001600160a01b03821682036102c057565b604435906001600160a01b03821682036102c057565b606435906001600160a01b03821682036102c057565b60a435906001600160a01b03821682036102c057565b346102c05760403660031901126102c0576103966108c9565b346102c0576000606036600319011261097857600435906001600160a01b03821682036109785750506024356001600160a01b03811681036102c057005b80fd5b346102c05760203660031901126102c0576102f16108c9565b346102c05760403660031901126102c0576103966108b3565b346102c05760003660031901126102c057005b9181601f840112156102c0578235916001600160401b0383116102c0576020808501948460051b0101116102c057565b346102c05760403660031901126102c0576107f26108c9565b346102c05760203660031901126102c0576103966108c9565b6040519190601f01601f191682016001600160401b03811183821017610a4757604052565b634e487b7160e01b600052604160045260246000fd5b81601f820112156102c0578035906001600160401b038211610a4757610a8c601f8301601f1916602001610a22565b92828452602083830101116102c057816000926020809301838601378301015290565b6001600160401b038111610a475760051b60200190565b9080601f830112156102c057813590610ae161051383610aaf565b9260208085858152019360051b8201019182116102c057602001915b818310610b0a5750505090565b82356001600160a01b03811681036102c057815260209283019201610afd56fea2646970667358221220da9d32ac6a30b17acfca879343c31e07121248e6e92a7fe501aa25c85ff69d4164736f6c634300081c0033",
+  "deployedBytecode": "0x608080604052600436101561001357600080fd5b60003560e01c90816301ffc9a71461080e57508063051e3f6b146107fb57806306fdde03146104b25780630815f6fd146107d9578063081812fc146104ad578063095ea7b3146106aa5780630f436129146107c65780630fb955331461032157806318160ddd1461042357806323b872dd146106a5578063242232d1146102a8578063248a9ca31461057757806325389b4b146107265780632d6fa4b21461061b5780632f2ff15d146103265780632f745c591461070d5780633380c0d8146102a857806336568abe146103265780633ccfd60b146106165780633dbaac63146106af5780634035c372146106aa57806342842e0e146106a5578063485cc955146102c55780634d787ea9146102a85780634f6ccce7146104ad5780635de6dc55146106475780636352211e146104ad578063651dc03d146102ca5780636a6278421461061b5780636c4cd58e146106205780636e4a923b1461057757806370a082311461061b578063715018a61461061657806374d8c2fe146105a75780637bef1c35146105935780637e2cd33c1461057757806386ec366f146104d05780638da5cb5b1461032157806391d14854146104b757806395d89b41146104b257806397294fea146104ad5780639b0595b81461043f578063a217fddf14610423578063a22cb465146103fc578063a35edd04146103db578063abd3c6e9146103c8578063b3e9074a14610398578063b6854f96146102a8578063b88d4fde14610354578063c4d66de8146102ca578063c87b56dd1461032b578063d547741f14610326578063dd41731814610321578063e8e56d26146102fd578063e985e9c5146102cf578063f2fde38b146102ca578063f6d81789146102c5578063fc7da9a9146102ad5763fe0d94c1146102a857600080fd5b6107fb565b346102c05760403660031901126102c057005b600080fd5b6109f0565b610a09565b346102c05760403660031901126102c0576102e86108c9565b506102f16108b3565b50602060405160008152f35b346102c0573660031901608081126102c0576060136102c057602060405160008152f35b610423565b610994565b346102c05760203660031901126102c05760405160208152806103506020820161086b565b0390f35b346102c05760803660031901126102c05761036d6108c9565b506103766108b3565b506064356001600160401b0381116102c057610396903690600401610a5d565b005b346102c05760203660031901126102c0576004356001600160401b0381116102c0576103969036906004016109c0565b346102c05760a03660031901126102c057005b346102c057366003190160c081126102c0576060136102c0576102f161090b565b346102c05760403660031901126102c0576104156108c9565b50602435801515036102c057005b346102c05760003660031901126102c057602060405160008152f35b346102c0576101003660031901126102c0576024356001600160401b0381116102c057610470903690600401610a5d565b506104796108df565b506104826108f5565b50600360843510156102c05760e4356001600160401b0381116102c057610396903690600401610ac6565b610577565b61088e565b346102c05760403660031901126102c0576102f16108b3565b346102c05760403660031901126102c0576004356001600160401b0381116102c057366023820112156102c0578060040135906024602061051861051385610aaf565b610a22565b848152019260051b820101903682116102c057602401915b818310610556576024356001600160401b0381116102c057610396903690600401610ac6565b82356001600160e01b0319811681036102c057815260209283019201610530565b346102c05760203660031901126102c057602060405160008152f35b60203660031901126102c0576103966108c9565b346102c0576101403660031901126102c0576024356001600160401b0381116102c0576105d8903690600401610a5d565b506105e16108df565b506105ea6108f5565b50600360843510156102c057610124356001600160401b0381116102c057610396903690600401610ac6565b6109ad565b61097b565b346102c05760203660031901126102c057600760043510156102c057602060405160008152f35b346102c05760203660031901126102c0576106606108c9565b50604051806020810160208252606051809152604082019060809060005b81811061068c575050500390f35b825184528594506020938401939092019160010161067e565b61093a565b610921565b346102c05760403660031901126102c0576004356001600160401b0381116102c0576106df9036906004016109c0565b50506024356001600160401b0381116102c0576107009036906004016109c0565b5050602060405160008152f35b346102c05760403660031901126102c0576102f16108c9565b346102c05760603660031901126102c0576000604051606081018181106001600160401b038211176107b25790602091604052606081528181018381526040820184815260806040519586948686525190606087870152506107968151809281858901528860a089019101610848565b601f801991011684010191516040840152516060830152030190f35b634e487b7160e01b83526041600452602483fd5b346102c05760603660031901126102c057005b346102c05760403660031901126102c0576107f2610831565b506103966108b3565b346102c05760203660031901126102c057005b346102c05760203660031901126102c05760209061082a610831565b5060008152f35b600435906001600160e01b0319821682036102c057565b60005b83811061085b5750506000910152565b818101518382015260200161084b565b602090606051808252610882818484016080610848565b601f01601f1916010190565b346102c05760003660031901126102c05760405160208152806103506020820161086b565b602435906001600160a01b03821682036102c057565b600435906001600160a01b03821682036102c057565b604435906001600160a01b03821682036102c057565b606435906001600160a01b03821682036102c057565b60a435906001600160a01b03821682036102c057565b346102c05760403660031901126102c0576103966108c9565b346102c0576000606036600319011261097857600435906001600160a01b03821682036109785750506024356001600160a01b03811681036102c057005b80fd5b346102c05760203660031901126102c0576102f16108c9565b346102c05760403660031901126102c0576103966108b3565b346102c05760003660031901126102c057005b9181601f840112156102c0578235916001600160401b0383116102c0576020808501948460051b0101116102c057565b346102c05760403660031901126102c0576107f26108c9565b346102c05760203660031901126102c0576103966108c9565b6040519190601f01601f191682016001600160401b03811183821017610a4757604052565b634e487b7160e01b600052604160045260246000fd5b81601f820112156102c0578035906001600160401b038211610a4757610a8c601f8301601f1916602001610a22565b92828452602083830101116102c057816000926020809301838601378301015290565b6001600160401b038111610a475760051b60200190565b9080601f830112156102c057813590610ae161051383610aaf565b9260208085858152019360051b8201019182116102c057602001915b818310610b0a5750505090565b82356001600160a01b03811681036102c057815260209283019201610afd56fea2646970667358221220da9d32ac6a30b17acfca879343c31e07121248e6e92a7fe501aa25c85ff69d4164736f6c634300081c0033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

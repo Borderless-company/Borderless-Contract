@@ -19,6 +19,13 @@ contract BorderlessAccessControl is Context, IAccessControl, ERC165 {
     }
 
     /**
+     * @dev Returns the default admin role.
+     */
+    function DEFAULT_ADMIN_ROLE() public pure returns (bytes32) {
+        return BorderlessAccessControlLib.DEFAULT_ADMIN_ROLE();
+    }
+
+    /**
      * @dev Modifier that checks that an account has a specific role. Reverts
      * with an {AccessControlUnauthorizedAccount} error including the required role.
      */

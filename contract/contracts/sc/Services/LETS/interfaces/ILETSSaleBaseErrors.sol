@@ -37,4 +37,14 @@ interface ILETSSaleBaseErrors {
      * @dev Invalid sale period Error
      */
     error InvalidSalePeriod();
+
+    /**
+     * @dev Invalid price Error
+     */
+    error InvalidPrice();
+
+    /**
+     * @dev Sale not active Error
+     */
+    error SaleNotActive();
 }

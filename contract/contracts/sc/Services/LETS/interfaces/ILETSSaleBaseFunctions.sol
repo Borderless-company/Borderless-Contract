@@ -26,12 +26,6 @@ interface ILETSSaleBaseFunctions {
     function updateSalePeriod(uint256 _saleStart, uint256 _saleEnd) external;
 
     /**
-     * @notice update has sale period
-     * @param _hasSalePeriod has sale period
-     */
-    function updateHasSalePeriod(bool _hasSalePeriod) external;
-
-    /**
      * @notice update price
      * @param _fixedPrice fixed price
      * @param _minPrice minimum price
@@ -42,10 +36,4 @@ interface ILETSSaleBaseFunctions {
         uint256 _minPrice,
         uint256 _maxPrice
     ) external;
-
-    /**
-     * @notice update is price range
-     * @param _isPriceRange is price range
-     */
-    function updateIsPriceRange(bool _isPriceRange) external;
 }
