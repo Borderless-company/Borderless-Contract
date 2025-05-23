@@ -405,8 +405,8 @@ async function main() {
   //   { value: hre.ethers.parseEther("0.001") } // 1 ETHを送付
   // );
 
-  // const executionMember2Balance = await letsExeConn.balanceOf(deployer);
-  // console.log(`executionMember2Balance: ${executionMember2Balance}`);
+  // const executiveMember2Balance = await letsExeConn.balanceOf(deployer);
+  // console.log(`executiveMember2Balance: ${executiveMember2Balance}`);
 
   // console.log("✅ LETS_JP_LLC_EXEの購入");
 

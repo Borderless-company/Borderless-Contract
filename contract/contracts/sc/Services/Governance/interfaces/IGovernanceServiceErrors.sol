@@ -5,13 +5,13 @@ import {IGovernanceServiceStructs} from "./IGovernanceServiceStructs.sol";
 
 interface IGovernanceServiceErrors {
     /**
-     * @dev Error when the transaction execution fails
+     * @dev Error when the transaction executive fails
      * @param transactionId The transaction ID
      */
     error ExecuteFailed(uint256 transactionId);
 
     /**
-     * @dev Error when the executor is not an execution member
+     * @dev Error when the executor is not an executive member
      * @param executor The executor address
      */
     error NotExecutionMember(address executor);

@@ -16,17 +16,17 @@ export const deployFullFixture = async () => {
   const [
     deployer,
     founder,
-    executionMember,
-    executionMember2,
-    executionMember3,
+    executiveMember,
+    executiveMember2,
+    executiveMember3,
     tokenMinter,
   ] = await ethers.getSigners();
 
   console.log("🤖 deployer", deployer.address);
 
   console.log("🤖 founder", founder.address);
-  console.log("🤖 executionMember", executionMember.address);
-  console.log("🤖 executionMember2", executionMember2.address);
+  console.log("🤖 executiveMember", executiveMember.address);
+  console.log("🤖 executiveMember2", executiveMember2.address);
 
   // Dictionary
   const Dictionary = await ethers.getContractFactory("Dictionary");
@@ -326,9 +326,9 @@ export const deployFullFixture = async () => {
     scr,
     proxy,
     founder,
-    executionMember,
-    executionMember2,
-    executionMember3,
+    executiveMember,
+    executiveMember2,
+    executiveMember3,
     tokenMinter,
     serviceFactory,
     sctBeaconAddress: sctBeaconAddress ?? "",

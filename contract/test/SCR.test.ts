@@ -43,9 +43,9 @@ describe("Full Deployment and Registration", function () {
       deployer,
       proxy,
       founder,
-      executionMember,
-      executionMember2,
-      executionMember3,
+      executiveMember,
+      executiveMember2,
+      executiveMember3,
       tokenMinter,
       sctBeaconAddress,
       lets_jp_llc_exeBeaconAddress,
@@ -177,16 +177,16 @@ describe("Full Deployment and Registration", function () {
 
     // initialMint を実行
     await letsExe.connect(founder).getFunction("initialMint(address[])")([
-      await executionMember.getAddress(),
-      await executionMember2.getAddress(),
+      await executiveMember.getAddress(),
+      await executiveMember2.getAddress(),
     ]);
 
     // 残高確認
     expect(
-      await letsExe.balanceOf(await executionMember.getAddress())
+      await letsExe.balanceOf(await executiveMember.getAddress())
     ).to.equal(1);
     expect(
-      await letsExe.balanceOf(await executionMember2.getAddress())
+      await letsExe.balanceOf(await executiveMember2.getAddress())
     ).to.equal(1);
 
     console.log("✅ LETS_JP_LLC_EXEのinitialMintを実行");
@@ -251,15 +251,15 @@ describe("Full Deployment and Registration", function () {
 
     // 購入
     await letsExeSale
-      .connect(executionMember3)
+      .connect(executiveMember3)
       .getFunction("offerToken(address)")(
-      await executionMember3.getAddress(),
+      await executiveMember3.getAddress(),
       { value: ethers.parseEther("0.1") } // 0.1 ETHを送付
     );
 
     // 残高確認
     expect(
-      await letsExe.balanceOf(await executionMember3.getAddress())
+      await letsExe.balanceOf(await executiveMember3.getAddress())
     ).to.equal(1);
 
     console.log("✅ SaleコントラクトからLETS_JP_LLC_EXEを購入");
@@ -288,15 +288,15 @@ describe("Full Deployment and Registration", function () {
 
     // 購入
     await letsNonExeSale
-      .connect(executionMember3)
+      .connect(executiveMember3)
       .getFunction("offerToken(address)")(
-      await executionMember3.getAddress(),
+      await executiveMember3.getAddress(),
       { value: ethers.parseEther("0.01") } // 0.1 ETHを送付
     );
 
     // 残高確認
     expect(
-      await letsNonExe.balanceOf(await executionMember3.getAddress())
+      await letsNonExe.balanceOf(await executiveMember3.getAddress())
     ).to.equal(1);
 
     console.log("✅ LETS_JP_LLC_NON_EXEの購入");

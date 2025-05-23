@@ -386,17 +386,17 @@ async function main() {
   // ────────────────────────────────────────────────
   
 
-  const executionMember = await hre.ethers.getSigner(
+  const executiveMember = await hre.ethers.getSigner(
     "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
   );
 
   await letsExeConn
     .connect(deployerWallet)
-    .initialMint([deployer, executionMember]);
+    .initialMint([deployer, executiveMember]);
   const deployerBalance = await letsExeConn.balanceOf(deployer);
   console.log(`deployerBalance: ${deployerBalance}`);
-  const executionMemberBalance = await letsExeConn.balanceOf(executionMember);
-  console.log(`executionMemberBalance: ${executionMemberBalance}`);
+  const executiveMemberBalance = await letsExeConn.balanceOf(executiveMember);
+  console.log(`executiveMemberBalance: ${executiveMemberBalance}`);
 
   console.log("✅ LETS_JP_LLC_EXEのmint");
 
@@ -404,7 +404,7 @@ async function main() {
   // LETS_JP_LLC_EXEの購入を実行
   // ────────────────────────────────────────────────
 
-  const executionMember2 = await hre.ethers.getSigner(
+  const executiveMember2 = await hre.ethers.getSigner(
     "0x90F79bf6EB2c4f870365E785982E1f101E93b906"
   );
 
@@ -420,14 +420,14 @@ async function main() {
   );
 
   await letsExeSaleConn
-    .connect(executionMember2)
+    .connect(executiveMember2)
     .getFunction("offerToken(address)")(
-      executionMember2,
+      executiveMember2,
     { value: hre.ethers.parseEther("0.001") } // 1 ETHを送付
   );
 
-  const executionMember2Balance = await letsExeConn.balanceOf(executionMember2);
-  console.log(`executionMember2Balance: ${executionMember2Balance}`);
+  const executiveMember2Balance = await letsExeConn.balanceOf(executiveMember2);
+  console.log(`executiveMember2Balance: ${executiveMember2Balance}`);
 
   console.log("✅ LETS_JP_LLC_EXEの購入");
 
