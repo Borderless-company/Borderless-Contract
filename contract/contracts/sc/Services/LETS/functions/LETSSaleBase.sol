@@ -4,6 +4,7 @@ pragma solidity 0.8.28;
 // storages
 import {Schema as LETSSaleBaseSchema} from "../storages/Schema.sol";
 import {Storage as LETSSaleBaseStorage} from "../storages/Storage.sol";
+import {Storage as LETSBaseStorage} from "../storages/Storage.sol";
 
 // lib
 import {Constants} from "../../../../core/lib/Constants.sol";
@@ -11,7 +12,6 @@ import {LETSBaseLib} from "../libs/LETSBaseLib.sol";
 import {LETSSaleBaseLib} from "../libs/LETSSaleBaseLib.sol";
 import {LETSSaleBaseInitializeLib} from "../../../../core/Initialize/libs/LETSSaleBaseInitializeLib.sol";
 import {ERC721Lib} from "../../../../sc/ERC721/libs/ERC721Lib.sol";
-import {BorderlessAccessControlLib} from "../../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
 
 // utils
 import {IErrors} from "../../../../core/utils/IErrors.sol";
@@ -19,12 +19,16 @@ import {IErrors} from "../../../../core/utils/IErrors.sol";
 // interfaces
 import {ILETSSaleBase} from "../interfaces/ILETSSaleBase.sol";
 
+// OpenZeppelin
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
+
+
 contract LETSSaleBase is ILETSSaleBase {
     // ============================================== //
     //                 Initialization                 //
     // ============================================== //
 
-    function initialize(address dictionary) external {
+    function initialize(address dictionary) public virtual override {
         LETSSaleBaseInitializeLib.initialize(dictionary);
     }
 
@@ -53,7 +57,7 @@ contract LETSSaleBase is ILETSSaleBase {
 
     modifier onlyTreasuryRole() {
         require(
-            BorderlessAccessControlLib.hasRole(
+            IAccessControl(LETSBaseStorage.LETSBaseSlot().sc).hasRole(
                 Constants.TREASURY_ROLE,
                 msg.sender
             ),
@@ -74,15 +78,15 @@ contract LETSSaleBase is ILETSSaleBase {
         uint256 maxPrice
     ) external {
         require(
-            BorderlessAccessControlLib.hasRole(
-                Constants.DEFAULT_ADMIN_ROLE,
+            IAccessControl(LETSBaseStorage.LETSBaseSlot().sc).hasRole(
+                Constants.FOUNDER_ROLE,
                 msg.sender
             ),
             IErrors.NotFounder(msg.sender)
         );
         LETSSaleBaseSchema.LETSSaleBaseLayout storage $ = LETSSaleBaseStorage
             .LETSSaleBaseSlot();
-        if ($.saleStart != 0 && $.saleEnd != 0) {
+        if (saleStart != 0 && saleEnd != 0) {
             LETSSaleBaseLib.setSalePeriod(saleStart, saleEnd);
         }
         LETSSaleBaseLib.setPrice(fixedPrice, minPrice, maxPrice);

@@ -9,7 +9,6 @@ import "@nomicfoundation/hardhat-verify";
 
 const deployerPrivateKey =
   process.env.DEPLOYER_PRIVATE_KEY ?? "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-console.log(`deployerPrivateKey: ${deployerPrivateKey}`);
 const baseSepoliaApiKey = process.env.BASE_SEPOLIA_API_KEY ?? "";
 
 const config: HardhatUserConfig = {

@@ -3,7 +3,8 @@ pragma solidity 0.8.28;
 
 import {Dictionary} from "../../../core/Dictionary/Dictionary.sol";
 import {CompanyInfo} from "./CompanyInfo.sol";
-import {SCInitialize} from "../../../core/Initialize/functions/SCInitialize.sol";
+import {SCInitialize} from "../../../sc/SCT/functions/initialize/SCInitialize.sol";
+import {Ownable} from "../../../sc/Ownable/functions/Ownable.sol";
 
 // storages
 import {Storage} from "../storages/Storage.sol";
@@ -25,19 +26,19 @@ import {DeployCoreContract} from "../../../core/lib/DeployCoreContract.sol";
 import {ISCR} from "../interfaces/ISCR.sol";
 import {ISCT} from "../../../sc/SCT/interfaces/ISCT.sol";
 import {ServiceType} from "../../../core/utils/ITypes.sol";
-import {ISCInitialize, ISCTInitialize} from "../../../core/Initialize/interfaces/ISCInitialize.sol";
+import {ISCInitialize} from "../../../sc/SCT/interfaces/initialize/ISCInitialize.sol";
 import {IInitialize} from "../../../core/Initialize/interfaces/IInitialize.sol";
 import {IServiceInitialize} from "../../../core/utils/IServiceInitialize.sol";
+import {ILETSBase} from "../../../sc/Services/LETS/interfaces/ILETSBase.sol";
+import {ILETSSaleBase} from "../../../sc/Services/LETS/interfaces/ILETSSaleBase.sol";
 import {IDictionary} from "../../../core/Dictionary/interfaces/IDictionary.sol";
 import {IErrors} from "../../../core/utils/IErrors.sol";
 import {IBeaconUpgradeableBaseStructs} from "../../BeaconUpgradeableBase/interfaces/IBeaconUpgradeableBaseStructs.sol";
-
+import {console} from "hardhat/console.sol";
 // openzeppelin
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 import {DynamicArrayLib} from "solady/src/utils/DynamicArrayLib.sol";
 
-import {console} from "hardhat/console.sol";
 
 /**
  * @title SmartCompany Registry v0.1.0
@@ -83,7 +84,6 @@ contract SCR is ISCR, CompanyInfo {
             ServiceType[] memory serviceTypes
         )
     {
-        console.log("createSmartCompany");
         // check founder role
         BorderlessAccessControlLib.onlyRole(Constants.FOUNDER_ROLE, msg.sender);
 
@@ -200,7 +200,6 @@ contract SCR is ISCR, CompanyInfo {
             ServiceType[] memory serviceTypes
         )
     {
-        console.log("_createSmartCompany");
         IBeaconUpgradeableBaseStructs.Beacon
             memory beaconInfo = BeaconUpgradeableBaseStorage
                 .SCRBeaconProxySlot()
@@ -219,7 +218,6 @@ contract SCR is ISCR, CompanyInfo {
             ""
         );
         address scInitialize = DeployCoreContract.deploySCInitialize();
-        console.log("deployed sc");
 
         // Deploy proxy contract
         company = DeployCoreContract.deployProxy(dictionary, "");
@@ -236,27 +234,21 @@ contract SCR is ISCR, CompanyInfo {
             borderlessAccessControl
         );
         // IDictionary(dictionary).setOnceInitialized(scInitialize, sc);
-        IDictionary(dictionary).setOnceInitialized(scInitialize, sc);
+        IDictionary(dictionary).setImplementation(
+            bytes4(keccak256("initialize(address,address,address,address)")),
+            scInitialize
+        );
 
-        console.log("company", company);
-        console.log("setting setOnceInitialized");
 
         IInitialize(borderlessAccessControl).initialize(dictionary);
-        console.log("borderlessAccessControlInitialize");
-        ISCTInitialize(scInitialize).initialize(
-            // companyInfo.founder,
-            // address(this),
-            sc,
-            dictionary
-        );
-        console.log("companyInitialize");
         ISCInitialize(company).initialize(
+            dictionary,
+            sc,
             companyInfo.founder,
             address(this)
-            // dictionary
         );
 
-        console.log("Initialized BorderlessAccessControl");
+        console.log("done sc initialize");
 
         // register company address
         Storage.SCRSlot().companies[scid].companyAddress = company;
@@ -273,7 +265,13 @@ contract SCR is ISCR, CompanyInfo {
 
         Ownable(dictionary).transferOwnership(companyInfo.founder);
 
-        emit DeploySmartCompany(companyInfo.founder, company, scid);
+        emit DeploySmartCompany(
+            companyInfo.founder,
+            company,
+            scid,
+            services,
+            serviceTypes
+        );
     }
 
     /**
@@ -294,7 +292,6 @@ contract SCR is ISCR, CompanyInfo {
         internal
         returns (address[] memory services, ServiceType[] memory serviceTypes)
     {
-        console.log("_setupService");
         DynamicArrayLib.DynamicArray memory tmpServices;
         DynamicArrayLib.DynamicArray memory tmpTypes;
         uint256 serviceCount;
@@ -305,23 +302,42 @@ contract SCR is ISCR, CompanyInfo {
                 scsAddresses[index],
                 dictionary
             );
-            console.log("deployed service");
-            tmpServices = tmpServices.p(service);
-            tmpTypes = tmpTypes.p(uint256(serviceType));
-            serviceCount++;
-
-            console.log("serviceCount", serviceCount);
 
             if (
                 serviceType == ServiceType.LETS_EXE ||
                 serviceType == ServiceType.LETS_NON_EXE
             ) {
-                console.log("initialize lets");
+                // Deploy lets dictionary & initialize & borderlessAccessControl contract
+                address letsDictionary = DeployCoreContract.deployDictionary(
+                    address(this)
+                );
+
+                // Deploy proxy contract
+                address letsProxy = DeployCoreContract.deployProxy(
+                    letsDictionary,
+                    ""
+                );
+                address letsOwnable = DeployCoreContract.deployOwnable();
+                IDictionary(letsDictionary).setOnceInitialized(letsProxy, service);
+                IDictionary(letsDictionary).setOnceInitialized(letsOwnable, letsOwnable);
+                IDictionary(letsDictionary).setImplementation(
+                    bytes4(keccak256("initialize(address,address,address,bytes)")),
+                    service
+                );
                 // initialize lets
-                LETSBaseInitializeLib.initialize(
-                    founder,
+                ILETSBase(letsProxy).initialize(
+                    letsDictionary,
+                    service,
+                    company,
                     scsDeployParams[index]
                 );
+                Ownable(letsOwnable).initialize(founder);
+                ServiceFactoryStorage.ServiceFactorySlot().founderServices[founder][
+                    serviceType
+                ] = letsProxy;
+                service = letsProxy;
+                console.log("letsProxy: ", letsProxy);
+                console.logUint(uint256(serviceType));
                 address letsSaleBeacon = ServiceFactoryStorage
                     .ServiceFactorySlot()
                     .letsSaleBeacons[scsAddresses[index]];
@@ -332,15 +348,20 @@ contract SCR is ISCR, CompanyInfo {
                         founder,
                         company,
                         letsSaleBeacon,
-                        dictionary
+                        letsDictionary
                     );
                 tmpServices = tmpServices.p(letsSaleAddress);
                 tmpTypes = tmpTypes.p(uint256(letsSaleType));
                 serviceCount++;
-            }
-        }
 
-        console.log("deployed services");
+                Ownable(letsDictionary).transferOwnership(founder);
+            }
+
+            tmpServices = tmpServices.p(service);
+            tmpTypes = tmpTypes.p(uint256(serviceType));
+            serviceCount++;
+
+        }
 
         services = DynamicArrayLib.asAddressArray(tmpServices.data);
         uint256[] memory rawTypes = tmpTypes.data;
@@ -349,9 +370,6 @@ contract SCR is ISCR, CompanyInfo {
             serviceTypes[j] = ServiceType(rawTypes[j]);
         }
 
-        console.log("prepare to register services");
-        console.log("address(this)", address(this));
-        console.log("company,founder", company, founder);
         ISCT(company).registerService(serviceTypes, services);
     }
 
@@ -361,7 +379,6 @@ contract SCR is ISCR, CompanyInfo {
         address beacon,
         address dictionary
     ) internal returns (address service, ServiceType serviceType) {
-        console.log("_deployService");
         (service, serviceType) = ServiceFactoryLib.activate(
             founder,
             company,
@@ -371,8 +388,14 @@ contract SCR is ISCR, CompanyInfo {
             service != address(0),
             NotActivateService(msg.sender, company, beacon)
         );
-        IDictionary(dictionary).setOnceInitialized(service, service);
-        IServiceInitialize(service).initialize(dictionary);
+
+        if (
+            serviceType != ServiceType.LETS_EXE &&
+            serviceType != ServiceType.LETS_NON_EXE
+        ) {
+            IDictionary(dictionary).setOnceInitialized(service, service);
+            IServiceInitialize(service).initialize(dictionary);
+        }
     }
 
     // ============================================== //

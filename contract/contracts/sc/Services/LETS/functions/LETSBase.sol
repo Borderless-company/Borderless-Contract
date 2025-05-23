@@ -3,12 +3,20 @@ pragma solidity 0.8.28;
 
 import {ERC721} from "../../../ERC721/functions/ERC721.sol";
 
+// storage
+import {Storage as LETSBaseStorage} from "../storages/Storage.sol";
+
 // lib
 import {LETSBaseLib} from "../libs/LETSBaseLib.sol";
-import {LETSBaseInitializeLib} from "../../../../core/Initialize/libs/LETSBaseInitializeLib.sol";
+import {LETSBaseInitializeLib} from "../libs/LETSBaseInitializeLib.sol";
 
 // interfaces
 import {ILETSBase} from "../interfaces/ILETSBase.sol";
+import {ISCT} from "../../../SCT/interfaces/ISCT.sol";
+import {Constants} from "../../../../core/lib/Constants.sol";
+
+// OpenZeppelin
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /**
  * @title Legal Embedded Token Service
@@ -19,13 +27,30 @@ contract LETSBase is ERC721, ILETSBase {
     //                Initialization                  //
     // ============================================== //
 
-    function initialize(address dictionary) public virtual {
-        LETSBaseInitializeLib.initialize(dictionary);
+    function initialize(
+        address,
+        address,
+        address sc,
+        bytes calldata params
+    ) public virtual override returns (bytes4[] memory selectors) {
+        selectors = LETSBaseInitializeLib.initialize(sc, params);
     }
 
     // ============================================== //
     //             Eternal Write Functions            //
     // ============================================== //
+
+    function mint(address to) external override {
+        require(
+            IAccessControl(ISCT(LETSBaseStorage.LETSBaseSlot().sc).getSCR())
+                .hasRole(Constants.MINTER_ROLE, msg.sender),
+            IAccessControl.AccessControlUnauthorizedAccount(
+                msg.sender,
+                Constants.MINTER_ROLE
+            )
+        );
+        LETSBaseLib.mint(to);
+    }
 
     function freezeToken(uint256 tokenId) external override {
         LETSBaseLib.freezeToken(tokenId);

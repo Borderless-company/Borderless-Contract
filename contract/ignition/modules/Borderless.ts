@@ -11,19 +11,13 @@ export const BorderlessModule = buildModule("BorderlessModule", (m) => {
   // １）Facet 実装を先に宣言（まだデプロイは行われません）
   // ────────────────────────────────────────────────
   const accessControlFacet = m.contract("BorderlessAccessControl", []);
-  console.log("ok accessControlFacet");
   const scrBeaconFacet = m.contract("SCRBeaconUpgradeable", []);
-  console.log("ok scrBeaconFacet");
   const sfBeaconFacet = m.contract("ServiceFactoryBeaconUpgradeable", []);
-  console.log("ok sfBeaconFacet");
   const serviceFactoryFacet = m.contract("ServiceFactory", []);
-  console.log("ok serviceFactoryFacet");
   const scrInitializeFacet = m.contract("SCRInitialize", [], {
     id: "Borderless_SCRInitialize",
   });
-  console.log("ok scrInitializeFacet");
   const scrFacet = m.contract("SCR", []);
-  console.log("ok scrFacet");
 
   // ────────────────────────────────────────────────
   // ２）Dictionary をデプロイ

@@ -9,8 +9,22 @@ interface ILETSBaseFunctions {
     /**
      * @notice Initialize the contract
      * @param dictionary The dictionary address
+     * @param implementation The implementation address
+     * @param sc The sc address
+     * @param params The parameters
      */
-    function initialize(address dictionary) external;
+    function initialize(
+        address dictionary,
+        address implementation,
+        address sc,
+        bytes calldata params
+    ) external returns (bytes4[] memory selectors);
+
+    /**
+     * @notice Mint a new token
+     * @param to The address to mint the token to
+     */
+    function mint(address to) external;
 
     /**
      * @notice Freeze the token with the given ID

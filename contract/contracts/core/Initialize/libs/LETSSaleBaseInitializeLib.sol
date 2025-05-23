@@ -28,12 +28,10 @@ library LETSSaleBaseInitializeLib {
             keccak256("updatePrice(uint256,uint256,uint256)")
         );
         selectors[6] = bytes4(keccak256("updateIsPriceRange(bool)"));
-        for (uint256 i = 0; i < selectors.length; i++) {
-            Dictionary(dictionary).setImplementation(
-                selectors[i],
-                address(this)
-            );
-        }
+        Dictionary(dictionary).bulkSetImplementation(
+            selectors,
+            address(this)
+        );
         emit LETSSaleBaseInitialized(msg.sender);
     }
 }

@@ -21,7 +21,14 @@ import {IOwnable} from "../interfaces/IOwnable.sol";
  * `onlyOwner`, which can be applied to your functions to restrict their use to
  * the owner.
  */
-abstract contract Ownable is IOwnable {
+contract Ownable is IOwnable {
+    function initialize(address owner_) public virtual {
+        require(
+            owner_ != address(0),
+            OwnableInvalidOwner(address(0))
+        );
+        OwnableStorage.OwnableSlot().owner = owner_;
+    }
 
     /**
      * @dev Throws if called by any account other than the owner.

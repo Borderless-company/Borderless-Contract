@@ -19,14 +19,30 @@ interface IDictionary is IDictionaryCore {
      * @param selector function selector
      * @param implementation implementation address
      */
-    function setImplementation(bytes4 selector, address implementation) external;
+    function setImplementation(
+        bytes4 selector,
+        address implementation
+    ) external;
+
+    /**
+     * @dev bulk set implementation address
+     * @param selectors function selectors
+     * @param implementation implementation address
+     */
+    function bulkSetImplementation(
+        bytes4[] memory selectors,
+        address implementation
+    ) external;
 
     /**
      * @dev bulk set implementation address
      * @param selectors function selectors
      * @param implementations implementation addresses
      */
-    function bulkSetImplementation(bytes4[] memory selectors, address[] memory implementations) external;
+    function bulkSetImplementation(
+        bytes4[] memory selectors,
+        address[] memory implementations
+    ) external;
 
     /**
      * @dev upgrade facade
@@ -39,7 +55,10 @@ interface IDictionary is IDictionaryCore {
      * @param account account address
      * @param implementation implementation address
      */
-    function setOnceInitialized(address account, address implementation) external;
+    function setOnceInitialized(
+        address account,
+        address implementation
+    ) external;
 
     // ============================================== //
     //              External Read Functions           //

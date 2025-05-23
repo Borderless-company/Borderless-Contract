@@ -6,7 +6,7 @@ import {Storage as GovernanceStorage} from "../storages/Storage.sol";
 import {Storage as LETSBaseStorage} from "../../LETS/storages/Storage.sol";
 
 // lib
-import {GovernanceInitializeLib} from "../../../../core/Initialize/libs/GovernanceInitializeLib.sol";
+import {GovernanceInitializeLib} from "../libs/GovernanceInitializeLib.sol";
 import {ThresholdLib} from "../../../../core/lib/ThresholdLib.sol";
 import {LETSBaseLib} from "../../LETS/libs/LETSBaseLib.sol";
 import {ERC721Lib} from "../../../ERC721/libs/ERC721Lib.sol";

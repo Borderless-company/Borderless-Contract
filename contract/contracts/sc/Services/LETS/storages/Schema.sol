@@ -6,6 +6,7 @@ pragma solidity 0.8.28;
  */
 library Schema {
     struct LETSBaseLayout {
+        address sc;
         uint256 nextTokenId;
         string baseURI;
         string extension;

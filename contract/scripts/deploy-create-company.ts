@@ -12,6 +12,7 @@ import {
   RegisterLetsSaleServiceModule,
   CreateSmartCompanyModule,
 } from "../ignition/modules/Borderless";
+import { BorderlessAccessControl } from "../typechain-types";
 
 dotenv.config();
 
@@ -63,10 +64,6 @@ async function main() {
     dictionary,
     proxy,
     sct,
-    governance_jp_llc,
-    lets_jp_llc_exe,
-    lets_jp_llc_non_exe,
-    lets_jp_llc_sale,
   } = await hre.ignition.deploy(BorderlessModule, {
     parameters: parameters,
   });
@@ -132,7 +129,9 @@ async function main() {
   const { selectors: scrSelectors, implementations: scrImplementations } =
     await registerFunctions("SCR", await scrFacet.getAddress());
 
-  const receipt = await dictionary.bulkSetImplementation(
+  const receipt = await dictionary.getFunction(
+    "bulkSetImplementation(bytes4[],address[])"
+  )(
     [
       ...scrBeaconSelectors,
       ...sfBeaconSelectors,
@@ -278,21 +277,6 @@ async function main() {
   );
 
   // ────────────────────────────────────────────────
-  // ログに出力
-  // ────────────────────────────────────────────────
-
-  console.table({
-    proxy: await proxy.getAddress(),
-    dictionary: await dictionary.getAddress(),
-    sct: await sct.getAddress(),
-    sctBeacon: await sctBeaconConn.getAddress(),
-    governanceBeacon: await governanceBeacon.getAddress(),
-    lets_jp_llc_exeBeacon: await lets_jp_llc_exeBeacon.getAddress(),
-    lets_jp_llc_non_exeBeacon: await lets_jp_llc_non_exeBeacon.getAddress(),
-    lets_jp_llc_saleBeacon: await lets_jp_llc_saleBeacon.getAddress(),
-  });
-
-  // ────────────────────────────────────────────────
   // FOUNDERロールの設定
   // ────────────────────────────────────────────────
 
@@ -364,67 +348,159 @@ async function main() {
   });
   console.log(`scProxyConn: ${scProxyConn.target}`);
 
-  // ────────────────────────────────────────────────
-  // LETS_JP_LLC_EXEのmintを実行
-  // ────────────────────────────────────────────────
-  await delay(10000); // 10秒待機
+  // ============================================== //
+  //            ServiceFactoryからLETSを取得           //
+  // ============================================== //
 
-  const executionMember = await hre.ethers.getSigner(
-    "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+  await delay(1000); // 1秒待機
+
+  const letsExeAddress = await serviceFactoryConn.getFounderService(
+    deployer,
+    3
   );
-
-  const lets_jp_llc_exeConn = await hre.ethers.getContractAt(
+  const letsNonExeAddress = await serviceFactoryConn.getFounderService(
+    deployer,
+    4
+  );
+  const letsExeConn = await hre.ethers.getContractAt(
     "LETS_JP_LLC_EXE",
-    scProxyConn.target ?? ""
+    letsExeAddress
   );
-  await lets_jp_llc_exeConn.initialMint([deployer, executionMember]);
-  const deployerBalance = await lets_jp_llc_exeConn.balanceOf(deployer);
-  console.log(`deployerBalance: ${deployerBalance}`);
-  const executionMemberBalance = await lets_jp_llc_exeConn.balanceOf(
-    executionMember
+  const letsExeSaleConn = await hre.ethers.getContractAt(
+    "LETS_JP_LLC_SALE",
+    letsExeAddress
   );
-  console.log(`executionMemberBalance: ${executionMemberBalance}`);
+  const letsNonExeConn = await hre.ethers.getContractAt(
+    "LETS_JP_LLC_NON_EXE",
+    letsNonExeAddress
+  );
+  const letsNonExeSaleConn = await hre.ethers.getContractAt(
+    "LETS_JP_LLC_SALE",
+    letsNonExeAddress
+  );
 
-  // ============================================== //
-  //                Saleコントラクトの設定               //
-  // ============================================== //
+  console.log("✅ Done get LETS");
+
+  // ────────────────────────────────────────────────
+  // LETS_JP_LLC_EXEの購入を実行
+  // ────────────────────────────────────────────────
+
+  // await delay(10000); // 10秒待機
+
+  // // Saleコントラクトの設定
+  // await letsExeSaleConn.getFunction(
+  //   "setSaleInfo(uint256,uint256,uint256,uint256,uint256)"
+  // )(
+  //   0,
+  //   0,
+  //   hre.ethers.parseEther("0.001"), // 1 ETH
+  //   0,
+  //   0
+  // );
+
+  // await letsExeSaleConn
+  //   .connect(deployerWallet)
+  //   .getFunction("offerToken(address)")(
+  //   deployer,
+  //   { value: hre.ethers.parseEther("0.001") } // 1 ETHを送付
+  // );
+
+  // const executionMember2Balance = await letsExeConn.balanceOf(deployer);
+  // console.log(`executionMember2Balance: ${executionMember2Balance}`);
+
+  // console.log("✅ LETS_JP_LLC_EXEの購入");
+
+  // ────────────────────────────────────────────────
+  // LETS_JP_LLC_NON_EXEの購入を実行
+  // ────────────────────────────────────────────────
+
+  // await delay(10000); // 10秒待機
+
+  // // Saleコントラクトの設定
+  // await letsNonExeSaleConn.getFunction(
+  //   "setSaleInfo(uint256,uint256,uint256,uint256,uint256)"
+  // )(
+  //   0,
+  //   0,
+  //   hre.ethers.parseEther("0.001"), // 1 ETH
+  //   0,
+  //   0
+  // );
+
+  // await letsNonExeSaleConn
+  //   .connect(deployerWallet)
+  //   .getFunction("offerToken(address)")(
+  //   deployer,
+  //   { value: hre.ethers.parseEther("0.001") } // 1 ETHを送付
+  // );
+
+  // const letsNonExeExecutionMember2Balance = await letsNonExeConn.balanceOf(
+  //   deployer
+  // );
+  // console.log(
+  //   `letsNonExeExecutionMember2Balance: ${letsNonExeExecutionMember2Balance}`
+  // );
+
+  // console.log("✅ LETS_JP_LLC_NON_EXEの購入");
+
+  // ────────────────────────────────────────────────
+  // MINTER_ROLEからLETS_JP_LLC_EXEのmintを実行
+  // ────────────────────────────────────────────────
+  await delay(10000); // 10秒待機
+
+  // minter roleの付与
+  const scrAccessControlConn = (
+    await hre.ethers.getContractAt(
+      "BorderlessAccessControl",
+      await proxy.getAddress()
+    )
+  ).connect(deployerWallet) as BorderlessAccessControl;
+
+  const MINTER_ROLE =
+    "0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6";
+  await scrAccessControlConn.grantRole(MINTER_ROLE, deployer);
 
   await delay(10000); // 10秒待機
 
-  const executionMember2 = await hre.ethers.getSigner(
-    "0x90F79bf6EB2c4f870365E785982E1f101E93b906"
+  // mint を実行
+  await letsExeConn.connect(deployerWallet).getFunction("mint(address)")(
+    deployer
   );
+  await delay(10000); // 10秒待機
+  const tokenMinterBalance = await letsExeConn.balanceOf(deployer);
+  console.log(`tokenMinterBalance: ${tokenMinterBalance}`);
 
-  // Saleコントラクトの設定
-  const letsSaleConn = await hre.ethers.getContractAt(
-    "LETS_JP_LLC_SALE",
-    scProxyConn.target ?? ""
+  console.log("✅ Done mint LETS_JP_LLC_EXE");
+
+  // ────────────────────────────────────────────────
+  // MINTER_ROLEからLETS_JP_LLC_NON_EXEのmintを実行
+  // ────────────────────────────────────────────────
+  await delay(10000); // 10秒待機
+
+  // mint を実行
+  await letsNonExeConn.connect(deployerWallet).getFunction("mint(address)")(
+    deployer
   );
+  await delay(10000); // 10秒待機
+  const tokenMinterBalance2 = await letsNonExeConn.balanceOf(deployer);
+  console.log(`tokenMinterBalance2: ${tokenMinterBalance2}`);
 
-  // Saleコントラクトの設定
-  await letsSaleConn.getFunction(
-    "setSaleInfo(uint256,uint256,uint256,uint256,uint256)"
-  )(
-    0,
-    0,
-    hre.ethers.parseEther("0.1"), // 1 ETH
-    0,
-    0
-  );
+  // ────────────────────────────────────────────────
+  // ログに出力
+  // ────────────────────────────────────────────────
 
-  await letsSaleConn
-    .connect(executionMember2)
-    .getFunction("offerToken(address)")(
-    executionMember2,
-    { value: hre.ethers.parseEther("0.1") } // 1 ETHを送付
-  );
-
-  const executionMember2Balance = await lets_jp_llc_exeConn.balanceOf(
-    executionMember2
-  );
-  console.log(`executionMember2Balance: ${executionMember2Balance}`);
-
-  console.log("✅ Saleコントラクトの設定");
+  console.table({
+    proxy: await proxy.getAddress(),
+    dictionary: await dictionary.getAddress(),
+    sct: await sct.getAddress(),
+    sctBeacon: await sctBeaconConn.getAddress(),
+    governanceBeacon: await governanceBeacon.getAddress(),
+    lets_jp_llc_exeBeacon: await lets_jp_llc_exeBeacon.getAddress(),
+    lets_jp_llc_non_exeBeacon: await lets_jp_llc_non_exeBeacon.getAddress(),
+    lets_jp_llc_saleBeacon: await lets_jp_llc_saleBeacon.getAddress(),
+    letsExeProxy: await letsExeConn.getAddress(),
+    letsNonExeProxy: await letsNonExeConn.getAddress(),
+  });
 }
 
 main().catch(console.error);

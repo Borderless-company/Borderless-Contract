@@ -7,6 +7,12 @@ interface ILETSSaleBaseFunctions {
     // ============================================== //
 
     /**
+     * @notice initialize
+     * @param dictionary dictionary address
+     */
+    function initialize(address dictionary) external;
+
+    /**
      * @notice buy token
      * @param to address to
      */

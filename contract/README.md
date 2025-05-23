@@ -27,14 +27,22 @@ bun run localhost
 ```
 
 ```bash
-bun run deploy:create-company --network localhost
+bun run deploy:create-company-local --network localhost
 ```
 
 ## Deploy Base Sepolia
 
-```bash
+- deploy
+
 ```bash
 bun run deploy --network base-sepolia
+```
+
+- deploy & token mint
+
+
+```bash
+bun run deploy:create-company --network base-sepolia
 ```
 
 ## Verify contract

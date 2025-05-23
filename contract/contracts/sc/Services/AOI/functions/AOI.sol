@@ -6,7 +6,7 @@ import {Storage as AOIStorage} from "../storages/Storage.sol";
 
 // lib
 import {AOILib} from "../libs/AOILib.sol";
-import {AOIInitializeLib} from "../../../../core/Initialize/libs/AOIInitializeLib.sol";
+import {AOIInitializeLib} from "../libs/AOIInitializeLib.sol";
 import {BorderlessAccessControlLib} from "../../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
 import {Constants} from "../../../../core/lib/Constants.sol";
 import {ERC721Lib} from "../../../../sc/ERC721/libs/ERC721Lib.sol";

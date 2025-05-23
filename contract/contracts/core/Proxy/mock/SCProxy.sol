@@ -78,6 +78,10 @@ contract SCProxy {
     ) external {}
     function bulkSetImplementation(
         bytes4[] memory selectors,
+        address implementation
+    ) external {}
+    function bulkSetImplementation(
+        bytes4[] memory selectors,
         address[] memory implementations
     ) external {}
     function upgradeFacade(address newFacade) external {}

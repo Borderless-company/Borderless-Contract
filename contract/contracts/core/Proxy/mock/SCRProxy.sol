@@ -2,15 +2,7 @@
 pragma solidity 0.8.28;
 
 // interfaces
-import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
-import {IDictionary} from "../../Dictionary/interfaces/IDictionary.sol";
-import {IServiceFactory} from "../../../scr/Factory/interfaces/IServiceFactory.sol";
 import {ICompanyInfo} from "../../../scr/SCR/interfaces/CompanyInfo/ICompanyInfo.sol";
-import {ISCR} from "../../../scr/SCR/interfaces/ISCR.sol";
-import {IServiceInitialize} from "../../utils/IServiceInitialize.sol";
-import {IInitialize} from "../../Initialize/interfaces/IInitialize.sol";
-import {ISCInitialize, ISCTInitialize} from "../../Initialize/interfaces/ISCInitialize.sol";
-import {ISCT} from "../../../sc/SCT/interfaces/ISCT.sol";
 import {IBeaconUpgradeableBaseStructs} from "../../../scr/BeaconUpgradeableBase/interfaces/IBeaconUpgradeableBaseStructs.sol";
 import {ServiceType} from "../../utils/ITypes.sol";
 
@@ -18,7 +10,9 @@ contract SCRProxy {
     constructor(address dictionary, bytes memory _data) {}
 
     // ERC165 functions
-    function supportsInterface(bytes4 interfaceId) external view returns (bool) {}
+    function supportsInterface(
+        bytes4 interfaceId
+    ) external view returns (bool) {}
 
     // Ownable functions
     function owner() public view returns (address) {}
@@ -33,44 +27,108 @@ contract SCRProxy {
     function revokeRole(bytes32 role, address account) external {}
     function renounceRole(bytes32 role, address callerConfirmation) external {}
     function getRoleAdmin(bytes32 role) external view returns (bytes32) {}
-    function hasRole(bytes32 role, address account) external view returns (bool) {}
+    function hasRole(
+        bytes32 role,
+        address account
+    ) external view returns (bool) {}
 
     // DictionaryBase functions
-    function getImplementation(bytes4 selector) external view returns (address) {}
+    function getImplementation(
+        bytes4 selector
+    ) external view returns (address) {}
 
     // Dictionary functions
-    function setImplementation(bytes4 selector, address implementation) external {}
-    function bulkSetImplementation(bytes4[] memory selectors, address[] memory implementations) external {}
+    function setImplementation(
+        bytes4 selector,
+        address implementation
+    ) external {}
+    function bulkSetImplementation(
+        bytes4[] memory selectors,
+        address implementation
+    ) external {}
     function upgradeFacade(address newFacade) external {}
-    function setOnceInitialized(address account, address implementation) external {}
+    function setOnceInitialized(
+        address account,
+        address implementation
+    ) external {}
     function getFacade() external view returns (address) {}
 
     // SCRBeaconUpgradeable functions
-    function updateSCRBeaconName(address beacon, string calldata name) external returns (IBeaconUpgradeableBaseStructs.Beacon memory) {}
+    function updateSCRBeaconName(
+        address beacon,
+        string calldata name
+    ) external returns (IBeaconUpgradeableBaseStructs.Beacon memory) {}
     function changeSCRBeaconOnline(address beacon, bool isOnline) external {}
-    function getSCRBeacon(address beacon) external view returns (IBeaconUpgradeableBaseStructs.Beacon memory) {}
-    function getSCRProxy(address proxy) external view returns (IBeaconUpgradeableBaseStructs.Proxy memory) {}
+    function getSCRBeacon(
+        address beacon
+    ) external view returns (IBeaconUpgradeableBaseStructs.Beacon memory) {}
+    function getSCRProxy(
+        address proxy
+    ) external view returns (IBeaconUpgradeableBaseStructs.Proxy memory) {}
 
     // ServiceFactoryBeaconUpgradeable functions
-    function updateServiceFactoryBeaconName(address beacon, string calldata name) external returns (IBeaconUpgradeableBaseStructs.Beacon memory) {}
-    function changeServiceFactoryBeaconOnline(address beacon, bool isOnline) external {}
-    function getServiceFactoryBeacon(address beacon) external view returns (IBeaconUpgradeableBaseStructs.Beacon memory) {}
-    function getServiceFactoryProxy(address proxy) external view returns (IBeaconUpgradeableBaseStructs.Proxy memory) {}
+    function updateServiceFactoryBeaconName(
+        address beacon,
+        string calldata name
+    ) external returns (IBeaconUpgradeableBaseStructs.Beacon memory) {}
+    function changeServiceFactoryBeaconOnline(
+        address beacon,
+        bool isOnline
+    ) external {}
+    function getServiceFactoryBeacon(
+        address beacon
+    ) external view returns (IBeaconUpgradeableBaseStructs.Beacon memory) {}
+    function getServiceFactoryProxy(
+        address proxy
+    ) external view returns (IBeaconUpgradeableBaseStructs.Proxy memory) {}
 
     // ServiceFactory functions
-    function setService(address implementation, string calldata name, ServiceType serviceType) external returns (address) {}
-    function setLetsSaleBeacon(address letsBeacon, address letsSaleBeacon) external {}
-    function getServiceType(address beacon) external view returns (ServiceType) {}
-    function getFounderService(address founder, ServiceType serviceType) external view returns (address) {}
+    function setService(
+        address implementation,
+        string calldata name,
+        ServiceType serviceType
+    ) external returns (address) {}
+    function setLetsSaleBeacon(
+        address letsBeacon,
+        address letsSaleBeacon
+    ) external {}
+    function getServiceType(
+        address beacon
+    ) external view returns (ServiceType) {}
+    function getFounderService(
+        address founder,
+        ServiceType serviceType
+    ) external view returns (address) {}
 
     // CompanyInfo functions
-    function setCompanyInfo(string calldata scid, string calldata companyInfoField, string calldata value) external {}
-    function addCompanyInfoFields(string calldata legalEntityCode, string calldata field) external {}
-    function updateCompanyInfoFields(string calldata legalEntityCode, uint256 fieldIndex, string calldata field) external {}
-    function deleteCompanyInfoFields(string calldata legalEntityCode, uint256 fieldIndex) external {}
-    function getCompanyInfoFields(string calldata legalEntityCode) external view returns (string[] memory) {}
-    function getCompanyInfo(string calldata scid) external view returns (ICompanyInfo.CompanyInfo memory) {}
-    function getCompanyField(string calldata scid, string calldata companyInfoField) external view returns (string memory) {}
+    function setCompanyInfo(
+        string calldata scid,
+        string calldata companyInfoField,
+        string calldata value
+    ) external {}
+    function addCompanyInfoFields(
+        string calldata legalEntityCode,
+        string calldata field
+    ) external {}
+    function updateCompanyInfoFields(
+        string calldata legalEntityCode,
+        uint256 fieldIndex,
+        string calldata field
+    ) external {}
+    function deleteCompanyInfoFields(
+        string calldata legalEntityCode,
+        uint256 fieldIndex
+    ) external {}
+    function getCompanyInfoFields(
+        string calldata legalEntityCode
+    ) external view returns (string[] memory) {}
+    function getCompanyInfo(
+        string calldata scid
+    ) external view returns (ICompanyInfo.CompanyInfo memory) {}
+    function getCompanyField(
+        string calldata scid,
+        string calldata companyInfoField
+    ) external view returns (string memory) {}
 
     // SCR functions
     function createSmartCompany(
@@ -85,8 +143,23 @@ contract SCRProxy {
         string[] calldata companyInfo,
         address[] calldata scsBeaconProxy,
         bytes[] calldata scsDeployParams
-    ) external returns (address company, address[] memory services, ServiceType[] memory serviceTypes) {}
-    function setSCContract(address scImplementation, string calldata scName) external returns (address) {}
-    function updateSCContract(address scBeacon, address newSCImplementation) external {}
-    function getFounderCompanies(address founder) external view returns (string memory) {}
+    )
+        external
+        returns (
+            address company,
+            address[] memory services,
+            ServiceType[] memory serviceTypes
+        )
+    {}
+    function setSCContract(
+        address scImplementation,
+        string calldata scName
+    ) external returns (address) {}
+    function updateSCContract(
+        address scBeacon,
+        address newSCImplementation
+    ) external {}
+    function getFounderCompanies(
+        address founder
+    ) external view returns (string memory) {}
 }
