@@ -80,15 +80,15 @@ npx hardhat verify --network base-sepolia "0xA960bD38Dcfa44c6e13832bFeC92462cAC3
 ┌───────────────────────────┬──────────────────────────────────────────────┐
 │ (index)                   │ Values                                       │
 ├───────────────────────────┼──────────────────────────────────────────────┤
-│ proxy                     │ '0x669f5e400Ea2FE4A352eD8E20EfD032f7d54CB26' │
-│ scProxy                   │ '0xbFFf5C2aB3873490578b4da18d3cb48Bad3e3673' │
-│ scrProxy                  │ '0xa8e2325031b0701D894d1FEA90B0C0087FAD318B' │
-│ dictionary                │ '0x63bf4c793e32453053f3c4befdC86a83667056f9' │
-│ sct                       │ '0x28b1Fa13bd017E7Fd57a4bE5188B0e71951Ea038' │
-│ sctBeacon                 │ '0x6BDb0FFD1aa4a3E68ea93d23A2F39D231BE8CF7E' │
-│ governanceBeacon          │ '0xCbFdb59302761532974D04aC46836aCd45cf7A27' │
-│ lets_jp_llc_exeBeacon     │ '0x2a20f5FdAFcded0741E79728a6c04B993e2949e4' │
-│ lets_jp_llc_non_exeBeacon │ '0x1c0Eb7851b765bddA54d942DA358c7F8779e5AeC' │
-│ lets_jp_llc_saleBeacon    │ '0xb17f4fEb61f0674E6e96A45122dE6ca0b5BD72c9' │
+│ proxy                     │ '0x0b5387D9C4dd4B744A8D91611110D059473aa40b' │
+│ dictionary                │ '0x441654379cE71d33B262559A2fCC1ECC5D5C867c' │
+│ sct                       │ '0x0d4D35E48B928Cd2CE8086E01293bCfAC338A785' │
+│ sctBeacon                 │ '0xC7792AD972C3c552Db3fc9bD8c93cF6C8d422464' │
+│ governanceBeacon          │ '0x253dAD70252fAcA6AAcbC178427b317b69138fD7' │
+│ lets_jp_llc_exeBeacon     │ '0xaC98d1c73afb972646be6E2788872550705c39E3' │
+│ lets_jp_llc_non_exeBeacon │ '0x35B01CF5Ab802f851B7d62AcdD6088570974990d' │
+│ lets_jp_llc_saleBeacon    │ '0x92e06f438d11DD49cE850F61025217fe3Ad51f85' │
+│ letsExeProxy              │ '0x35cEFea97A15f9927898Ee70164E3F16Cd580c46' │
+│ letsNonExeProxy           │ '0xd54f5C53977bC9dB4Daa77551AEF880750c03729' │
 └───────────────────────────┴──────────────────────────────────────────────┘
 ```
