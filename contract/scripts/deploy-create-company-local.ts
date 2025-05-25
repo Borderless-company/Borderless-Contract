@@ -69,7 +69,6 @@ async function main() {
   });
 
   console.log(`✅ Done deploy BorderlessModule`);
-  
 
   // ────────────────────────────────────────────────
   // 関数セレクタ登録権限の付与

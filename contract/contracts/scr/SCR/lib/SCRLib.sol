@@ -27,7 +27,7 @@ library SCRLib {
         return Storage.SCRSlot().companiesInfo[scid][companyInfoField];
     }
 
-    function getFounderCompanies(
+    function getSmartCompany(
         address founder
     ) internal view returns (string memory companyNumber) {
         return Storage.SCRSlot().founderCompanies[founder];

@@ -32,9 +32,18 @@ contract LETS_JP_LLC_EXE is LETSBase, ILETS_JP_LLC_EXE {
         address implementation,
         address sc,
         bytes calldata params
-    ) public override returns (bytes4[] memory selectors) {
-        selectors = super.initialize(dictionary, implementation, sc, params);
-        LETS_JP_LLC_EXEInitializeLib.initialize(dictionary, selectors, implementation);
+    ) public virtual override returns (bytes4[] memory selectors) {
+        selectors = super.initialize(
+            dictionary,
+            implementation,
+            sc,
+            params
+        );
+        LETS_JP_LLC_EXEInitializeLib.initialize(
+            dictionary,
+            selectors,
+            implementation
+        );
     }
 
     // ============================================== //

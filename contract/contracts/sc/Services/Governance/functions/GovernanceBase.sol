@@ -13,6 +13,7 @@ import {ERC721Lib} from "../../../ERC721/libs/ERC721Lib.sol";
 
 // interfaces
 import {IGovernanceService} from "../interfaces/IGovernanceService.sol";
+import {IERC721} from "../../../ERC721/interfaces/IERC721.sol";
 import {IErrors} from "../../../../core/utils/IErrors.sol";
 
 /**
@@ -29,7 +30,9 @@ contract GovernanceBase is IGovernanceService {
      */
     modifier onlyExecutor(uint256 transactionId) {
         require(
-            GovernanceStorage.GovernanceSlot().transactions[transactionId]
+            GovernanceStorage
+                .GovernanceSlot()
+                .transactions[transactionId]
                 .executor == msg.sender,
             NotExecutor(msg.sender, transactionId)
         );
@@ -42,7 +45,9 @@ contract GovernanceBase is IGovernanceService {
      */
     modifier onceApproved(uint256 transactionId) {
         require(
-            !GovernanceStorage.GovernanceSlot().approvals[transactionId][msg.sender],
+            !GovernanceStorage.GovernanceSlot().approvals[transactionId][
+                msg.sender
+            ],
             AlreadyApproved(msg.sender, transactionId)
         );
         _;
@@ -53,9 +58,9 @@ contract GovernanceBase is IGovernanceService {
      * @param transactionId_ The transaction ID
      */
     modifier onlyVotePeriod(uint256 transactionId_) {
-        Transaction memory transaction = GovernanceStorage.GovernanceSlot().transactions[
-            transactionId_
-        ];
+        Transaction memory transaction = GovernanceStorage
+            .GovernanceSlot()
+            .transactions[transactionId_];
         require(
             block.timestamp >= transaction.voteStart &&
                 block.timestamp <= transaction.voteEnd,
@@ -69,9 +74,9 @@ contract GovernanceBase is IGovernanceService {
      * @param transactionId The transaction ID
      */
     modifier thresholdReached(uint256 transactionId) {
-        Transaction memory transaction = GovernanceStorage.GovernanceSlot().transactions[
-            transactionId
-        ];
+        Transaction memory transaction = GovernanceStorage
+            .GovernanceSlot()
+            .transactions[transactionId];
 
         require(
             transaction.approvalCount >=
@@ -96,14 +101,26 @@ contract GovernanceBase is IGovernanceService {
         _;
     }
 
-    modifier onlyTokenHolder() {
+    modifier onlyTokenHolder(uint256 transactionId) {
         bool isTokenHolder = false;
-        uint256[] memory tokens = ERC721Lib.getTokensOfOwner(
-            msg.sender
-        );
-        for (uint256 i = 0; i < tokens.length; i++) {
-            if (LETSBaseLib.getUpdatedToken(tokens[i]) <= block.timestamp) {
-                isTokenHolder = true;
+        Transaction memory transaction = GovernanceStorage
+            .GovernanceSlot()
+            .transactions[transactionId];
+        address[] memory tokenContracts = transaction
+            .proposalInfo
+            .proposalMemberContracts;
+        for (uint256 i = 0; i < tokenContracts.length; i++) {
+            uint256[] memory tokenIds = IERC721(tokenContracts[i])
+                .getTokensOfOwner(msg.sender);
+            for (uint256 j = 0; j < tokenIds.length; j++) {
+                if (
+                    LETSBaseLib.getUpdatedToken(tokenIds[j]) <= block.timestamp
+                ) {
+                    isTokenHolder = true;
+                    break;
+                }
+            }
+            if (isTokenHolder) {
                 break;
             }
         }
@@ -126,13 +143,16 @@ contract GovernanceBase is IGovernanceService {
     function execute(
         uint256 transactionId
     ) external onlyExecutor(transactionId) thresholdReached(transactionId) {
-        Transaction memory transaction = GovernanceStorage.GovernanceSlot().transactions[
-            transactionId
-        ];
-        (bool success, ) = transaction.to.call{value: transaction.value}(
-            transaction.data
-        );
-        require(success, ExecuteFailed(transactionId));
+        // Transaction memory transaction = GovernanceStorage
+        //     .GovernanceSlot()
+        //     .transactions[transactionId];
+        // (bool success, ) = transaction.to.call{value: transaction.value}(
+        //     transaction.data
+        // );
+        // require(success, ExecuteFailed(transactionId));
+        GovernanceStorage
+            .GovernanceSlot()
+            .transactions[transactionId].executed = true;
         emit TransactionExecuted(transactionId);
     }
 
@@ -142,10 +162,15 @@ contract GovernanceBase is IGovernanceService {
         external
         onceApproved(transactionId)
         onlyVotePeriod(transactionId)
-        onlyTokenHolder
+        onlyTokenHolder(transactionId)
     {
-        GovernanceStorage.GovernanceSlot().approvals[transactionId][msg.sender] = true;
-        GovernanceStorage.GovernanceSlot().transactions[transactionId].approvalCount++;
+        GovernanceStorage.GovernanceSlot().approvals[transactionId][
+            msg.sender
+        ] = true;
+        GovernanceStorage
+            .GovernanceSlot()
+            .transactions[transactionId]
+            .approvalCount++;
         emit TransactionApproved(transactionId, msg.sender);
     }
 
@@ -210,8 +235,21 @@ contract GovernanceBase is IGovernanceService {
     }
 
     function cancelTransaction(uint256 transactionId_) external {
-        GovernanceStorage.GovernanceSlot().transactions[transactionId_].cancelled = true;
+        GovernanceStorage
+            .GovernanceSlot()
+            .transactions[transactionId_]
+            .cancelled = true;
         emit TransactionCancelled(transactionId_);
+    }
+
+    // ============================================== //
+    //             External Read Functions             //
+    // ============================================== //
+
+    function getTransaction(
+        uint256 transactionId
+    ) external view returns (Transaction memory) {
+        return GovernanceStorage.GovernanceSlot().transactions[transactionId];
     }
 
     // ============================================== //
@@ -227,8 +265,15 @@ contract GovernanceBase is IGovernanceService {
         uint256 voteEnd,
         ProposalInfo memory proposalInfo
     ) internal {
-        uint256 transactionId = GovernanceStorage.GovernanceSlot().lastTransactionId++;
-        GovernanceStorage.GovernanceSlot().transactions[transactionId] = Transaction({
+        GovernanceStorage
+            .GovernanceSlot()
+            .lastTransactionId++;
+        uint256 transactionId = GovernanceStorage
+            .GovernanceSlot()
+            .lastTransactionId;
+        GovernanceStorage.GovernanceSlot().transactions[
+            transactionId
+        ] = Transaction({
             value: value,
             data: data,
             to: to,

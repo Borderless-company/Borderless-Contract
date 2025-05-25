@@ -402,9 +402,9 @@ contract SCR is ISCR, CompanyInfo {
     //           External Read Functions              //
     // ============================================== //
 
-    function getFounderCompanies(
+    function getSmartCompany(
         address founder
     ) external view returns (string memory) {
-        return SCRLib.getFounderCompanies(founder);
+        return SCRLib.getSmartCompany(founder);
     }
 }

@@ -18,7 +18,7 @@ library GovernanceInitializeLib {
             .InitializeSlot();
         require(!$init.initialized, InitializeErrors.AlreadyInitialized());
 
-        bytes4[] memory selectors = new bytes4[](5);
+        bytes4[] memory selectors = new bytes4[](6);
         selectors[0] = bytes4(keccak256("execute(uint256)"));
         selectors[1] = bytes4(keccak256("approveTransaction(uint256)"));
         selectors[2] = bytes4(
@@ -32,12 +32,8 @@ library GovernanceInitializeLib {
             )
         );
         selectors[4] = bytes4(keccak256("cancelTransaction(uint256)"));
-        for (uint256 i = 0; i < selectors.length; i++) {
-            Dictionary(dictionary).setImplementation(
-                selectors[i],
-                address(this)
-            );
-        }
+        selectors[5] = bytes4(keccak256("getTransaction(uint256)"));
+        Dictionary(dictionary).bulkSetImplementation(selectors, address(this));
         emit GovernanceInitialized(msg.sender);
     }
 }

@@ -57,7 +57,7 @@
         - [概要](#概要-10)
         - [パラメータ](#パラメータ-9)
         - [戻り値](#戻り値-2)
-      - [`getFounderCompanies`](#getfoundercompanies)
+      - [`getSmartCompany`](#getfoundercompanies)
         - [概要](#概要-11)
         - [パラメータ](#パラメータ-10)
         - [戻り値](#戻り値-3)
@@ -330,7 +330,7 @@ Smart Company TemplateのImplementationコントラクトを更新する関数�
 | --- | --- | --- |
 | `` | `string` | `companyInfoField`に対応した値。 |
 
-#### `getFounderCompanies`
+#### `getSmartCompany`
 
 ##### 概要
 

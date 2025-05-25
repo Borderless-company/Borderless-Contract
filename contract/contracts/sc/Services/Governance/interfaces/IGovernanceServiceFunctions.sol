@@ -67,4 +67,17 @@ interface IGovernanceServiceFunctions {
      * @param transactionId_ The transaction ID
      */
     function cancelTransaction(uint256 transactionId_) external;
+
+    // ============================================== //
+    //             External Read Functions             //
+    // ============================================== //
+
+    /**
+     * @dev Get a transaction
+     * @param transactionId The transaction ID
+     * @return The transaction
+     */
+    function getTransaction(
+        uint256 transactionId
+    ) external view returns (IGovernanceServiceStructs.Transaction memory);
 }

@@ -116,8 +116,12 @@ describe("Full Deployment and Registration", function () {
     const companyAddress = scInfo.beaconAddress;
     const services = scInfo.services;
 
+    const scId = await scrConn.getSmartCompany(founder.address);
+    const scCompanyInfo = await scrConn.getCompanyInfo(scId);
+
     // アサーション
     expect(companyAddress).to.match(/^0x[0-9a-fA-F]{40}$/);
+    expect(scCompanyInfo.companyAddress).to.equal(companyAddress);
     if (!companyAddress) throw new Error("Company address not found in logs");
 
     console.log("✅ createSmartCompany が成功");

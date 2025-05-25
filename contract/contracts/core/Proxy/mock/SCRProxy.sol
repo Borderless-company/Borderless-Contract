@@ -155,11 +155,13 @@ contract SCRProxy {
         address scImplementation,
         string calldata scName
     ) external returns (address) {}
+
     function updateSCContract(
         address scBeacon,
         address newSCImplementation
     ) external {}
-    function getFounderCompanies(
+
+    function getSmartCompany(
         address founder
     ) external view returns (string memory) {}
 }
