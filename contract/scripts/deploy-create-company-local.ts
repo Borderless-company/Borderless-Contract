@@ -13,41 +13,15 @@ import {
   CreateSmartCompanyModule,
 } from "../ignition/modules/Borderless";
 import { BorderlessAccessControl } from "../typechain-types";
-
+import { letsEncodeParams } from "../utils/Encode";
+import { getDeployerAddress } from "../utils/Deployer";
+import { getSelectors, registerAllFacets } from "../utils/DictionaryHelper";
+import { delay } from "../utils/Delay";
+import { setBorderlessAccessControlOnceInitialized } from "../utils/Initialize";
 dotenv.config();
-
-const getDeployerAddress = async () => {
-  const deployerWallet = new hre.ethers.Wallet(
-    process.env.DEPLOYER_PRIVATE_KEY!,
-    hre.ethers.provider
-  );
-  const deployer =
-    (await deployerWallet.getAddress()) ||
-    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-  return { deployer, deployerWallet };
-};
-
-const registerFunctions = async (name: string, implAddress: string) => {
-  const factory = await hre.ethers.getContractFactory(name);
-  const selectors = [];
-  const implementations = [];
-  for (const frag of factory.interface.fragments) {
-    if (!(frag instanceof FunctionFragment)) continue;
-    const selector = FunctionFragment.getSelector(
-      frag.name,
-      frag.inputs.map((i) => i.type)
-    );
-    selectors.push(selector);
-    implementations.push(implAddress);
-  }
-  return { selectors, implementations };
-};
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function main() {
   const { deployer, deployerWallet } = await getDeployerAddress();
-  console.log(`deployer: ${deployer}`);
 
   const parameters = {
     BorderlessModule: { Deployer: deployer },
@@ -63,7 +37,7 @@ async function main() {
     scrFacet,
     dictionary,
     proxy,
-    sct
+    sct,
   } = await hre.ignition.deploy(BorderlessModule, {
     parameters: parameters,
   });
@@ -74,92 +48,33 @@ async function main() {
   // 関数セレクタ登録権限の付与
   // ────────────────────────────────────────────────
 
-  const dictionaryConn = await hre.ethers.getContractAt(
-    "Dictionary",
-    dictionary.target ?? ""
+  await setBorderlessAccessControlOnceInitialized(
+    dictionary,
+    deployerWallet,
+    accessControlFacet
   );
-  await dictionaryConn
-    .connect(deployerWallet)
-    .setOnceInitialized(
-      await accessControlFacet.getAddress(),
-      await accessControlFacet.getAddress()
-    );
-
-  console.log("✅ Done setOnceInitialized");
 
   // ────────────────────────────────────────────────
   // Register all Facets in Dictionary
   // ────────────────────────────────────────────────
 
-  
-
-  const {
-    selectors: scrBeaconSelectors,
-    implementations: scrBeaconImplementations,
-  } = await registerFunctions(
-    "SCRBeaconUpgradeable",
-    await scrBeaconFacet.getAddress()
+  await registerAllFacets(
+    dictionary,
+    scrBeaconFacet,
+    sfBeaconFacet,
+    serviceFactoryFacet,
+    scrInitializeFacet,
+    scrFacet
   );
-
-  const {
-    selectors: sfBeaconSelectors,
-    implementations: sfBeaconImplementations,
-  } = await registerFunctions(
-    "ServiceFactoryBeaconUpgradeable",
-    await sfBeaconFacet.getAddress()
-  );
-
-  const {
-    selectors: serviceFactorySelectors,
-    implementations: serviceFactoryImplementations,
-  } = await registerFunctions(
-    "ServiceFactory",
-    await serviceFactoryFacet.getAddress()
-  );
-
-  const {
-    selectors: scrInitializeSelectors,
-    implementations: scrInitializeImplementations,
-  } = await registerFunctions(
-    "SCRInitialize",
-    await scrInitializeFacet.getAddress()
-  );
-
-  const { selectors: scrSelectors, implementations: scrImplementations } =
-    await registerFunctions("SCR", await scrFacet.getAddress());
-
-  const receipt = await dictionary.getFunction(
-    "bulkSetImplementation(bytes4[],address[])"
-  )(
-    [
-      ...scrBeaconSelectors,
-      ...sfBeaconSelectors,
-      ...serviceFactorySelectors,
-      ...scrInitializeSelectors,
-      ...scrSelectors,
-    ],
-    [
-      ...scrBeaconImplementations,
-      ...sfBeaconImplementations,
-      ...serviceFactoryImplementations,
-      ...scrInitializeImplementations,
-      ...scrImplementations,
-    ]
-  );
-  await receipt.wait();
-
-  console.log("✅ Done register functions");
 
   // ────────────────────────────────────────────────
   // initializer を実行
   // ────────────────────────────────────────────────
-  
+
   // SCRInitialize
   await hre.ignition.deploy(InitializeModule, {
     parameters: parameters,
   });
-
-  
 
   // BorderlessAccessControlInitialize
   await hre.ignition.deploy(BorderlessAccessControlInitializeModule, {
@@ -171,7 +86,7 @@ async function main() {
   // ────────────────────────────────────────────────
   // SCTを登録
   // ────────────────────────────────────────────────
-  
+
   const sctAddress = await sct.getAddress();
   console.log(`sctAddress: ${sctAddress}`);
   const { sctBeaconConn } = await hre.ignition.deploy(RegisterSCTModule, {
@@ -186,8 +101,6 @@ async function main() {
   //              会社情報のフィールドを設定              //
   // ────────────────────────────────────────────────
 
-  
-
   const scrConn = await hre.ethers.getContractAt("SCR", proxy.target ?? "");
   await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "zip_code");
   await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "prefecture");
@@ -199,7 +112,7 @@ async function main() {
   // ────────────────────────────────────────────────
   // Serviceを登録
   // ────────────────────────────────────────────────
-  
+
   // Governance_JP_LLC
   const { serviceBeaconConn: governanceBeacon } = await hre.ignition.deploy(
     RegisterGovernanceServiceModule,
@@ -214,8 +127,6 @@ async function main() {
     }
   );
 
-  
-
   // LETS_JP_LLC_EXE
   const { serviceBeaconConn: lets_jp_llc_exeBeacon } =
     await hre.ignition.deploy(RegisterLetsServiceModule, {
@@ -228,8 +139,6 @@ async function main() {
       },
     });
 
-  
-
   // LETS_JP_LLC_NON_EXE
   const { serviceBeaconConn: lets_jp_llc_non_exeBeacon } =
     await hre.ignition.deploy(RegisterLetsNonExeServiceModule, {
@@ -241,8 +150,6 @@ async function main() {
         },
       },
     });
-
-  
 
   // LETS_JP_LLC_SALE
   const { serviceBeaconConn: lets_jp_llc_saleBeacon } =
@@ -261,7 +168,7 @@ async function main() {
   // ────────────────────────────────────────────────
   // LETSとSaleコントラクトの紐付け
   // ────────────────────────────────────────────────
-  
+
   const serviceFactoryConn = await hre.ethers.getContractAt(
     "ServiceFactory",
     proxy
@@ -279,8 +186,6 @@ async function main() {
   // FOUNDERロールの設定
   // ────────────────────────────────────────────────
 
-  
-
   // Set Role
   const founderRole =
     "0x7ed687a8f2955bd2ba7ca08227e1e364d132be747f42fb733165f923021b0225";
@@ -296,32 +201,22 @@ async function main() {
   // createSmartCompany の実行
   // ────────────────────────────────────────────────
 
-  
-
-  function encodeParams(
-    name: string,
-    symbol: string,
-    baseURI: string,
-    extension: string
-  ): string {
-    return hre.ethers.AbiCoder.defaultAbiCoder().encode(
-      ["string", "string", "string", "string"],
-      [name, symbol, baseURI, extension]
-    );
-  }
-
   const scsExtraParams = [
-    encodeParams(
+    letsEncodeParams(
       "LETS_JP_LLC_EXE",
       "LETS_JP_LLC_EXE",
       "https://example.com/metadata/",
-      ".json"
+      ".json",
+      true,
+      2000
     ),
-    encodeParams(
+    letsEncodeParams(
       "LETS_JP_LLC_NON_EXE",
       "LETS_JP_LLC_NON_EXE",
       "https://example.com/metadata/",
-      ".json"
+      ".json",
+      false,
+      2000
     ),
   ];
 
@@ -383,7 +278,6 @@ async function main() {
   // ────────────────────────────────────────────────
   // LETS_JP_LLC_EXEのinitialMintを実行
   // ────────────────────────────────────────────────
-  
 
   const executiveMember = await hre.ethers.getSigner(
     "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
@@ -421,7 +315,7 @@ async function main() {
   await letsExeSaleConn
     .connect(executiveMember2)
     .getFunction("offerToken(address)")(
-      executiveMember2,
+    executiveMember2,
     { value: hre.ethers.parseEther("0.001") } // 1 ETHを送付
   );
 
@@ -433,7 +327,6 @@ async function main() {
   // ────────────────────────────────────────────────
   // LETS_JP_LLC_NON_EXEの購入を実行
   // ────────────────────────────────────────────────
-
 
   // Saleコントラクトの設定
   await letsNonExeSaleConn.getFunction(

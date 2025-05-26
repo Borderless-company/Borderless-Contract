@@ -10,7 +10,7 @@ import {Storage as LETSBaseStorage} from "../storages/Storage.sol";
 import {Constants} from "../../../../core/lib/Constants.sol";
 import {LETSBaseLib} from "../libs/LETSBaseLib.sol";
 import {LETSSaleBaseLib} from "../libs/LETSSaleBaseLib.sol";
-import {LETSSaleBaseInitializeLib} from "../../../../core/Initialize/libs/LETSSaleBaseInitializeLib.sol";
+import {LETSSaleBaseInitializeLib} from "../libs/initialize/LETSSaleBaseInitializeLib.sol";
 import {ERC721Lib} from "../../../../sc/ERC721/libs/ERC721Lib.sol";
 
 // utils
@@ -21,7 +21,6 @@ import {ILETSSaleBase} from "../interfaces/ILETSSaleBase.sol";
 
 // OpenZeppelin
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
-
 
 contract LETSSaleBase is ILETSSaleBase {
     // ============================================== //
@@ -84,13 +83,11 @@ contract LETSSaleBase is ILETSSaleBase {
             ),
             IErrors.NotFounder(msg.sender)
         );
-        LETSSaleBaseSchema.LETSSaleBaseLayout storage $ = LETSSaleBaseStorage
-            .LETSSaleBaseSlot();
         if (saleStart != 0 && saleEnd != 0) {
             LETSSaleBaseLib.setSalePeriod(saleStart, saleEnd);
         }
         LETSSaleBaseLib.setPrice(fixedPrice, minPrice, maxPrice);
-        $.isSaleActive = true;
+        LETSSaleBaseStorage.LETSSaleBaseSlot().isSaleActive = true;
     }
 
     function offerToken(

@@ -5,7 +5,7 @@
     "localhost": "hardhat node",
     "deploy:module": "hardhat ignition deploy ./ignition/modules/Borderless.ts",
     "deploy": "hardhat run ./scripts/deploy.ts",
-    "deploy:create-company": "hardhat run ./scripts/deploy-create-company.ts",
+    "deploy:create-company": "hardhat run ./scripts/deploy-create-company.ts --",
     "deploy:create-company-local": "hardhat run ./scripts/deploy-create-company-local.ts",
     "test": "hardhat test",
     "coverage": "hardhat coverage",

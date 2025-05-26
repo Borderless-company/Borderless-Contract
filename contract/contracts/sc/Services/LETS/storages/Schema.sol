@@ -7,7 +7,9 @@ pragma solidity 0.8.28;
 library Schema {
     struct LETSBaseLayout {
         address sc;
+        bool isMetadataFixed;
         uint256 nextTokenId;
+        uint256 maxSupply;
         string baseURI;
         string extension;
 
@@ -20,14 +22,6 @@ library Schema {
         * @dev timestamp of the mint or transfer of the token
         */
         mapping(uint256 => uint256) updatedToken;
-        /**
-         * @dev index => function selector
-         */
-        mapping(uint256 => bytes4) selectors;
-        /**
-         * @dev number of registered selectors
-         */
-        uint256 selectorIndex;
     }
 
     struct LETSSaleBaseLayout {
@@ -38,13 +32,5 @@ library Schema {
         uint256 minPrice;
         uint256 maxPrice;
         bool isSaleActive;
-        /**
-         * @dev index => function selector
-         */
-        mapping(uint256 => bytes4) selectors;
-        /**
-         * @dev number of registered selectors
-         */
-        uint256 selectorIndex;
     }
 }

@@ -18,4 +18,9 @@ interface ILETSBaseErrors {
      * @dev not transferable error
      */
     error NotTransferable();
+
+    /**
+     * @dev max supply reached error
+     */
+    error MaxSupplyReached();
 }

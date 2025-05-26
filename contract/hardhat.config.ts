@@ -33,6 +33,11 @@ const config: HardhatUserConfig = {
       url: "https://sepolia.base.org",
       accounts: [deployerPrivateKey],
     },
+    "soneium-minato": {
+      url: "https://rpc.minato.soneium.org/",
+      accounts: [deployerPrivateKey],
+      chainId: 1946,
+    },
   },
   typechain: {
     outDir: "typechain-types",

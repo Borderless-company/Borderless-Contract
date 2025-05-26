@@ -15,7 +15,6 @@ import {Storage as BeaconUpgradeableBaseStorage} from "../../BeaconUpgradeableBa
 // lib
 import {SCRLib} from "../lib/SCRLib.sol";
 import {ServiceFactoryLib} from "../../Factory/lib/ServiceFactoryLib.sol";
-import {LETSBaseInitializeLib} from "../../../sc/Services/LETS/libs/LETSBaseInitializeLib.sol";
 import {BeaconUpgradeableBaseLib} from "../../BeaconUpgradeableBase/lib/BeaconUpgradeableBaseLib.sol";
 import {BorderlessAccessControlLib} from "../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
 import {ArrayLib} from "../../../core/lib/ArrayLib.sol";

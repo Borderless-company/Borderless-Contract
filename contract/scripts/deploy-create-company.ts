@@ -13,8 +13,12 @@ import {
   CreateSmartCompanyModule,
 } from "../ignition/modules/Borderless";
 import { BorderlessAccessControl } from "../typechain-types";
+import { letsEncodeParams } from "../utils/Encode";
+import { parseDeployArgs } from "../utils/parseArgs";
 
 dotenv.config();
+
+const { delayMs } = parseDeployArgs();
 
 const getDeployerAddress = async () => {
   const deployerWallet = new hre.ethers.Wallet(
@@ -69,7 +73,7 @@ async function main() {
   });
 
   console.log(`✅ Done deploy BorderlessModule`);
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   // ────────────────────────────────────────────────
   // 関数セレクタ登録権限の付与
@@ -92,7 +96,7 @@ async function main() {
   // Register all Facets in Dictionary
   // ────────────────────────────────────────────────
 
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   const {
     selectors: scrBeaconSelectors,
@@ -154,13 +158,13 @@ async function main() {
   // ────────────────────────────────────────────────
   // initializer を実行
   // ────────────────────────────────────────────────
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
   // SCRInitialize
   await hre.ignition.deploy(InitializeModule, {
     parameters: parameters,
   });
 
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   // BorderlessAccessControlInitialize
   await hre.ignition.deploy(BorderlessAccessControlInitializeModule, {
@@ -172,7 +176,7 @@ async function main() {
   // ────────────────────────────────────────────────
   // SCTを登録
   // ────────────────────────────────────────────────
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
   const sctAddress = await sct.getAddress();
   console.log(`sctAddress: ${sctAddress}`);
   const { sctBeaconConn } = await hre.ignition.deploy(RegisterSCTModule, {
@@ -187,7 +191,7 @@ async function main() {
   //              会社情報のフィールドを設定              //
   // ────────────────────────────────────────────────
 
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   const scrConn = await hre.ethers.getContractAt("SCR", proxy.target ?? "");
   await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "zip_code");
@@ -200,7 +204,7 @@ async function main() {
   // ────────────────────────────────────────────────
   // Serviceを登録
   // ────────────────────────────────────────────────
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
   // Governance_JP_LLC
   const { serviceBeaconConn: governanceBeacon } = await hre.ignition.deploy(
     RegisterGovernanceServiceModule,
@@ -215,7 +219,7 @@ async function main() {
     }
   );
 
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   // LETS_JP_LLC_EXE
   const { serviceBeaconConn: lets_jp_llc_exeBeacon } =
@@ -229,7 +233,7 @@ async function main() {
       },
     });
 
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   // LETS_JP_LLC_NON_EXE
   const { serviceBeaconConn: lets_jp_llc_non_exeBeacon } =
@@ -243,7 +247,7 @@ async function main() {
       },
     });
 
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   // LETS_JP_LLC_SALE
   const { serviceBeaconConn: lets_jp_llc_saleBeacon } =
@@ -262,7 +266,7 @@ async function main() {
   // ────────────────────────────────────────────────
   // LETSとSaleコントラクトの紐付け
   // ────────────────────────────────────────────────
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
   const serviceFactoryConn = await hre.ethers.getContractAt(
     "ServiceFactory",
     proxy
@@ -280,7 +284,7 @@ async function main() {
   // FOUNDERロールの設定
   // ────────────────────────────────────────────────
 
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   // Set Role
   const founderRole =
@@ -297,32 +301,24 @@ async function main() {
   // createSmartCompany の実行
   // ────────────────────────────────────────────────
 
-  await delay(10000); // 10秒待機
-
-  function encodeParams(
-    name: string,
-    symbol: string,
-    baseURI: string,
-    extension: string
-  ): string {
-    return hre.ethers.AbiCoder.defaultAbiCoder().encode(
-      ["string", "string", "string", "string"],
-      [name, symbol, baseURI, extension]
-    );
-  }
+  await delay(delayMs);
 
   const scsExtraParams = [
-    encodeParams(
+    letsEncodeParams(
       "LETS_JP_LLC_EXE",
       "LETS_JP_LLC_EXE",
       "https://example.com/metadata/",
-      ".json"
+      ".json",
+      true,
+      2000
     ),
-    encodeParams(
+    letsEncodeParams(
       "LETS_JP_LLC_NON_EXE",
       "LETS_JP_LLC_NON_EXE",
       "https://example.com/metadata/",
-      ".json"
+      ".json",
+      false,
+      2000
     ),
   ];
 
@@ -352,7 +348,7 @@ async function main() {
   //            ServiceFactoryからLETSを取得           //
   // ============================================== //
 
-  await delay(1000); // 1秒待機
+  await delay(delayMs);
 
   const letsExeAddress = await serviceFactoryConn.getFounderService(
     deployer,
@@ -385,7 +381,7 @@ async function main() {
   // LETS_JP_LLC_EXEの購入を実行
   // ────────────────────────────────────────────────
 
-  // await delay(10000); // 10秒待機
+  // await delay(20000); // 10秒待機
 
   // // Saleコントラクトの設定
   // await letsExeSaleConn.getFunction(
@@ -414,7 +410,7 @@ async function main() {
   // LETS_JP_LLC_NON_EXEの購入を実行
   // ────────────────────────────────────────────────
 
-  // await delay(10000); // 10秒待機
+  // await delay(20000); // 10秒待機
 
   // // Saleコントラクトの設定
   // await letsNonExeSaleConn.getFunction(
@@ -446,7 +442,7 @@ async function main() {
   // ────────────────────────────────────────────────
   // MINTER_ROLEからLETS_JP_LLC_EXEのmintを実行
   // ────────────────────────────────────────────────
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   // minter roleの付与
   const scrAccessControlConn = (
@@ -460,13 +456,13 @@ async function main() {
     "0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6";
   await scrAccessControlConn.grantRole(MINTER_ROLE, deployer);
 
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   // mint を実行
   await letsExeConn.connect(deployerWallet).getFunction("mint(address)")(
     deployer
   );
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
   const tokenMinterBalance = await letsExeConn.balanceOf(deployer);
   console.log(`tokenMinterBalance: ${tokenMinterBalance}`);
 
@@ -475,13 +471,13 @@ async function main() {
   // ────────────────────────────────────────────────
   // MINTER_ROLEからLETS_JP_LLC_NON_EXEのmintを実行
   // ────────────────────────────────────────────────
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
 
   // mint を実行
   await letsNonExeConn.connect(deployerWallet).getFunction("mint(address)")(
     deployer
   );
-  await delay(10000); // 10秒待機
+  await delay(delayMs);
   const tokenMinterBalance2 = await letsNonExeConn.balanceOf(deployer);
   console.log(`tokenMinterBalance2: ${tokenMinterBalance2}`);
 

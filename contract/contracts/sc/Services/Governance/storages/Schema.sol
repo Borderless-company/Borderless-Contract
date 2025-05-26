@@ -11,13 +11,5 @@ library Schema {
         uint256 lastTransactionId;
         mapping(uint256 => IGovernanceServiceStructs.Transaction) transactions;
         mapping(uint256 => mapping(address => bool)) approvals;
-        /**
-         * @dev index => function selector
-         */
-        mapping(uint256 => bytes4) selectors;
-        /**
-         * @dev number of registered selectors
-         */
-        uint256 selectorIndex;
     }
 }

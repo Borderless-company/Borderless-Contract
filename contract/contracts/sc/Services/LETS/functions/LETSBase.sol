@@ -8,7 +8,7 @@ import {Storage as LETSBaseStorage} from "../storages/Storage.sol";
 
 // lib
 import {LETSBaseLib} from "../libs/LETSBaseLib.sol";
-import {LETSBaseInitializeLib} from "../libs/LETSBaseInitializeLib.sol";
+import {LETSBaseInitializeLib} from "../libs/initialize/LETSBaseInitializeLib.sol";
 
 // interfaces
 import {ILETSBase} from "../interfaces/ILETSBase.sol";
@@ -17,6 +17,7 @@ import {Constants} from "../../../../core/lib/Constants.sol";
 
 // OpenZeppelin
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {console} from "hardhat/console.sol";
 
 /**
  * @title Legal Embedded Token Service
@@ -34,6 +35,25 @@ contract LETSBase is ERC721, ILETSBase {
         bytes calldata params
     ) public virtual override returns (bytes4[] memory selectors) {
         selectors = LETSBaseInitializeLib.initialize(sc, params);
+        console.log("LETSBase initialized");
+        console.log("sc", LETSBaseStorage.LETSBaseSlot().sc);
+        console.log("baseURI", LETSBaseStorage.LETSBaseSlot().baseURI);
+        console.log("extension", LETSBaseStorage.LETSBaseSlot().extension);
+        console.log("isMetadataFixed", LETSBaseStorage.LETSBaseSlot().isMetadataFixed);
+        console.log("maxSupply", LETSBaseStorage.LETSBaseSlot().maxSupply);
+        console.log("nextTokenId", LETSBaseStorage.LETSBaseSlot().nextTokenId);
+    }
+
+    // ============================================== //
+    //                MODIFIERS                       //
+    // ============================================== //
+
+    modifier onlyUnderMaxSupply() {
+        require(
+            LETSBaseStorage.LETSBaseSlot().maxSupply > super.totalSupply(),
+            MaxSupplyReached()
+        );
+        _;
     }
 
     // ============================================== //
@@ -73,5 +93,21 @@ contract LETSBase is ERC721, ILETSBase {
 
     function getUpdatedToken(uint256 tokenId) external view returns (uint256) {
         return LETSBaseLib.getUpdatedToken(tokenId);
+    }
+
+    // ============================================== //
+    //            OVERRIDE ERC721 Functions           //
+    // ============================================== //
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view override returns (string memory) {
+        return
+            (LETSBaseStorage.LETSBaseSlot().isMetadataFixed)
+                ? string.concat(
+                    LETSBaseStorage.LETSBaseSlot().baseURI,
+                    LETSBaseStorage.LETSBaseSlot().extension
+                )
+                : super.tokenURI(tokenId);
     }
 }

@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { expect } from "chai";
 import { SCR } from "../../typechain-types";
 import { getDeploySmartCompanyAddress } from "./Event";
-import { encodeParams } from "./Encode";
+import { letsEncodeParams } from "../../utils/Encode";
 import { deployFullFixture } from "./DeployFixture";
 
 export const createCompany = async () => {
@@ -36,17 +36,21 @@ export const createCompany = async () => {
 
   const scsExtraParams = [
     "0x",
-    encodeParams(
+    letsEncodeParams(
       "LETS_JP_LLC_EXE",
       "LETS_JP_LLC_EXE",
       "https://example.com/metadata/",
-      ".json"
+      ".json",
+      true,
+      2000
     ),
-    encodeParams(
+    letsEncodeParams(
       "LETS_JP_LLC_NON_EXE",
       "LETS_JP_LLC_NON_EXE",
       "https://example.com/metadata/",
-      ".json"
+      ".json",
+      false,
+      2000
     ),
   ];
 
@@ -79,8 +83,12 @@ export const createCompany = async () => {
   const companyAddress = scInfo.beaconAddress;
   const services = scInfo.services;
 
+  const scId = await scrConn.getSmartCompany(founder.address);
+  const scCompanyInfo = await scrConn.getCompanyInfo(scId);
+
   // アサーション
   expect(companyAddress).to.match(/^0x[0-9a-fA-F]{40}$/);
+  expect(scCompanyInfo.companyAddress).to.equal(companyAddress);
   if (!companyAddress) throw new Error("Company address not found in logs");
 
   console.log("✅ createSmartCompany が成功");

@@ -113,8 +113,7 @@ contract ERC721 is IERC721, Ownable {
 
     function tokenURI(
         uint256 tokenId
-    ) public view override returns (string memory) {
-        // ERC721URIStorage優先
+    ) public view virtual override returns (string memory) {
         return ERC721Lib.tokenURI(tokenId);
     }
 

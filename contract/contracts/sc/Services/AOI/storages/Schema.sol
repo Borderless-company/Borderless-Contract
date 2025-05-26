@@ -24,13 +24,5 @@ library Schema {
          * @dev ephemeralSalt => used
          */
         mapping(bytes32 => bool) usedEphemeralSalts;
-        /**
-         * @dev index => function selector
-         */
-        mapping(uint256 => bytes4) selectors;
-        /**
-         * @dev number of registered selectors
-         */
-        uint256 selectorIndex;
     }
 }

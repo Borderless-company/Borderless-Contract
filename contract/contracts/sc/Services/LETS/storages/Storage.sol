@@ -20,7 +20,7 @@ library Storage {
         keccak256(
             abi.encode(
                 uint256(
-                    keccak256("erc7201:borderless:contracts.storage.LETSBase")
+                    keccak256("erc7201:borderless:contracts.storage.LETSSaleBase")
                 ) - 1
             )
         ) & ~bytes32(uint256(0xff));

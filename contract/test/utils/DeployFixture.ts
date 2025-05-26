@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { registerFunctions } from "./DictionaryHelper";
+import { registerFunctions } from "../../utils/DictionaryHelper";
 import {
   SCRInitialize,
   BorderlessAccessControl,

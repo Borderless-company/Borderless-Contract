@@ -20,13 +20,5 @@ library Schema {
          * @dev account => investment amount
          */
         mapping(address account => uint256 investmentAmount) investmentAmount;
-        /**
-         * @dev index => function selector
-         */
-        mapping(uint256 => bytes4) selectors;
-        /**
-         * @dev number of registered selectors
-         */
-        uint256 selectorIndex;
     }
 }
