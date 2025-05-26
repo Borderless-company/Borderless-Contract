@@ -1,15 +1,15 @@
-[submodule "dao-llc-templates/lib/forge-std"]
-	path = dao-llc-templates/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "dao-llc-jp-templates/lib/forge-std"]
-	path = dao-llc-jp-templates/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "contract/packages/hardhat/lib/forge-std"]
-	path = contract/packages/hardhat/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "dao-llc-jp-templates/lib/openzeppelin-contracts"]
-	path = dao-llc-jp-templates/lib/openzeppelin-contracts
-	url = https://github.com/openzeppelin/openzeppelin-contracts
+# [submodule "dao-llc-templates/lib/forge-std"]
+# 	path = dao-llc-templates/lib/forge-std
+# 	url = https://github.com/foundry-rs/forge-std
+# [submodule "dao-llc-jp-templates/lib/forge-std"]
+# 	path = dao-llc-jp-templates/lib/forge-std
+# 	url = https://github.com/foundry-rs/forge-std
+# [submodule "contract/packages/hardhat/lib/forge-std"]
+# 	path = contract/packages/hardhat/lib/forge-std
+# 	url = https://github.com/foundry-rs/forge-std
+# [submodule "dao-llc-jp-templates/lib/openzeppelin-contracts"]
+# 	path = dao-llc-jp-templates/lib/openzeppelin-contracts
+# 	url = https://github.com/openzeppelin/openzeppelin-contracts
 [submodule "contract/packages/hardhat/lib/openzeppelin-foundry-upgrades"]
 	path = contract/packages/hardhat/lib/openzeppelin-foundry-upgrades
 	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades
@@ -19,3 +19,24 @@
 [submodule "contract/packages/hardhat/lib/openzeppelin-contracts"]
 	path = contract/packages/hardhat/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "contract/packages/hardhat/lib/solady"]
+	path = contract/packages/hardhat/lib/solady
+	url = https://github.com/vectorized/solady
+[submodule "contract/packages/hardhat/lib/forge-std"]
+	path = contract/packages/hardhat/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "contract/packages/hardhat/lib/openzeppelin-contracts"]
+	path = contract/packages/hardhat/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "contract/packages/hardhat/lib/openzeppelin-contracts-upgradeable"]
+	path = contract/packages/hardhat/lib/openzeppelin-contracts-upgradeable
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable
+[submodule "contract/packages/hardhat/lib/openzeppelin-foundry-upgrades"]
+	path = contract/packages/hardhat/lib/openzeppelin-foundry-upgrades
+	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades
+[submodule "contract/packages/hardhat/lib/solady"]
+	path = contract/packages/hardhat/lib/solady
+	url = https://github.com/vectorized/solady
+[submodule "openzeppelin-foundry-upgrades"]
+	path = openzeppelin-foundry-upgrades
+	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades

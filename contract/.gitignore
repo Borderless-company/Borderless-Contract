@@ -1,23 +1,17 @@
-# dependencies
 node_modules
+.env
 
-# yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# Hardhat files
+/cache
+/artifacts
 
-# eslint
-.eslintcache
+# TypeChain files
+/typechain
+/typechain-types
 
-# misc
-.DS_Store
+# solidity-coverage files
+/coverage
+/coverage.json
 
-# IDE
-.vscode
-.idea
-
-# cli
-dist
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
