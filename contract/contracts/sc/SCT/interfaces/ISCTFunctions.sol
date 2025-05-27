@@ -8,7 +8,7 @@ import {ServiceType} from "../../../core/utils/ITypes.sol";
  */
 interface ISCTFunctions {
 	// ============================================== //
-	//            External Write Functions            //
+	//            EXTERNAL WRITE FUNCTIONS            //
 	// ============================================== //
 
 	/**
@@ -32,7 +32,7 @@ interface ISCTFunctions {
 		address account, uint256 investmentAmount) external;
 
 	// ============================================== //
-	//            External Read Functions             //
+	//            EXTERNAL READ FUNCTIONS             //
 	// ============================================== //
 
 	/**

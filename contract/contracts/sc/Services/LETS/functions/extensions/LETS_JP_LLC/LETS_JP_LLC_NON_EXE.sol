@@ -9,7 +9,7 @@ import {LETS_JP_LLC_NON_EXEInitializeLib} from "../../../libs/extensions/LETS_JP
  */
 contract LETS_JP_LLC_NON_EXE is LETSBase {
     // ============================================== //
-    //                 Initialization                 //
+    //                    INITIALIZE                  //
     // ============================================== //
 
     function initialize(

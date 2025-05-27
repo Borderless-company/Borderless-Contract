@@ -17,7 +17,7 @@ import {ILETSBase, ILETSBaseEvents} from "../interfaces/ILETSBase.sol";
  */
 library LETSBaseLib {
     // ============================================== //
-    //             Internal Write Functions           //
+    //             INTERNAL WRITE FUNCTIONS           //
     // ============================================== //
 
     function mint(address to) internal returns (uint256 tokenId) {
@@ -40,7 +40,7 @@ library LETSBaseLib {
     }
 
     // ============================================== //
-    //             Internal Read Functions            //
+    //             INTERNAL READ FUNCTIONS            //
     // ============================================== //
 
     function getUpdatedToken(uint256 tokenId) internal view returns (uint256) {

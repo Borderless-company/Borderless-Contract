@@ -1,22 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {Dictionary} from "../../../../../core/Dictionary/Dictionary.sol";
+import {Dictionary} from "../../../../../core/Dictionary/functions/Dictionary.sol";
 
 // storage
 import {Storage as LETSBaseStorage} from "../../storages/Storage.sol";
 import {Schema as LETSBaseSchema} from "../../storages/Schema.sol";
 import {Storage as ERC721Storage} from "../../../../ERC721/storages/Storage.sol";
 import {Schema as ERC721Schema} from "../../../../ERC721/storages/Schema.sol";
-import {Storage as OwnableStorage} from "../../../../Ownable/storages/Storage.sol";
 import {Storage as InitializeStorage} from "../../../../../core/Initialize/storages/Storage.sol";
 import {Schema as InitializeSchema} from "../../../../../core/Initialize/storages/Schema.sol";
 
 // interfaces
 import {IErrors} from "../../../../../core/utils/IErrors.sol";
-import {IOwnableErrors} from "../../../../Ownable/interfaces/IOwnableErrors.sol";
 import {InitializeErrors} from "../../../../../core/Initialize/interfaces/InitializeErrors.sol";
 
+/**
+ * @title LETSBaseInitializeLib
+ * @notice Library for initializing the LETSBase contract
+ */
 library LETSBaseInitializeLib {
     function initialize(
         address sc,

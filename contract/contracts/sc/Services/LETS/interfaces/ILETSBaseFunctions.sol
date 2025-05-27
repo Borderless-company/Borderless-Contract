@@ -3,7 +3,7 @@ pragma solidity 0.8.28;
 
 interface ILETSBaseFunctions {
     // ============================================== //
-    //             External Write Functions           //
+    //             EXTERNAL WRITE FUNCTIONS           //
     // ============================================== //
 
     /**

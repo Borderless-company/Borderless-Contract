@@ -5,13 +5,13 @@ pragma solidity 0.8.28;
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {StorageSlot} from "@openzeppelin/contracts/utils/StorageSlot.sol";
 import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
-import {IBeacon} from "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
 import {IProxy} from "./IProxy.sol";
-import {IDictionary} from "../Dictionary/interfaces/IDictionary.sol";
+import {IDictionary} from "../Dictionary/interfaces/IDictionary/IDictionary.sol";
 
 /**
-    @dev This ERC7546 helper constant & methods
+ * @title ProxyUtils
+ * @notice This ERC7546 helper constant & methods
  */
 library ProxyUtils {
     /**

@@ -2,7 +2,7 @@
 pragma solidity 0.8.28;
 
 // storages
-import {Storage} from "../storages/Storage.sol";
+import {Storage as SCRBeaconStorage} from "../storages/Storage.sol";
 
 // lib
 import {BeaconUpgradeableBaseLib} from "../lib/BeaconUpgradeableBaseLib.sol";
@@ -20,7 +20,7 @@ import {ISCRBeaconUpgradeableFunctions} from "../interfaces/IBeaconUpgradeableBa
 contract SCRBeaconUpgradeable is ISCRBeaconUpgradeableFunctions {
 
     // =============================================== //
-    //            External Write Functions             //
+    //            EXTERNAL WRITE FUNCTIONS             //
     // =============================================== //
 
     function updateSCRBeaconName(
@@ -32,14 +32,14 @@ contract SCRBeaconUpgradeable is ISCRBeaconUpgradeableFunctions {
         returns (IBeaconUpgradeableBaseStructs.Beacon memory beacon_)
     {
         BeaconUpgradeableBaseLib.checkBeacon(
-            Storage.SCRBeaconProxySlot(),
+            SCRBeaconStorage.SCRBeaconProxySlot(),
             beacon,
             false
         );
         BeaconUpgradeableBaseLib.checkBeaconName(name);
 
         // update beacon name
-        beacon_ = Storage.SCRBeaconProxySlot().beacons[beacon];
+        beacon_ = SCRBeaconStorage.SCRBeaconProxySlot().beacons[beacon];
         beacon_.name = name;
 
         // emit event
@@ -52,12 +52,12 @@ contract SCRBeaconUpgradeable is ISCRBeaconUpgradeableFunctions {
     ) external override {
         // check if the beacon is already online or offline
         require(
-            Storage.SCRBeaconProxySlot().beacons[beacon].isOnline != isOnline,
+            SCRBeaconStorage.SCRBeaconProxySlot().beacons[beacon].isOnline != isOnline,
             IBeaconUpgradeableBaseErrors.BeaconAlreadyOnlineOrOffline(beacon)
         );
 
         // change the beacon online status
-        Storage.SCRBeaconProxySlot().beacons[beacon].isOnline = isOnline;
+        SCRBeaconStorage.SCRBeaconProxySlot().beacons[beacon].isOnline = isOnline;
 
         // emit event
         if (isOnline) {
@@ -68,18 +68,18 @@ contract SCRBeaconUpgradeable is ISCRBeaconUpgradeableFunctions {
     }
 
     // =============================================== //
-    //            External Read Functions              //
+    //            EXTERNAL READ FUNCTIONS              //
     // =============================================== //
 
     function getSCRBeacon(
         address beacon
     ) external override view returns (IBeaconUpgradeableBaseStructs.Beacon memory) {
-        return Storage.SCRBeaconProxySlot().beacons[beacon];
+        return SCRBeaconStorage.SCRBeaconProxySlot().beacons[beacon];
     }
 
     function getSCRProxy(
         address proxy
     ) external override view returns (IBeaconUpgradeableBaseStructs.Proxy memory) {
-        return Storage.SCRBeaconProxySlot().proxies[proxy];
+        return SCRBeaconStorage.SCRBeaconProxySlot().proxies[proxy];
     }
 }

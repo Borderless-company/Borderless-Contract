@@ -25,7 +25,7 @@ import {console} from "hardhat/console.sol";
  */
 contract LETSBase is ERC721, ILETSBase {
     // ============================================== //
-    //                Initialization                  //
+    //                INITIALIZE                  //
     // ============================================== //
 
     function initialize(
@@ -39,7 +39,10 @@ contract LETSBase is ERC721, ILETSBase {
         console.log("sc", LETSBaseStorage.LETSBaseSlot().sc);
         console.log("baseURI", LETSBaseStorage.LETSBaseSlot().baseURI);
         console.log("extension", LETSBaseStorage.LETSBaseSlot().extension);
-        console.log("isMetadataFixed", LETSBaseStorage.LETSBaseSlot().isMetadataFixed);
+        console.log(
+            "isMetadataFixed",
+            LETSBaseStorage.LETSBaseSlot().isMetadataFixed
+        );
         console.log("maxSupply", LETSBaseStorage.LETSBaseSlot().maxSupply);
         console.log("nextTokenId", LETSBaseStorage.LETSBaseSlot().nextTokenId);
     }
@@ -91,7 +94,9 @@ contract LETSBase is ERC721, ILETSBase {
     //             Eternal Read Functions             //
     // ============================================== //
 
-    function getUpdatedToken(uint256 tokenId) external view returns (uint256) {
+    function getUpdatedToken(
+        uint256 tokenId
+    ) external view override returns (uint256) {
         return LETSBaseLib.getUpdatedToken(tokenId);
     }
 

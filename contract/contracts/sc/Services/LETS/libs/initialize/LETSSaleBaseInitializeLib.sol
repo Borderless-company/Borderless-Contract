@@ -2,7 +2,7 @@
 pragma solidity 0.8.28;
 
 // lib
-import {Dictionary} from "../../../../../core/Dictionary/Dictionary.sol";
+import {Dictionary} from "../../../../../core/Dictionary/functions/Dictionary.sol";
 
 // storage
 import {Schema as InitializeSchema} from "../../../../../core/Initialize/storages/Schema.sol";
@@ -11,7 +11,14 @@ import {Storage as InitializeStorage} from "../../../../../core/Initialize/stora
 // interfaces
 import {InitializeErrors} from "../../../../../core/Initialize/interfaces/InitializeErrors.sol";
 
+/**
+ * @title LETSSaleBaseInitializeLib
+ * @notice Library for initializing the LETSSaleBase contract
+ */
 library LETSSaleBaseInitializeLib {
+    // ============================================== //
+    //                   EVENTS                       //
+    // ============================================== //
     event LETSSaleBaseInitialized(address indexed initializer);
 
     function initialize(address dictionary) internal {

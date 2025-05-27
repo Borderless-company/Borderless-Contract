@@ -2,8 +2,7 @@
 pragma solidity 0.8.28;
 
 // storages
-import {Storage} from "../storages/Storage.sol";
-import {Storage as AccessControlStorage} from "../../../core/BorderlessAccessControl/storages/Storage.sol";
+import {Storage as ServiceFactoryStorage} from "../storages/Storage.sol";
 import {Storage as BeaconProxyBaseStorage} from "../../BeaconUpgradeableBase/storages/Storage.sol";
 
 // lib
@@ -18,9 +17,13 @@ import {IServiceFactory} from "../interfaces/IServiceFactory.sol";
 import {ServiceType} from "../../../core/utils/ITypes.sol";
 import {Constants} from "../../../core/lib/Constants.sol";
 
+/**
+ * @title ServiceFactory
+ * @notice This library contains functions for the ServiceFactory contract v0.1.0.
+ */
 contract ServiceFactory is IServiceFactory {
     // ============================================== //
-    //           External Write Functions             //
+    //           EXTERNAL WRITE FUNCTIONS             //
     // ============================================== //
 
     function setService(
@@ -40,7 +43,7 @@ contract ServiceFactory is IServiceFactory {
             name
         );
 
-        Storage.ServiceFactorySlot().serviceTypes[beacon] = serviceType;
+        ServiceFactoryStorage.ServiceFactorySlot().serviceTypes[beacon] = serviceType;
     }
 
     function setLetsSaleBeacon(
@@ -52,23 +55,23 @@ contract ServiceFactory is IServiceFactory {
             msg.sender
         );
 
-        Storage.ServiceFactorySlot().letsSaleBeacons[letsBeacon] = letsSaleBeacon;
+        ServiceFactoryStorage.ServiceFactorySlot().letsSaleBeacons[letsBeacon] = letsSaleBeacon;
     }
 
     // ============================================== //
-    //           External Read Functions              //
+    //           EXTERNAL READ FUNCTIONS              //
     // ============================================== //
 
     function getServiceType(
         address beacon
-    ) external view returns (ServiceType) {
+    ) external view override returns (ServiceType) {
         return ServiceFactoryLib.getServiceType(beacon);
     }
 
     function getFounderService(
         address founder,
         ServiceType serviceType
-    ) external view returns (address) {
+    ) external view override returns (address) {
         return ServiceFactoryLib.getFounderService(founder, serviceType);
     }
 }

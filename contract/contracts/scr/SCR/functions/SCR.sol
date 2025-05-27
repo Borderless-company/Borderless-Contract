@@ -1,15 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {Dictionary} from "../../../core/Dictionary/Dictionary.sol";
+import {Dictionary} from "../../../core/Dictionary/functions/Dictionary.sol";
 import {CompanyInfo} from "./CompanyInfo.sol";
-import {SCInitialize} from "../../../sc/SCT/functions/initialize/SCInitialize.sol";
-import {Ownable} from "../../../sc/Ownable/functions/Ownable.sol";
+import {Ownable} from "../../../core/Ownable/functions/Ownable.sol";
 
 // storages
-import {Storage} from "../storages/Storage.sol";
+import {Storage as SCRStorage} from "../storages/Storage.sol";
 import {Storage as ServiceFactoryStorage} from "../../Factory/storages/Storage.sol";
-import {Storage as AccessControlStorage} from "../../../core/BorderlessAccessControl/storages/Storage.sol";
 import {Storage as BeaconUpgradeableBaseStorage} from "../../BeaconUpgradeableBase/storages/Storage.sol";
 
 // lib
@@ -17,7 +15,6 @@ import {SCRLib} from "../lib/SCRLib.sol";
 import {ServiceFactoryLib} from "../../Factory/lib/ServiceFactoryLib.sol";
 import {BeaconUpgradeableBaseLib} from "../../BeaconUpgradeableBase/lib/BeaconUpgradeableBaseLib.sol";
 import {BorderlessAccessControlLib} from "../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
-import {ArrayLib} from "../../../core/lib/ArrayLib.sol";
 import {Constants} from "../../../core/lib/Constants.sol";
 import {DeployCoreContract} from "../../../core/lib/DeployCoreContract.sol";
 
@@ -29,18 +26,16 @@ import {ISCInitialize} from "../../../sc/SCT/interfaces/initialize/ISCInitialize
 import {IInitialize} from "../../../core/Initialize/interfaces/IInitialize.sol";
 import {IServiceInitialize} from "../../../core/utils/IServiceInitialize.sol";
 import {ILETSBase} from "../../../sc/Services/LETS/interfaces/ILETSBase.sol";
-import {ILETSSaleBase} from "../../../sc/Services/LETS/interfaces/ILETSSaleBase.sol";
-import {IDictionary} from "../../../core/Dictionary/interfaces/IDictionary.sol";
-import {IErrors} from "../../../core/utils/IErrors.sol";
+import {IDictionary} from "../../../core/Dictionary/interfaces/IDictionary/IDictionary.sol";
 import {IBeaconUpgradeableBaseStructs} from "../../BeaconUpgradeableBase/interfaces/IBeaconUpgradeableBaseStructs.sol";
 import {console} from "hardhat/console.sol";
-// openzeppelin
 
+// solady
 import {DynamicArrayLib} from "solady/src/utils/DynamicArrayLib.sol";
-
 
 /**
  * @title SmartCompany Registry v0.1.0
+ * @notice This library contains functions for the SCR contract v0.1.0.
  */
 contract SCR is ISCR, CompanyInfo {
     using DynamicArrayLib for DynamicArrayLib.DynamicArray;
@@ -51,14 +46,14 @@ contract SCR is ISCR, CompanyInfo {
 
     modifier onlyOnceEstablish(address founder, string calldata scid) {
         require(
-            bytes(Storage.SCRSlot().founderCompanies[founder]).length == 0,
+            bytes(SCRStorage.SCRSlot().founderCompanies[founder]).length == 0,
             AlreadyEstablish(founder, scid)
         );
         _;
     }
 
     // ============================================== //
-    //           External Write Functions             //
+    //           EXTERNAL WRITE FUNCTIONS             //
     // ============================================== //
 
     function createSmartCompany(
@@ -123,7 +118,7 @@ contract SCR is ISCR, CompanyInfo {
         string[] memory fields = SCRLib.getCompanyInfoFields(legalEntityCode);
 
         for (uint256 i = 0; i < companyInfo.length; i++) {
-            Storage.SCRSlot().companiesInfo[scid][fields[i]] = companyInfo[i];
+            SCRStorage.SCRSlot().companiesInfo[scid][fields[i]] = companyInfo[i];
         }
 
         (company, services, serviceTypes) = _createSmartCompany(
@@ -171,7 +166,7 @@ contract SCR is ISCR, CompanyInfo {
     }
 
     // ============================================== //
-    //            Internal Write Functions            //
+    //            INTERNAL WRITE FUNCTIONS            //
     // ============================================== //
 
     /**
@@ -238,7 +233,6 @@ contract SCR is ISCR, CompanyInfo {
             scInitialize
         );
 
-
         IInitialize(borderlessAccessControl).initialize(dictionary);
         ISCInitialize(company).initialize(
             dictionary,
@@ -250,9 +244,9 @@ contract SCR is ISCR, CompanyInfo {
         console.log("done sc initialize");
 
         // register company address
-        Storage.SCRSlot().companies[scid].companyAddress = company;
+        SCRStorage.SCRSlot().companies[scid].companyAddress = company;
         // register founder to company number
-        Storage.SCRSlot().founderCompanies[companyInfo.founder] = scid;
+        SCRStorage.SCRSlot().founderCompanies[companyInfo.founder] = scid;
 
         (services, serviceTypes) = _setupService(
             companyInfo.founder,
@@ -317,10 +311,18 @@ contract SCR is ISCR, CompanyInfo {
                     ""
                 );
                 address letsOwnable = DeployCoreContract.deployOwnable();
-                IDictionary(letsDictionary).setOnceInitialized(letsProxy, service);
-                IDictionary(letsDictionary).setOnceInitialized(letsOwnable, letsOwnable);
+                IDictionary(letsDictionary).setOnceInitialized(
+                    letsProxy,
+                    service
+                );
+                IDictionary(letsDictionary).setOnceInitialized(
+                    letsOwnable,
+                    letsOwnable
+                );
                 IDictionary(letsDictionary).setImplementation(
-                    bytes4(keccak256("initialize(address,address,address,bytes)")),
+                    bytes4(
+                        keccak256("initialize(address,address,address,bytes)")
+                    ),
                     service
                 );
                 // initialize lets
@@ -331,9 +333,9 @@ contract SCR is ISCR, CompanyInfo {
                     scsDeployParams[index]
                 );
                 Ownable(letsOwnable).initialize(founder);
-                ServiceFactoryStorage.ServiceFactorySlot().founderServices[founder][
-                    serviceType
-                ] = letsProxy;
+                ServiceFactoryStorage.ServiceFactorySlot().founderServices[
+                    founder
+                ][serviceType] = letsProxy;
                 service = letsProxy;
                 console.log("letsProxy: ", letsProxy);
                 console.logUint(uint256(serviceType));
@@ -359,7 +361,6 @@ contract SCR is ISCR, CompanyInfo {
             tmpServices = tmpServices.p(service);
             tmpTypes = tmpTypes.p(uint256(serviceType));
             serviceCount++;
-
         }
 
         services = DynamicArrayLib.asAddressArray(tmpServices.data);
@@ -398,12 +399,12 @@ contract SCR is ISCR, CompanyInfo {
     }
 
     // ============================================== //
-    //           External Read Functions              //
+    //           EXTERNAL READ FUNCTIONS              //
     // ============================================== //
 
-    function getSmartCompany(
+    function getSmartCompanyId(
         address founder
-    ) external view returns (string memory) {
-        return SCRLib.getSmartCompany(founder);
+    ) external view override returns (string memory scid) {
+        scid = SCRLib.getSmartCompanyId(founder);
     }
 }

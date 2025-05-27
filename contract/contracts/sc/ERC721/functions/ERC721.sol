@@ -11,7 +11,7 @@ import {ERC721Lib} from "../libs/ERC721Lib.sol";
 // interfaces
 import {IERC721} from "../interfaces/IERC721.sol";
 
-import {Ownable} from "../../Ownable/functions/Ownable.sol";
+import {Ownable} from "../../../core/Ownable/functions/Ownable.sol";
 import {LibString} from "solady/src/utils/LibString.sol";
 
 // OpenZeppelin
@@ -203,8 +203,9 @@ contract ERC721 is IERC721, Ownable {
     }
 
     // ============================================== //
-    //   URI Storage
-    // =====================
+    //                 URI Storage                    //
+    // ============================================== //
+
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {
         ERC721Lib.setTokenURI(tokenId, _tokenURI);
     }

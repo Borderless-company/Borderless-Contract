@@ -15,7 +15,7 @@ import {
 import { BorderlessAccessControl } from "../typechain-types";
 import { letsEncodeParams } from "../utils/Encode";
 import { getDeployerAddress } from "../utils/Deployer";
-import { getSelectors, registerAllFacets } from "../utils/DictionaryHelper";
+import { registerAllFacets } from "../utils/DictionaryHelper";
 import { delay } from "../utils/Delay";
 import { setBorderlessAccessControlOnceInitialized } from "../utils/Initialize";
 dotenv.config();
@@ -97,8 +97,8 @@ async function main() {
 
   console.log(`✅ Done set SCT`, sctBeaconConn.target);
 
-  // ============================================== //
-  //              会社情報のフィールドを設定              //
+  // ────────────────────────────────────────────────
+  // 会社情報のフィールドを設定
   // ────────────────────────────────────────────────
 
   const scrConn = await hre.ethers.getContractAt("SCR", proxy.target ?? "");

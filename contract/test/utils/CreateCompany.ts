@@ -83,7 +83,7 @@ export const createCompany = async () => {
   const companyAddress = scInfo.beaconAddress;
   const services = scInfo.services;
 
-  const scId = await scrConn.getSmartCompany(founder.address);
+  const scId = await scrConn.getSmartCompanyId(founder.address);
   const scCompanyInfo = await scrConn.getCompanyInfo(scId);
 
   // アサーション

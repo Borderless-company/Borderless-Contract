@@ -24,7 +24,7 @@ contract LETS_JP_LLC_EXE is LETSBase, ILETS_JP_LLC_EXE {
     bool private _initialMintExecuteMemberCompleted;
 
     // ============================================== //
-    //                 Initialization                 //
+    //                    INITIALIZE                  //
     // ============================================== //
 
     function initialize(
@@ -47,7 +47,7 @@ contract LETS_JP_LLC_EXE is LETSBase, ILETS_JP_LLC_EXE {
     }
 
     // ============================================== //
-    //             External Write Functions           //
+    //             EXTERNAL WRITE FUNCTIONS           //
     // ============================================== //
 
     function initialMint(address[] calldata tos) external {
@@ -66,7 +66,7 @@ contract LETS_JP_LLC_EXE is LETSBase, ILETS_JP_LLC_EXE {
     }
 
     // ============================================== //
-    //             External Read Functions            //
+    //             EXTERNAL READ FUNCTIONS            //
     // ============================================== //
 
     function getInitialMintExecuteMemberCompleted()

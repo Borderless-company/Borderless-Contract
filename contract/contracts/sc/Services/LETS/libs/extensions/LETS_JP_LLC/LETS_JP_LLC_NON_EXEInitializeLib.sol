@@ -2,7 +2,7 @@
 pragma solidity 0.8.28;
 
 // lib
-import {Dictionary} from "../../../../../../core/Dictionary/Dictionary.sol";
+import {Dictionary} from "../../../../../../core/Dictionary/functions/Dictionary.sol";
 
 // storage
 import {Schema as InitializeSchema} from "../../../../../../core/Initialize/storages/Schema.sol";

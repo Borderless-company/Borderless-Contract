@@ -11,6 +11,6 @@ library Schema {
     }
 
     struct AccessControlLayout {
-        mapping(bytes32 role => RoleData) _roles;
+        mapping(bytes32 role => RoleData) roles;
     }
 }

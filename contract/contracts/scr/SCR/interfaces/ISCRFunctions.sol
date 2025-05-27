@@ -7,6 +7,10 @@ import {ServiceType} from "../../../core/utils/ITypes.sol";
  * @title SmartCompany Registry Functions v0.1.0
  */
 interface ISCRFunctions {
+    // ============================================== //
+    //           EXTERNAL WRITE FUNCTIONS             //
+    // ============================================== //
+
     /**
      * @notice Create a new SmartCompany
      * @dev only executor can create a new SmartCompany
@@ -67,4 +71,17 @@ interface ISCRFunctions {
         address scBeacon,
         address newSCImplementation
     ) external;
+
+    // ============================================== //
+    //           EXTERNAL READ FUNCTIONS              //
+    // ============================================== //
+
+    /**
+     * @notice Get the smart company id
+     * @param founder The founder address
+     * @return scid The smart company identifier
+     */
+    function getSmartCompanyId(
+        address founder
+    ) external view returns (string memory scid);
 }

@@ -6,7 +6,7 @@ import {IBeaconUpgradeableBaseStructs} from "./IBeaconUpgradeableBaseStructs.sol
 
 interface ISCRBeaconUpgradeableFunctions {
     // =============================================== //
-    //            External Write Functions             //
+    //            EXTERNAL WRITE FUNCTIONS             //
     // =============================================== //
     /**
      * @notice update the SCR beacon name
@@ -27,7 +27,7 @@ interface ISCRBeaconUpgradeableFunctions {
     function changeSCRBeaconOnline(address beacon, bool isOnline) external;
 
     // =============================================== //
-    //            External Read Functions              //
+    //            EXTERNAL READ FUNCTIONS              //
     // =============================================== //
 
     /**
@@ -51,7 +51,7 @@ interface ISCRBeaconUpgradeableFunctions {
 
 interface IServiceFactoryBeaconUpgradeableFunctions {
     // =============================================== //
-    //            External Write Functions             //
+    //            EXTERNAL WRITE FUNCTIONS             //
     // =============================================== //
 
     /**
@@ -76,7 +76,7 @@ interface IServiceFactoryBeaconUpgradeableFunctions {
     ) external;
 
     // =============================================== //
-    //            External Read Functions              //
+    //            EXTERNAL READ FUNCTIONS              //
     // =============================================== //
 
     /**
