@@ -638,7 +638,7 @@
           "type": "address"
         }
       ],
-      "name": "getSmartCompany",
+      "name": "getSmartCompanyId",
       "outputs": [
         {
           "internalType": "string",

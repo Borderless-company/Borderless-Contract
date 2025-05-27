@@ -2,6 +2,11 @@
 pragma solidity 0.8.28;
 
 /**
+ * @title ITypes
+ * @notice ITypes is an interface that defines the types for the core contracts.
+ */
+
+/**
  * @dev Service type enum
  * @param NON Non-service
  * @param AOI Aoi service

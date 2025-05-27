@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
+/**
+ * @title ArrayLib
+ * @notice ArrayLib is a library that provides utility functions for arrays.
+ */
 library ArrayLib {
     function removeAndCompact(
         string[] storage array,

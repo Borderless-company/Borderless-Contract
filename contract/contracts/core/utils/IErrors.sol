@@ -3,6 +3,10 @@ pragma solidity 0.8.28;
 
 import {ContractType} from "./ITypes.sol";
 
+/**
+ * @title IErrors
+ * @notice IErrors is an interface that defines the errors for the core contracts.
+ */
 interface IErrors {
     error NotSCR(address sender);
     error NotFounder(address sender);

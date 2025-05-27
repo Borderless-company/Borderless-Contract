@@ -2,8 +2,7 @@
 pragma solidity 0.8.28;
 
 // storages
-import {Storage} from "../storages/Storage.sol";
-import {Storage as AccessControlStorage} from "../../../core/BorderlessAccessControl/storages/Storage.sol";
+import {Storage as SCRStorage} from "../storages/Storage.sol";
 
 // lib
 import {SCRLib} from "../lib/SCRLib.sol";
@@ -18,6 +17,7 @@ import {IErrors} from "../../../core/utils/IErrors.sol";
 
 /**
  * @title SmartCompany Registry v0.1.0
+ * @notice This library contains functions for the CompanyInfo contract v0.1.0.
  */
 contract CompanyInfo is ICompanyInfo {
     // ============================================== //
@@ -26,14 +26,14 @@ contract CompanyInfo is ICompanyInfo {
 
     modifier onlyFounder(string calldata scid) {
         require(
-            Storage.SCRSlot().companies[scid].founder == msg.sender,
+            SCRStorage.SCRSlot().companies[scid].founder == msg.sender,
             ISCRErrors.InvalidFounder(msg.sender)
         );
         _;
     }
 
     // ============================================== //
-    //           External Write Functions             //
+    //           EXTERNAL WRITE FUNCTIONS             //
     // ============================================== //
 
     function setCompanyInfo(
@@ -41,7 +41,7 @@ contract CompanyInfo is ICompanyInfo {
         string calldata companyInfoField,
         string calldata value
     ) external override onlyFounder(scid) {
-        Storage.SCRSlot().companiesInfo[scid][companyInfoField] = value;
+        SCRStorage.SCRSlot().companiesInfo[scid][companyInfoField] = value;
         emit UpdateCompanyInfo(msg.sender, scid, companyInfoField, value);
     }
 
@@ -55,7 +55,7 @@ contract CompanyInfo is ICompanyInfo {
             msg.sender
         );
 
-        Storage.SCRSlot().companyInfoFields[legalEntityCode].push(field);
+        SCRStorage.SCRSlot().companyInfoFields[legalEntityCode].push(field);
         emit AddCompanyInfoField(msg.sender, legalEntityCode, field);
     }
 
@@ -70,12 +70,12 @@ contract CompanyInfo is ICompanyInfo {
             msg.sender
         );
 
-        uint256 length = Storage
+        uint256 length = SCRStorage
             .SCRSlot()
             .companyInfoFields[legalEntityCode]
             .length;
         require(fieldIndex < length, IErrors.InvalidLength(length, fieldIndex));
-        Storage.SCRSlot().companyInfoFields[legalEntityCode][
+        SCRStorage.SCRSlot().companyInfoFields[legalEntityCode][
             fieldIndex
         ] = field;
         emit UpdateCompanyInfoField(
@@ -96,11 +96,11 @@ contract CompanyInfo is ICompanyInfo {
             msg.sender
         );
 
-        string memory field = Storage.SCRSlot().companyInfoFields[
+        string memory field = SCRStorage.SCRSlot().companyInfoFields[
             legalEntityCode
         ][fieldIndex];
         ArrayLib.removeAndCompact(
-            Storage.SCRSlot().companyInfoFields[legalEntityCode],
+            SCRStorage.SCRSlot().companyInfoFields[legalEntityCode],
             fieldIndex
         );
         emit DeleteCompanyInfoField(
@@ -112,25 +112,30 @@ contract CompanyInfo is ICompanyInfo {
     }
 
     // ============================================== //
-    //           External Read Functions              //
+    //           EXTERNAL READ FUNCTIONS              //
     // ============================================== //
 
     function getCompanyInfoFields(
         string calldata legalEntityCode
-    ) external view returns (string[] memory fields) {
+    ) external view override returns (string[] memory fields) {
         return SCRLib.getCompanyInfoFields(legalEntityCode);
     }
 
     function getCompanyInfo(
         string calldata scid
-    ) external view returns (CompanyInfo memory companyInfo) {
+    )
+        external
+        view
+        override
+        returns (CompanyInfo memory companyInfo)
+    {
         return SCRLib.getCompanyInfo(scid);
     }
 
     function getCompanyField(
         string calldata scid,
         string calldata companyInfoField
-    ) external view returns (string memory) {
+    ) external view override returns (string memory) {
         return SCRLib.getCompanyField(scid, companyInfoField);
     }
 }

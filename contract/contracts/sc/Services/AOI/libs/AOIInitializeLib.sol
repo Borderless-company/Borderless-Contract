@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {Dictionary} from "../../../../core/Dictionary/Dictionary.sol";
+import {Dictionary} from "../../../../core/Dictionary/functions/Dictionary.sol";
 
 // storages
 import {Schema as InitializeSchema} from "../../../../core/Initialize/storages/Schema.sol";
@@ -10,6 +10,10 @@ import {Storage as InitializeStorage} from "../../../../core/Initialize/storages
 // interfaces
 import {InitializeErrors} from "../../../../core/Initialize/interfaces/InitializeErrors.sol";
 
+/**
+ * @title AOIInitializeLib
+ * @notice Library for initializing the AOI contract
+ */
 library AOIInitializeLib {
     event AOIInitialized(address indexed initializer);
 

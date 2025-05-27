@@ -1,16 +1,25 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.23;
+pragma solidity 0.8.28;
 
-/// @dev Library version has been tested with version 5.0.0.
 import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import {IBeacon} from "@openzeppelin/contracts/proxy/beacon/IBeacon.sol";
 
+/**
+ * @title IVerifiable
+ * @notice IVerifiable is an interface that defines the functions for a verifiable contract.
+ */
 interface IVerifiable is IBeacon, IERC165 {
     event FacadeUpgraded(address newFacade);
 
-    /// @dev from IBeacon
-    // function implementation() external view returns(address);
-    /// @dev from IERC165
-    // function supportsInterface(bytes4 interfaceId) external view returns (bool);
-    function supportsInterfaces() external view returns(bytes4[] memory);
+    /**
+     * @notice get implementation address
+     * @return implementation address
+     */
+    function implementation() external view returns (address);
+
+    /**
+     * @notice get supported interfaces
+     * @return supported interfaces
+     */
+    function supportsInterfaces() external view returns (bytes4[] memory);
 }

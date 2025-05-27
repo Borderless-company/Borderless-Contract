@@ -8,7 +8,7 @@ import {ServiceType} from "../../../core/utils/ITypes.sol";
  */
 interface IServiceFactoryFunctions {
     // ============================================== //
-    //           External Write Functions             //
+    //           EXTERNAL WRITE FUNCTIONS             //
     // ============================================== //
 
     /**
@@ -35,7 +35,7 @@ interface IServiceFactoryFunctions {
     ) external;
 
     // ============================================== //
-    //           External Read Functions              //
+    //           EXTERNAL READ FUNCTIONS              //
     // ============================================== //
 
     /**

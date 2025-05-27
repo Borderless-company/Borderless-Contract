@@ -22,9 +22,13 @@ import {ILETSSaleBase} from "../interfaces/ILETSSaleBase.sol";
 // OpenZeppelin
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
+/**
+ * @title LETSSaleBase
+ * @notice This contract is used to manage the sale of the LETS token
+ */
 contract LETSSaleBase is ILETSSaleBase {
     // ============================================== //
-    //                 Initialization                 //
+    //                    INITIALIZE                  //
     // ============================================== //
 
     function initialize(address dictionary) public virtual override {
@@ -32,7 +36,7 @@ contract LETSSaleBase is ILETSSaleBase {
     }
 
     // ============================================== //
-    //                   Modifier                     //
+    //                   MODIFIER                     //
     // ============================================== //
 
     modifier onlySaleActive() {
@@ -66,7 +70,7 @@ contract LETSSaleBase is ILETSSaleBase {
     }
 
     // ============================================== //
-    //             External Write Functions           //
+    //             EXTERNAL WRITE FUNCTIONS           //
     // ============================================== //
 
     function setSaleInfo(
@@ -75,7 +79,7 @@ contract LETSSaleBase is ILETSSaleBase {
         uint256 fixedPrice,
         uint256 minPrice,
         uint256 maxPrice
-    ) external {
+    ) external override {
         require(
             IAccessControl(LETSBaseStorage.LETSBaseSlot().sc).hasRole(
                 Constants.FOUNDER_ROLE,
@@ -120,7 +124,7 @@ contract LETSSaleBase is ILETSSaleBase {
     function updateSalePeriod(
         uint256 saleStart,
         uint256 saleEnd
-    ) external onlyTreasuryRole {
+    ) external override onlyTreasuryRole {
         LETSSaleBaseLib.setSalePeriod(saleStart, saleEnd);
     }
 
@@ -128,7 +132,7 @@ contract LETSSaleBase is ILETSSaleBase {
         uint256 fixedPrice,
         uint256 minPrice,
         uint256 maxPrice
-    ) external onlyTreasuryRole {
+    ) external override onlyTreasuryRole {
         LETSSaleBaseLib.setPrice(fixedPrice, minPrice, maxPrice);
     }
 }

@@ -4,18 +4,68 @@ pragma solidity 0.8.28;
 // storages
 import {Storage as ACStorage} from "../storages/Storage.sol";
 
+// lib
+import {Constants} from "../../lib/Constants.sol";
+
 // OpenZeppelin
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
+/**
+ * @title BorderlessAccessControlLib
+ * @notice BorderlessAccessControlLib is a library that provides functions for managing roles and permissions for the Borderless protocol.
+ */
 library BorderlessAccessControlLib {
+    // ============================================== //
+    //             INTERNAL WRITE FUNCTIONS           //
+    // ============================================== //
+
+    function grantRole(bytes32 role, address account) internal returns (bool) {
+        if (!hasRole(role, account)) {
+            ACStorage.AccessControlSlot().roles[role].hasRole[account] = true;
+            emit IAccessControl.RoleGranted(role, account, msg.sender);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function revokeRole(bytes32 role, address account) internal returns (bool) {
+        if (hasRole(role, account)) {
+            ACStorage.AccessControlSlot().roles[role].hasRole[account] = false;
+            emit IAccessControl.RoleRevoked(role, account, msg.sender);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function setRoleAdmin(bytes32 role, bytes32 adminRole) internal {
+        bytes32 previousAdminRole = getRoleAdmin(role);
+        ACStorage.AccessControlSlot().roles[role].adminRole = adminRole;
+        emit IAccessControl.RoleAdminChanged(
+            role,
+            previousAdminRole,
+            adminRole
+        );
+    }
+
+    // ============================================== //
+    //             INTERNAL READ FUNCTIONS            //
+    // ============================================== //
+
     function DEFAULT_ADMIN_ROLE() internal pure returns (bytes32) {
         return bytes32(0);
     }
 
+    function FOUNDER_ROLE() internal pure returns (bytes32) {
+        return Constants.FOUNDER_ROLE;
+    }
+
     /**
-     * @notice check if account has role
-     * @param role role
-     * @param account account
+     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `account`
+     * is missing `role`.
+     * @param role The role to check.
+     * @param account The account to check.
      */
     function onlyRole(bytes32 role, address account) internal view {
         require(
@@ -25,8 +75,9 @@ library BorderlessAccessControlLib {
     }
 
     /**
-     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `_msgSender()`
-     * is missing `role`. Overriding this function changes the behavior of the {onlyRole} modifier.
+     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `msg.sender`
+     * is missing `role`.
+     * @param role The role to check.
      */
     function checkRole(bytes32 role) internal view {
         checkRole(role, msg.sender);
@@ -46,55 +97,6 @@ library BorderlessAccessControlLib {
     }
 
     /**
-     * @dev Attempts to grant `role` to `account` and returns a boolean indicating if `role` was granted.
-     *
-     * Internal function without access restriction.
-     *
-     * May emit a {RoleGranted} event.
-     */
-    function grantRole(bytes32 role, address account) internal returns (bool) {
-        if (!hasRole(role, account)) {
-            ACStorage.AccessControlSlot()._roles[role].hasRole[account] = true;
-            emit IAccessControl.RoleGranted(role, account, msg.sender);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @dev Attempts to revoke `role` from `account` and returns a boolean indicating if `role` was revoked.
-     *
-     * Internal function without access restriction.
-     *
-     * May emit a {RoleRevoked} event.
-     */
-    function revokeRole(bytes32 role, address account) internal returns (bool) {
-        if (hasRole(role, account)) {
-            ACStorage.AccessControlSlot()._roles[role].hasRole[account] = false;
-            emit IAccessControl.RoleRevoked(role, account, msg.sender);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @dev Sets `adminRole` as ``role``'s admin role.
-     *
-     * Emits a {RoleAdminChanged} event.
-     */
-    function setRoleAdmin(bytes32 role, bytes32 adminRole) internal {
-        bytes32 previousAdminRole = getRoleAdmin(role);
-        ACStorage.AccessControlSlot()._roles[role].adminRole = adminRole;
-        emit IAccessControl.RoleAdminChanged(
-            role,
-            previousAdminRole,
-            adminRole
-        );
-    }
-
-    /**
      * @notice check if account has role
      * @param role role
      * @param account account
@@ -104,7 +106,7 @@ library BorderlessAccessControlLib {
         bytes32 role,
         address account
     ) internal view returns (bool) {
-        return ACStorage.AccessControlSlot()._roles[role].hasRole[account];
+        return ACStorage.AccessControlSlot().roles[role].hasRole[account];
     }
 
     /**
@@ -113,6 +115,6 @@ library BorderlessAccessControlLib {
      * @return bytes32 admin role
      */
     function getRoleAdmin(bytes32 role) internal view returns (bytes32) {
-        return ACStorage.AccessControlSlot()._roles[role].adminRole;
+        return ACStorage.AccessControlSlot().roles[role].adminRole;
     }
 }

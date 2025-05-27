@@ -3,13 +3,11 @@ pragma solidity 0.8.28;
 
 // storage
 import {Storage as GovernanceStorage} from "../storages/Storage.sol";
-import {Storage as LETSBaseStorage} from "../../LETS/storages/Storage.sol";
 
 // lib
 import {GovernanceInitializeLib} from "../libs/GovernanceInitializeLib.sol";
 import {ThresholdLib} from "../../../../core/lib/ThresholdLib.sol";
 import {LETSBaseLib} from "../../LETS/libs/LETSBaseLib.sol";
-import {ERC721Lib} from "../../../ERC721/libs/ERC721Lib.sol";
 
 // interfaces
 import {IGovernanceService} from "../interfaces/IGovernanceService.sol";
@@ -18,14 +16,15 @@ import {IErrors} from "../../../../core/utils/IErrors.sol";
 
 /**
  * @title Test smart contract for Borderless.company service
+ * @notice This contract is used to test the Governance service
  */
 contract GovernanceBase is IGovernanceService {
     // ============================================== //
-    //                  Modifier                      //
+    //                  MODIFIER                      //
     // ============================================== //
 
     /**
-     * @dev Modifier to check if the caller is the executor of the transaction
+     * @dev MODIFIER to check if the caller is the executor of the transaction
      * @param transactionId The transaction ID
      */
     modifier onlyExecutor(uint256 transactionId) {
@@ -40,7 +39,7 @@ contract GovernanceBase is IGovernanceService {
     }
 
     /**
-     * @dev Modifier to check if the caller has already approved the transaction
+     * @dev MODIFIER to check if the caller has already approved the transaction
      * @param transactionId The transaction ID
      */
     modifier onceApproved(uint256 transactionId) {
@@ -54,7 +53,7 @@ contract GovernanceBase is IGovernanceService {
     }
 
     /**
-     * @dev Modifier to check if the current block timestamp is in the vote period
+     * @dev MODIFIER to check if the current block timestamp is in the vote period
      * @param transactionId_ The transaction ID
      */
     modifier onlyVotePeriod(uint256 transactionId_) {
@@ -70,7 +69,7 @@ contract GovernanceBase is IGovernanceService {
     }
 
     /**
-     * @dev Modifier to check if the threshold is reached
+     * @dev MODIFIER to check if the threshold is reached
      * @param transactionId The transaction ID
      */
     modifier thresholdReached(uint256 transactionId) {
@@ -129,7 +128,7 @@ contract GovernanceBase is IGovernanceService {
     }
 
     // ============================================== //
-    //                  Initialization                 //
+    //                  INITIALIZE                 //
     // ============================================== //
 
     function initialize(address dictionary) external {
@@ -137,12 +136,17 @@ contract GovernanceBase is IGovernanceService {
     }
 
     // ============================================== //
-    //             External Write Functions           //
+    //             EXTERNAL WRITE FUNCTIONS           //
     // ============================================== //
 
     function execute(
         uint256 transactionId
-    ) external onlyExecutor(transactionId) thresholdReached(transactionId) {
+    )
+        external
+        override
+        onlyExecutor(transactionId)
+        thresholdReached(transactionId)
+    {
         // Transaction memory transaction = GovernanceStorage
         //     .GovernanceSlot()
         //     .transactions[transactionId];
@@ -152,7 +156,8 @@ contract GovernanceBase is IGovernanceService {
         // require(success, ExecuteFailed(transactionId));
         GovernanceStorage
             .GovernanceSlot()
-            .transactions[transactionId].executed = true;
+            .transactions[transactionId]
+            .executed = true;
         emit TransactionExecuted(transactionId);
     }
 
@@ -212,7 +217,7 @@ contract GovernanceBase is IGovernanceService {
         uint256 voteStart,
         uint256 voteEnd,
         address[] memory proposalMemberContracts
-    ) external checkProposalLevel(proposalLevel, true) {
+    ) external override checkProposalLevel(proposalLevel, true) {
         require(
             numerator > 0 && denominator > 0,
             InvalidNumeratorOrDenominator(numerator, denominator)
@@ -234,7 +239,7 @@ contract GovernanceBase is IGovernanceService {
         );
     }
 
-    function cancelTransaction(uint256 transactionId_) external {
+    function cancelTransaction(uint256 transactionId_) external override {
         GovernanceStorage
             .GovernanceSlot()
             .transactions[transactionId_]
@@ -243,17 +248,17 @@ contract GovernanceBase is IGovernanceService {
     }
 
     // ============================================== //
-    //             External Read Functions             //
+    //             EXTERNAL READ FUNCTIONS             //
     // ============================================== //
 
     function getTransaction(
         uint256 transactionId
-    ) external view returns (Transaction memory) {
+    ) external view override returns (Transaction memory) {
         return GovernanceStorage.GovernanceSlot().transactions[transactionId];
     }
 
     // ============================================== //
-    //             Internal Write Functions           //
+    //             INTERNAL WRITE FUNCTIONS           //
     // ============================================== //
 
     function _registerTransaction(
@@ -265,9 +270,7 @@ contract GovernanceBase is IGovernanceService {
         uint256 voteEnd,
         ProposalInfo memory proposalInfo
     ) internal {
-        GovernanceStorage
-            .GovernanceSlot()
-            .lastTransactionId++;
+        GovernanceStorage.GovernanceSlot().lastTransactionId++;
         uint256 transactionId = GovernanceStorage
             .GovernanceSlot()
             .lastTransactionId;

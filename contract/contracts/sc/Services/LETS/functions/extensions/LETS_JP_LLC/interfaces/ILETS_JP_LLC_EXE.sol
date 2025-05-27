@@ -16,7 +16,7 @@ interface ILETS_JP_LLC_EXE {
     error NotFounder(address sender);
 
     // ============================================== //
-    //             External Write Functions           //
+    //             EXTERNAL WRITE FUNCTIONS           //
     // ============================================== //
 
     /**
@@ -28,7 +28,7 @@ interface ILETS_JP_LLC_EXE {
     ) external;
 
     // ============================================== //
-    //             External Read Functions            //
+    //             EXTERNAL READ FUNCTIONS            //
     // ============================================== //
 
     /**

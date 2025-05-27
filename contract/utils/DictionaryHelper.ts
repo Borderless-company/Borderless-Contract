@@ -101,4 +101,4 @@ export const registerAllFacets = async (
   await receipt.wait();
 
   console.log("✅ Done register functions");
-}
+};

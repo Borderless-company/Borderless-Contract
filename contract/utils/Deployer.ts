@@ -11,3 +11,13 @@ export const getDeployerAddress = async () => {
   console.log(`deployer: ${deployer}`);
   return { deployer, deployerWallet };
 };
+
+export const getFounderAddresses = async () => {
+  const founderAddresses = process.env.FOUNDER_ADDRESSES?.split(",") || [];
+  if (founderAddresses.length === 0) {
+    console.log("No founder addresses found in .env file");
+  } else {
+    console.log(`Founder addresses: ${founderAddresses.join(", ")}`);
+  }
+  return founderAddresses;
+};

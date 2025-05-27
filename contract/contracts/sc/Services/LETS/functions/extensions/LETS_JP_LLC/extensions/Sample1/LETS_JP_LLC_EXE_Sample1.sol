@@ -15,13 +15,13 @@ import {ERC721Lib} from "../../../../../../../ERC721/libs/ERC721Lib.sol";
  */
 contract LETS_JP_LLC_EXE_Sample1 is LETS_JP_LLC_EXE {
     // ============================================== //
-    //                Initialization                  //
+    //                INITIALIZE                  //
     // ============================================== //
 
     error InvalidTokenId(uint256 tokenId);
 
     // ============================================== //
-    //                Initialization                  //
+    //                INITIALIZE                  //
     // ============================================== //
 
     function initialize(

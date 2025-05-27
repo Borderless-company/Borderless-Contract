@@ -2,8 +2,8 @@
 pragma solidity 0.8.28;
 
 // storages
-import {Storage} from "../storages/Storage.sol";
-import {Schema} from "../storages/Schema.sol";
+import {Storage as ServiceFactoryBeaconStorage} from "../storages/Storage.sol";
+import {Schema as ServiceFactoryBeaconSchema} from "../storages/Schema.sol";
 
 // lib
 import {BeaconUpgradeableBaseLib} from "../lib/BeaconUpgradeableBaseLib.sol";
@@ -22,7 +22,7 @@ contract ServiceFactoryBeaconUpgradeable is
     IServiceFactoryBeaconUpgradeableFunctions
 {
     // =============================================== //
-    //            External Write Functions             //
+    //            EXTERNAL WRITE FUNCTIONS             //
     // =============================================== //
 
     function updateServiceFactoryBeaconName(
@@ -34,14 +34,16 @@ contract ServiceFactoryBeaconUpgradeable is
         returns (IBeaconUpgradeableBaseStructs.Beacon memory beacon_)
     {
         BeaconUpgradeableBaseLib.checkBeacon(
-            Storage.ServiceFactoryBeaconProxySlot(),
+            ServiceFactoryBeaconStorage.ServiceFactoryBeaconProxySlot(),
             beacon,
             false
         );
         BeaconUpgradeableBaseLib.checkBeaconName(name);
 
         // update beacon name
-        beacon_ = Storage.ServiceFactoryBeaconProxySlot().beacons[beacon];
+        beacon_ = ServiceFactoryBeaconStorage
+            .ServiceFactoryBeaconProxySlot()
+            .beacons[beacon];
         beacon_.name = name;
 
         // emit event
@@ -54,13 +56,15 @@ contract ServiceFactoryBeaconUpgradeable is
     ) external override {
         // check if the beacon is already online or offline
         require(
-            Storage.ServiceFactoryBeaconProxySlot().beacons[beacon].isOnline !=
-                isOnline,
+            ServiceFactoryBeaconStorage
+                .ServiceFactoryBeaconProxySlot()
+                .beacons[beacon]
+                .isOnline != isOnline,
             IBeaconUpgradeableBaseErrors.BeaconAlreadyOnlineOrOffline(beacon)
         );
 
         // change the beacon online status
-        Storage
+        ServiceFactoryBeaconStorage
             .ServiceFactoryBeaconProxySlot()
             .beacons[beacon]
             .isOnline = isOnline;
@@ -74,7 +78,7 @@ contract ServiceFactoryBeaconUpgradeable is
     }
 
     // =============================================== //
-    //            External Read Functions              //
+    //            EXTERNAL READ FUNCTIONS              //
     // =============================================== //
 
     function getServiceFactoryBeacon(
@@ -85,7 +89,10 @@ contract ServiceFactoryBeaconUpgradeable is
         override
         returns (IBeaconUpgradeableBaseStructs.Beacon memory)
     {
-        return Storage.ServiceFactoryBeaconProxySlot().beacons[beacon];
+        return
+            ServiceFactoryBeaconStorage.ServiceFactoryBeaconProxySlot().beacons[
+                beacon
+            ];
     }
 
     function getServiceFactoryProxy(
@@ -96,6 +103,9 @@ contract ServiceFactoryBeaconUpgradeable is
         override
         returns (IBeaconUpgradeableBaseStructs.Proxy memory)
     {
-        return Storage.ServiceFactoryBeaconProxySlot().proxies[proxy];
+        return
+            ServiceFactoryBeaconStorage.ServiceFactoryBeaconProxySlot().proxies[
+                proxy
+            ];
     }
 }

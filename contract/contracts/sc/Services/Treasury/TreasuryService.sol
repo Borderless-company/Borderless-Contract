@@ -14,7 +14,7 @@ contract TreasuryService is ITreasuryServiceBase, Initializable {
     address private _company;
 
     // ============================================== //
-    //                  Modifier                      //
+    //                  MODIFIER                      //
     // ============================================== //
 
     modifier onlyService() {
@@ -46,7 +46,7 @@ contract TreasuryService is ITreasuryServiceBase, Initializable {
     }
 
     // ============================================== //
-    //             External Write Functions       //
+    //             EXTERNAL WRITE FUNCTIONS       //
     // ============================================== //
 
     function callAdmin() public view onlyAdmin returns (bool called_) {
@@ -54,7 +54,7 @@ contract TreasuryService is ITreasuryServiceBase, Initializable {
     }
 
     // ============================================== //
-    //             Internal Read Functions            //
+    //             INTERNAL READ FUNCTIONS            //
     // ============================================== //
 
     function _validateCaller() internal view returns (bool called_) {

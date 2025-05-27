@@ -16,10 +16,11 @@ import {ServiceType} from "../../../core/utils/ITypes.sol";
 
 /**
  * @title SCT (Smart Company Template) contract
+ * @notice SCT is a contract that manages the smart company template
  */
 contract SCT is ISCT {
     // ============================================== //
-    //            External Write Functions            //
+    //            EXTERNAL WRITE FUNCTIONS            //
     // ============================================== //
 
     function registerService(
@@ -57,22 +58,22 @@ contract SCT is ISCT {
     }
 
     // ============================================== //
-    //            External Read Functions             //
+    //            EXTERNAL READ FUNCTIONS             //
     // ============================================== //
 
-    function getSCR() external view returns (address scr) {
+    function getSCR() external view override returns (address scr) {
         scr = SCTStorage.SCTSlot().scr;
     }
 
     function getService(
         ServiceType serviceType
-    ) external view returns (address) {
+    ) external view override returns (address) {
         return SCTStorage.SCTSlot().serviceContracts[serviceType];
     }
 
     function getInvestmentAmount(
         address account
-    ) external view returns (uint256) {
+    ) external view override returns (uint256) {
         return SCTStorage.SCTSlot().investmentAmount[account];
     }
 }

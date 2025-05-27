@@ -5,8 +5,14 @@ import {IGovernanceServiceStructs} from "./IGovernanceServiceStructs.sol";
 
 interface IGovernanceServiceFunctions {
     // ============================================== //
-    //           External Write Functions             //
+    //           EXTERNAL WRITE FUNCTIONS             //
     // ============================================== //
+
+    /**
+     * @dev Execute a transaction
+     * @param transactionId The transaction ID
+     */
+    function execute(uint256 transactionId) external;
 
     /**
      * @dev Approve a transaction
@@ -69,7 +75,7 @@ interface IGovernanceServiceFunctions {
     function cancelTransaction(uint256 transactionId_) external;
 
     // ============================================== //
-    //             External Read Functions             //
+    //             EXTERNAL READ FUNCTIONS            //
     // ============================================== //
 
     /**

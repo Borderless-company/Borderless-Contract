@@ -2,7 +2,8 @@
 pragma solidity 0.8.28;
 
 /**
- * @notice address utility functions
+ * @title Address
+ * @notice Address is a library that provides utility functions for addresses.
  */
 library Address {
     /// @notice check if the address is not zero

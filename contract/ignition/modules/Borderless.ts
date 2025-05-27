@@ -24,6 +24,7 @@ export const BorderlessModule = buildModule("BorderlessModule", (m) => {
   //    （コンストラクタでオーナーアドレス等を渡す場合は引数に）
   // ────────────────────────────────────────────────
   const dictionary = m.contract("Dictionary", [deployer]);
+  const dictionaryInitializeFacet = m.contract("DictionaryInitialize", []);
 
   // ────────────────────────────────────────────────
   // ３）Proxy をデプロイ
@@ -45,13 +46,6 @@ export const BorderlessModule = buildModule("BorderlessModule", (m) => {
   const lets_jp_llc_non_exe = m.contract("LETS_JP_LLC_NON_EXE", []);
   const lets_jp_llc_sale = m.contract("LETS_JP_LLC_SALE", []);
 
-  // ────────────────────────────────────────────────
-  // ６）SCProxy, SCRProxy をデプロイ
-  //    （コンストラクタでオーナーアドレス等を渡す場合は引数に）
-  // ────────────────────────────────────────────────
-  const scProxy = m.contract("SCProxy", []);
-  const scrProxy = m.contract("SCRProxy", [dictionary, "0x"]);
-
   console.log(`✅ Done deploy`);
 
   return {
@@ -62,9 +56,8 @@ export const BorderlessModule = buildModule("BorderlessModule", (m) => {
     scrInitializeFacet,
     scrFacet,
     dictionary,
+    dictionaryInitializeFacet,
     proxy,
-    scProxy,
-    scrProxy,
     sct,
     governance_jp_llc,
     lets_jp_llc_exe,
@@ -95,6 +88,24 @@ export const BorderlessAccessControlInitializeModule = buildModule(
     return {
       dictionary,
       accessControlFacet,
+    };
+  }
+);
+
+export const DictionaryInitializeModule = buildModule(
+  "DictionaryInitializeModule",
+  (m) => {
+    const { dictionaryInitializeFacet, dictionary } = m.useModule(
+      BorderlessModule
+    );
+    const dictionaryInitializeConn = m.contractAt(
+      "DictionaryInitialize",
+      dictionaryInitializeFacet
+    );
+    m.call(dictionaryInitializeConn, "initialize", [dictionary]);
+    return {
+      dictionary,
+      dictionaryInitializeFacet,
     };
   }
 );

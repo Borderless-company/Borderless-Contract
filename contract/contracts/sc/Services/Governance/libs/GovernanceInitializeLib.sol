@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {Dictionary} from "../../../../core/Dictionary/Dictionary.sol";
+import {Dictionary} from "../../../../core/Dictionary/functions/Dictionary.sol";
 
 // storages
 import {Schema as InitializeSchema} from "../../../../core/Initialize/storages/Schema.sol";
@@ -10,8 +10,19 @@ import {Storage as InitializeStorage} from "../../../../core/Initialize/storages
 // interfaces
 import {InitializeErrors} from "../../../../core/Initialize/interfaces/InitializeErrors.sol";
 
+/**
+ * @title GovernanceInitializeLib
+ * @notice Library for initializing the Governance service
+ */
 library GovernanceInitializeLib {
+    // ============================================== //
+    //                   EVENTS                       //
+    // ============================================== //
     event GovernanceInitialized(address indexed initializer);
+
+    // ============================================== //
+    //           EXTERNAL WRITE FUNCTIONS             //
+    // ============================================== //
 
     function initialize(address dictionary) internal {
         InitializeSchema.InitializeLayout storage $init = InitializeStorage

@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
+/**
+ * @title ThresholdLib
+ * @notice ThresholdLib is a library that provides utility functions for thresholds.
+ */
 library ThresholdLib {
     /**
      * @dev Check if the value is greater than or equal to the threshold

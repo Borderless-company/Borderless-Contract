@@ -3,7 +3,7 @@ pragma solidity 0.8.28;
 
 interface ILETSSaleBaseFunctions {
     // ============================================== //
-    //             External Write Functions           //
+    //             EXTERNAL WRITE FUNCTIONS           //
     // ============================================== //
 
     /**
@@ -11,6 +11,22 @@ interface ILETSSaleBaseFunctions {
      * @param dictionary dictionary address
      */
     function initialize(address dictionary) external;
+
+    /**
+     * @notice set sale info
+     * @param saleStart sale start time
+     * @param saleEnd sale end time
+     * @param fixedPrice fixed price
+     * @param minPrice minimum price
+     * @param maxPrice maximum price
+     */
+    function setSaleInfo(
+        uint256 saleStart,
+        uint256 saleEnd,
+        uint256 fixedPrice,
+        uint256 minPrice,
+        uint256 maxPrice
+    ) external;
 
     /**
      * @notice buy token

@@ -23,7 +23,7 @@ bun run localhost
 - deploy contract
 
 ```bash
-# bun run deploy:module --network localhost
+bun run deploy --network localhost
 ```
 
 ```bash
@@ -82,16 +82,14 @@ npx hardhat verify --network base-sepolia "0xA960bD38Dcfa44c6e13832bFeC92462cAC3
 ┌───────────────────────────┬──────────────────────────────────────────────┐
 │ (index)                   │ Values                                       │
 ├───────────────────────────┼──────────────────────────────────────────────┤
-│ proxy                     │ '0x94C3115c90ff05c48A8B6C1dA9541de2642a0851' │
-│ dictionary                │ '0xAf1b5fC1634d566A6f8a2c851826F52b6ad140c7' │
-│ sct                       │ '0x816e6013CB995393eCd9d8e4b2bDd940Ccb6d8d4' │
-│ sctBeacon                 │ '0x50ffBce7B0972F225dce2D214A2cC9B8998B1D57' │
-│ governanceBeacon          │ '0x6B08F0E7A3aE6fecf701F77e6C9aaca0Ee02E35B' │
-│ lets_jp_llc_exeBeacon     │ '0x305A2B6540E5d558ecf8E9177D2D65e632001119' │
-│ lets_jp_llc_non_exeBeacon │ '0x926f5Bad437def884010f42584453E180E355FD5' │
-│ lets_jp_llc_saleBeacon    │ '0x8Fab5c8EB34E4D33e88494e7700D694681e77791' │
-│ letsExeProxy              │ '0x788c9C95adf9588A4ae10ca57e55CA7064F7F0A4' │
-│ letsNonExeProxy           │ '0x296d77188Cc53625D968a41d1bD36193C5B130EC' │
+│ proxy                     │ '0x0eFAB975d9A08bB38eDEBadbA3E82F2d6F57C82f' │
+│ dictionary                │ '0xc955c9EaC8D8f4f568f83b1D575B820f27cB8e2E' │
+│ sct                       │ '0xBF2377cBBAbF6b87E682C796663A2470Bc696C39' │
+│ sctBeacon                 │ '0xD4C13637BA0E26fD14e9e28e17EaBb4c1a542a02' │
+│ governanceBeacon          │ '0x2941553244B4c77f67e01213f8B99dAB0E0bEbfC' │
+│ lets_jp_llc_exeBeacon     │ '0x38658A4c12160878bA94fA8b7dBC569c30B52008' │
+│ lets_jp_llc_non_exeBeacon │ '0x4108AEB58A5a94dda39b7771EfeA99AA6123a0a0' │
+│ lets_jp_llc_saleBeacon    │ '0xF7EFAdc56e8ccc6d09b4B186D9aF8Cb9a6CBDca8' │
 └───────────────────────────┴──────────────────────────────────────────────┘
 ```
 

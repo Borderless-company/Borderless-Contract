@@ -6,6 +6,10 @@ import {Storage} from "../storages/Storage.sol";
 import {Storage as AccessControlStorage} from "../../../core/BorderlessAccessControl/storages/Storage.sol";
 import {Constants} from "../../lib/Constants.sol";
 
+/**
+ * @title SCRInitialize
+ * @notice SCRInitialize is a contract that initializes the SCR contract.
+ */
 contract SCRInitialize {
     event InitializeBorderless(address indexed defaultAdmin);
 
@@ -19,7 +23,7 @@ contract SCRInitialize {
         // grant default admin role
         AccessControlStorage
             .AccessControlSlot()
-            ._roles[Constants.DEFAULT_ADMIN_ROLE]
+            .roles[Constants.DEFAULT_ADMIN_ROLE]
             .hasRole[defaultAdmin] = true;
 
         emit InitializeBorderless(defaultAdmin);
