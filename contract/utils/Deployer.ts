@@ -12,6 +12,16 @@ export const getDeployerAddress = async () => {
   return { deployer, deployerWallet };
 };
 
+export const getAdminAddresses = async () => {
+  const adminAddresses = process.env.ADMIN_ADDRESSES?.split(",") || [];
+  if (adminAddresses.length === 0) {
+    console.log("No admin addresses found in .env file");
+  } else {
+    console.log(`Admin addresses: ${adminAddresses.join(", ")}`);
+  }
+  return adminAddresses;
+};
+
 export const getFounderAddresses = async () => {
   const founderAddresses = process.env.FOUNDER_ADDRESSES?.split(",") || [];
   if (founderAddresses.length === 0) {

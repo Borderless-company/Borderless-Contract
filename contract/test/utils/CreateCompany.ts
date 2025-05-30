@@ -89,6 +89,11 @@ export const createCompany = async () => {
   // アサーション
   expect(companyAddress).to.match(/^0x[0-9a-fA-F]{40}$/);
   expect(scCompanyInfo.companyAddress).to.equal(companyAddress);
+  expect(scCompanyInfo.founder).to.equal(founder.address);
+  expect(scCompanyInfo.companyName).to.equal(companyName);
+  expect(scCompanyInfo.establishmentDate).to.equal(establishmentDate);
+  expect(scCompanyInfo.jurisdiction).to.equal(jurisdiction);
+  expect(scCompanyInfo.entityType).to.equal(entityType);
   if (!companyAddress) throw new Error("Company address not found in logs");
 
   console.log("✅ createSmartCompany が成功");

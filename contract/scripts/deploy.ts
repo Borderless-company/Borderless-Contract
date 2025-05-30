@@ -12,7 +12,11 @@ import {
   DictionaryInitializeModule,
 } from "../ignition/modules/Borderless";
 import { parseDeployArgs } from "../utils/parseArgs";
-import { getDeployerAddress, getFounderAddresses } from "../utils/Deployer";
+import {
+  getDeployerAddress,
+  getFounderAddresses,
+  getAdminAddresses,
+} from "../utils/Deployer";
 import { registerAllFacets } from "../utils/DictionaryHelper";
 import { delay } from "../utils/Delay";
 
@@ -23,6 +27,7 @@ const { delayMs } = parseDeployArgs();
 export default async function main() {
   const { deployer, deployerWallet } = await getDeployerAddress();
   console.log(`deployer: ${deployer}`);
+  const adminAddresses = await getAdminAddresses();
   const founderAddresses = await getFounderAddresses();
 
   const parameters = {
@@ -242,12 +247,21 @@ export default async function main() {
   await delay(delayMs);
 
   // Set Role
+  const adminRole =
+    "0x0000000000000000000000000000000000000000000000000000000000000000";
   const founderRole =
     "0x7ed687a8f2955bd2ba7ca08227e1e364d132be747f42fb733165f923021b0225";
   const accessControlConn = await hre.ethers.getContractAt(
     "BorderlessAccessControl",
     proxy.target ?? ""
   );
+
+  for (const adminAddress of adminAddresses) {
+    await delay(delayMs);
+    await accessControlConn
+      .connect(deployerWallet)
+      .grantRole(adminRole, adminAddress);
+  }
 
   for (const founderAddress of founderAddresses) {
     await delay(delayMs);

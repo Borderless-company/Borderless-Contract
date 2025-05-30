@@ -17,7 +17,6 @@ import {Constants} from "../../../../core/lib/Constants.sol";
 
 // OpenZeppelin
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
-import {console} from "hardhat/console.sol";
 
 /**
  * @title Legal Embedded Token Service
@@ -35,16 +34,6 @@ contract LETSBase is ERC721, ILETSBase {
         bytes calldata params
     ) public virtual override returns (bytes4[] memory selectors) {
         selectors = LETSBaseInitializeLib.initialize(sc, params);
-        console.log("LETSBase initialized");
-        console.log("sc", LETSBaseStorage.LETSBaseSlot().sc);
-        console.log("baseURI", LETSBaseStorage.LETSBaseSlot().baseURI);
-        console.log("extension", LETSBaseStorage.LETSBaseSlot().extension);
-        console.log(
-            "isMetadataFixed",
-            LETSBaseStorage.LETSBaseSlot().isMetadataFixed
-        );
-        console.log("maxSupply", LETSBaseStorage.LETSBaseSlot().maxSupply);
-        console.log("nextTokenId", LETSBaseStorage.LETSBaseSlot().nextTokenId);
     }
 
     // ============================================== //
@@ -53,7 +42,8 @@ contract LETSBase is ERC721, ILETSBase {
 
     modifier onlyUnderMaxSupply() {
         require(
-            LETSBaseStorage.LETSBaseSlot().maxSupply > super.totalSupply(),
+            LETSBaseStorage.LETSBaseSlot().maxSupply == 0 ||
+                LETSBaseStorage.LETSBaseSlot().maxSupply > super.totalSupply(),
             MaxSupplyReached()
         );
         _;
