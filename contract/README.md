@@ -82,14 +82,14 @@ npx hardhat verify --network base-sepolia "0xA960bD38Dcfa44c6e13832bFeC92462cAC3
 ┌───────────────────────────┬──────────────────────────────────────────────┐
 │ (index)                   │ Values                                       │
 ├───────────────────────────┼──────────────────────────────────────────────┤
-│ proxy                     │ '0x0eFAB975d9A08bB38eDEBadbA3E82F2d6F57C82f' │
-│ dictionary                │ '0xc955c9EaC8D8f4f568f83b1D575B820f27cB8e2E' │
-│ sct                       │ '0xBF2377cBBAbF6b87E682C796663A2470Bc696C39' │
-│ sctBeacon                 │ '0xD4C13637BA0E26fD14e9e28e17EaBb4c1a542a02' │
-│ governanceBeacon          │ '0x2941553244B4c77f67e01213f8B99dAB0E0bEbfC' │
-│ lets_jp_llc_exeBeacon     │ '0x38658A4c12160878bA94fA8b7dBC569c30B52008' │
-│ lets_jp_llc_non_exeBeacon │ '0x4108AEB58A5a94dda39b7771EfeA99AA6123a0a0' │
-│ lets_jp_llc_saleBeacon    │ '0xF7EFAdc56e8ccc6d09b4B186D9aF8Cb9a6CBDca8' │
+│ proxy                     │ '0x6C59F7C01775BfB88A82e20A3bB9321a9Ac788B2' │
+│ dictionary                │ '0x8552e43509041112223a9bB0f54D1A39400A29c8' │
+│ sct                       │ '0xD4b2a33F18321Db83332a9C8eBA91e3a26d36628' │
+│ sctBeacon                 │ '0xeA3Cc68b61b87D05B35f0252b0bcCC77357aC4ED' │
+│ governanceBeacon          │ '0x43727e2D9DDA3272d0b7C20D241CdfC87a0ea478' │
+│ lets_jp_llc_exeBeacon     │ '0x33a59762515d59908e394A1A53259A7Bb526B891' │
+│ lets_jp_llc_non_exeBeacon │ '0x9Bc014f74c67C45a387A81F7E52ff3712c0b65e9' │
+│ lets_jp_llc_saleBeacon    │ '0x9BCE158B8342FBd834DEF07C586D64Eb19F7d465' │
 └───────────────────────────┴──────────────────────────────────────────────┘
 ```
 

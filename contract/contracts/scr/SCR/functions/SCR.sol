@@ -244,7 +244,9 @@ contract SCR is ISCR, CompanyInfo {
         console.log("done sc initialize");
 
         // register company address
-        SCRStorage.SCRSlot().companies[scid].companyAddress = company;
+        companyInfo.companyAddress = company;
+        SCRStorage.SCRSlot().companies[scid] = companyInfo;
+
         // register founder to company number
         SCRStorage.SCRSlot().founderCompanies[companyInfo.founder] = scid;
 
