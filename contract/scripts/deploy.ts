@@ -11,14 +11,14 @@ import {
   RegisterLetsSaleServiceModule,
   DictionaryInitializeModule,
 } from "../ignition/modules/Borderless";
-import { parseDeployArgs } from "../utils/parseArgs";
+import { parseDeployArgs } from "./utils/parseArgs";
 import {
   getDeployerAddress,
   getFounderAddresses,
   getAdminAddresses,
-} from "../utils/Deployer";
-import { registerAllFacets } from "../utils/DictionaryHelper";
-import { delay } from "../utils/Delay";
+} from "./utils/Deployer";
+import { registerAllFacets } from "./utils/DictionaryHelper";
+import { delay } from "./utils/Delay";
 
 dotenv.config();
 
@@ -27,8 +27,8 @@ const { delayMs } = parseDeployArgs();
 export default async function main() {
   const { deployer, deployerWallet } = await getDeployerAddress();
   console.log(`deployer: ${deployer}`);
-  const adminAddresses = await getAdminAddresses();
-  const founderAddresses = await getFounderAddresses();
+  const adminAddresses = [...(await getAdminAddresses()), deployer];
+  const founderAddresses = [...(await getFounderAddresses()), deployer];
 
   const parameters = {
     BorderlessModule: { Deployer: deployer },
@@ -132,6 +132,10 @@ export default async function main() {
   const { sctBeaconConn } = await hre.ignition.deploy(RegisterSCTModule, {
     parameters: {
       ...parameters,
+      RegisterSCTModule: {
+        SCTAddress: sctAddress,
+        SCTName: "SC_JP_DAOLLC",
+      },
     },
   });
 

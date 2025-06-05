@@ -6,6 +6,8 @@ import {Schema} from "../storages/Schema.sol";
 
 // lib
 import {Address} from "../../../core/lib/Address.sol";
+import {BorderlessAccessControlLib} from "../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
+import {Constants} from "../../../core/lib/Constants.sol";
 
 // interfaces
 import {IBeaconUpgradeableBaseEvents} from "../interfaces/IBeaconUpgradeableBaseEvents.sol";
@@ -40,8 +42,8 @@ library BeaconUpgradeableBaseLib {
         address implementation,
         string memory name
     ) internal returns (address proxy) {
-        // checkImplementation(implementation);
-        checkBeaconName(name);
+        _checkBeacon(slot, implementation, true);
+        _checkBeaconName(name);
 
         // create beacon proxy
         UpgradeableBeacon beacon = new UpgradeableBeacon(
@@ -108,8 +110,7 @@ library BeaconUpgradeableBaseLib {
         address beacon,
         address newImplementation
     ) internal {
-        checkBeacon(slot, beacon, false);
-        // checkImplementation(newImplementation);
+        _checkBeacon(slot, beacon, false);
 
         // upgrade beacon proxy
         UpgradeableBeacon(payable(beacon)).upgradeTo(
@@ -126,34 +127,87 @@ library BeaconUpgradeableBaseLib {
         );
     }
 
+    /**
+     * @notice update the beacon name
+     * @param slot the beacon proxy layout
+     * @param beacon the beacon address
+     * @param name the new name
+     * @return beacon_ the beacon
+     */
+    function updateBeaconName(
+        Schema.BeaconProxyLayout storage slot,
+        address beacon,
+        string memory name
+    ) internal returns (IBeaconUpgradeableBaseStructs.Beacon memory beacon_) {
+        _onlyAdmin();
+        _checkBeacon(slot, beacon, false);
+        _checkBeaconName(name);
+        slot.beacons[beacon].name = name;
+        beacon_ = slot.beacons[beacon];
+    }
+
+    /**
+     * @notice change the beacon online status
+     * @param slot the beacon proxy layout
+     * @param beacon the beacon address
+     * @param isOnline the new online status
+     */
+    function changeSCRBeaconOnline(
+        Schema.BeaconProxyLayout storage slot,
+        address beacon,
+        bool isOnline
+    ) internal {
+        _onlyAdmin();
+        _checkBeacon(slot, beacon, false);
+
+        require(
+            slot.beacons[beacon].isOnline != isOnline,
+            IBeaconUpgradeableBaseErrors.BeaconAlreadyOnlineOrOffline(beacon)
+        );
+
+        slot.beacons[beacon].isOnline = isOnline;
+    }
+
     // ============================================== //
     //                 Read Functions                 //
     // ============================================== //
 
-    // function checkImplementation(address implementation) internal pure {
-    //     require(
-    //         Address.checkAddress(implementation),
-    //         IBeaconUpgradeableBaseErrors.InvalidImplementation(implementation)
-    //     );
-    // }
-
-    function checkBeacon(
+    /**
+     * @dev check if the beacon is valid
+     */
+    function _checkBeacon(
         Schema.BeaconProxyLayout storage slot,
         address beacon,
         bool isAdd
     ) internal view {
         require(
-            Address.checkAddress(beacon) &&
+            !Address.isZeroAddress(beacon) &&
                 (
                     isAdd
                         ? slot.beacons[beacon].implementation == address(0)
                         : slot.beacons[beacon].implementation != address(0)
                 ),
-            IBeaconUpgradeableBaseErrors.InvalidBeacon(beacon)
+            IBeaconUpgradeableBaseErrors.InvalidBeacon(
+                beacon,
+                slot.beacons[beacon].implementation
+            )
         );
     }
 
-    function checkBeaconName(string memory name) internal pure {
+    /**
+     * @dev check if the caller is an admin
+     */
+    function _onlyAdmin() internal view {
+        BorderlessAccessControlLib.onlyRole(
+            Constants.DEFAULT_ADMIN_ROLE,
+            msg.sender
+        );
+    }
+
+    /**
+     * @dev check if the beacon name is not empty
+     */
+    function _checkBeaconName(string memory name) internal pure {
         require(!LibString.eq(name, ""), IErrors.EmptyString(name));
     }
 }

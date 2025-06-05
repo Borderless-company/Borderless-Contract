@@ -1,7 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { ethers } from "hardhat";
 import { expect } from "chai";
-import { SCR } from "../../typechain-types";
+import { SCR, SCRBeaconUpgradeable } from "../../typechain-types";
 import { getDeploySmartCompanyAddress } from "./Event";
 import { letsEncodeParams } from "../../utils/Encode";
 import { deployFullFixture } from "./DeployFixture";
@@ -9,8 +9,9 @@ import { deployFullFixture } from "./DeployFixture";
 export const createCompany = async () => {
   // ============================================== //
   const {
-    proxy,
     founder,
+    proxy,
+    scrBeacon,
     sctBeaconAddress,
     lets_jp_llc_exeBeaconAddress,
     lets_jp_llc_non_exeBeaconAddress,
@@ -79,14 +80,16 @@ export const createCompany = async () => {
   );
   const receipt = await call.wait();
 
+  // get company info from logs
   const scInfo = getDeploySmartCompanyAddress(receipt);
   const companyAddress = scInfo.beaconAddress;
   const services = scInfo.services;
 
+  // get company info from contract
   const scId = await scrConn.getSmartCompanyId(founder.address);
   const scCompanyInfo = await scrConn.getCompanyInfo(scId);
 
-  // アサーション
+  // Assertions
   expect(companyAddress).to.match(/^0x[0-9a-fA-F]{40}$/);
   expect(scCompanyInfo.companyAddress).to.equal(companyAddress);
   expect(scCompanyInfo.founder).to.equal(founder.address);
@@ -95,6 +98,25 @@ export const createCompany = async () => {
   expect(scCompanyInfo.jurisdiction).to.equal(jurisdiction);
   expect(scCompanyInfo.entityType).to.equal(entityType);
   if (!companyAddress) throw new Error("Company address not found in logs");
+
+  // get beacon info from contract
+  const scrBeaconUpgradeableConn = (
+    await ethers.getContractAt("SCRBeaconUpgradeable", await proxy.getAddress())
+  ).connect(founder) as SCRBeaconUpgradeable;
+  const beaconInfo = await scrBeaconUpgradeableConn.getSCRBeacon(
+    sctBeaconAddress ?? ""
+  );
+
+  console.log("beaconInfo name", beaconInfo.name);
+  console.log("beaconInfo isOnline", beaconInfo.isOnline);
+  console.log("beaconInfo implementation", beaconInfo.implementation);
+
+  // Assertions
+  expect(beaconInfo.name).to.equal("SC_JP_DAOLLC");
+  expect(beaconInfo.isOnline).to.be.true;
+  expect(beaconInfo.implementation).to.not.equal(
+    "0x0000000000000000000000000000000000000000"
+  );
 
   console.log("✅ createSmartCompany が成功");
 

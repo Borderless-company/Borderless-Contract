@@ -31,7 +31,7 @@ contract LETSBase is ERC721, ILETSBase {
         address,
         address,
         address sc,
-        bytes calldata params
+        bytes memory params
     ) public virtual override returns (bytes4[] memory selectors) {
         selectors = LETSBaseInitializeLib.initialize(sc, params);
     }
@@ -53,7 +53,7 @@ contract LETSBase is ERC721, ILETSBase {
     //             Eternal Write Functions            //
     // ============================================== //
 
-    function mint(address to) external override {
+    function mint(address to) public virtual override {
         require(
             IAccessControl(ISCT(LETSBaseStorage.LETSBaseSlot().sc).getSCR())
                 .hasRole(Constants.MINTER_ROLE, msg.sender),

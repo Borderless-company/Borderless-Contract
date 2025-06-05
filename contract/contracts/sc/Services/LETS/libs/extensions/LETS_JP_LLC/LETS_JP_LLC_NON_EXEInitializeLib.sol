@@ -18,12 +18,8 @@ library LETS_JP_LLC_NON_EXEInitializeLib {
         InitializeSchema.InitializeLayout storage $init = InitializeStorage
             .InitializeSlot();
         require(!$init.initialized, InitializeErrors.AlreadyInitialized());
-        bytes4[] memory newSelectors = new bytes4[](selectors.length + 2);
-        for (uint256 i = 0; i < selectors.length; i++) {
-            newSelectors[i] = selectors[i];
-        }
         Dictionary(dictionary).bulkSetImplementation(
-            newSelectors,
+            selectors,
             implementation
         );
         emit LETS_JP_LLC_NON_EXEInitialized(msg.sender);

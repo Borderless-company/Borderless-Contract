@@ -2,10 +2,11 @@ import hre from "hardhat";
 import dotenv from "dotenv";
 import { CreateSmartCompanyModule } from "../ignition/modules/Borderless";
 import { BorderlessAccessControl } from "../typechain-types";
-import { letsEncodeParams } from "../utils/Encode";
-import { parseDeployArgs } from "../utils/parseArgs";
-import { delay } from "../utils/Delay";
-import deploy from "./deploy";
+import { letsEncodeParams } from "./utils/Encode";
+import { parseDeployArgs } from "./utils/parseArgs";
+import { delay } from "./utils/Delay";
+import { getMinterAddresses } from "./utils/Deployer";
+import { deployBorderless } from "./utils/Deploy";
 
 dotenv.config();
 
@@ -24,24 +25,7 @@ async function main() {
     lets_jp_llc_exeBeacon,
     lets_jp_llc_non_exeBeacon,
     lets_jp_llc_saleBeacon,
-  } = await deploy();
-
-  // ────────────────────────────────────────────────
-  // FOUNDERロールの設定
-  // ────────────────────────────────────────────────
-
-  await delay(delayMs);
-
-  // Set Role
-  const founderRole =
-    "0x7ed687a8f2955bd2ba7ca08227e1e364d132be747f42fb733165f923021b0225";
-  const accessControlConn = await hre.ethers.getContractAt(
-    "BorderlessAccessControl",
-    proxy.target ?? ""
-  );
-  await accessControlConn.grantRole(founderRole, deployer);
-
-  console.log("✅ Set Role");
+  } = await deployBorderless();
 
   // ────────────────────────────────────────────────
   // createSmartCompany の実行
@@ -113,18 +97,18 @@ async function main() {
     "LETS_JP_LLC_EXE",
     letsExeAddress
   );
-  const letsExeSaleConn = await hre.ethers.getContractAt(
-    "LETS_JP_LLC_SALE",
-    letsExeAddress
-  );
+  // const letsExeSaleConn = await hre.ethers.getContractAt(
+  //   "LETS_JP_LLC_SALE",
+  //   letsExeAddress
+  // );
   const letsNonExeConn = await hre.ethers.getContractAt(
     "LETS_JP_LLC_NON_EXE",
     letsNonExeAddress
   );
-  const letsNonExeSaleConn = await hre.ethers.getContractAt(
-    "LETS_JP_LLC_SALE",
-    letsNonExeAddress
-  );
+  // const letsNonExeSaleConn = await hre.ethers.getContractAt(
+  //   "LETS_JP_LLC_SALE",
+  //   letsNonExeAddress
+  // );
 
   console.log("✅ Done get LETS");
 
@@ -193,7 +177,6 @@ async function main() {
   // ────────────────────────────────────────────────
   // MINTER_ROLEからLETS_JP_LLC_EXEのmintを実行
   // ────────────────────────────────────────────────
-  await delay(delayMs);
 
   // minter roleの付与
   const scrAccessControlConn = (
@@ -205,15 +188,17 @@ async function main() {
 
   const MINTER_ROLE =
     "0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6";
-  await scrAccessControlConn.grantRole(MINTER_ROLE, deployer);
-
-  await delay(delayMs);
+  const minterAddresses = [...(await getMinterAddresses()), deployer];
+  for (const minterAddress of minterAddresses) {
+    await delay(delayMs);
+    await scrAccessControlConn.grantRole(MINTER_ROLE, minterAddress);
+  }
 
   // mint を実行
+  await delay(delayMs);
   await letsExeConn.connect(deployerWallet).getFunction("mint(address)")(
     deployer
   );
-  await delay(delayMs);
   const tokenMinterBalance = await letsExeConn.balanceOf(deployer);
   console.log(`tokenMinterBalance: ${tokenMinterBalance}`);
 
@@ -222,13 +207,12 @@ async function main() {
   // ────────────────────────────────────────────────
   // MINTER_ROLEからLETS_JP_LLC_NON_EXEのmintを実行
   // ────────────────────────────────────────────────
-  await delay(delayMs);
 
   // mint を実行
+  await delay(delayMs);
   await letsNonExeConn.connect(deployerWallet).getFunction("mint(address)")(
     deployer
   );
-  await delay(delayMs);
   const tokenMinterBalance2 = await letsNonExeConn.balanceOf(deployer);
   console.log(`tokenMinterBalance2: ${tokenMinterBalance2}`);
 

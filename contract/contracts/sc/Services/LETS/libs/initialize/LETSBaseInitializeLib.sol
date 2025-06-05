@@ -22,7 +22,7 @@ import {InitializeErrors} from "../../../../../core/Initialize/interfaces/Initia
 library LETSBaseInitializeLib {
     function initialize(
         address sc,
-        bytes calldata params
+        bytes memory params
     ) internal returns (bytes4[] memory selectors) {
         (
             string memory name,

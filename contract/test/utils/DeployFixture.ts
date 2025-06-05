@@ -8,6 +8,7 @@ import {
 } from "../../typechain-types";
 import { expect } from "chai";
 import { getBeaconAddress } from "./Event";
+import { Contract } from "ethers";
 
 export const deployFullFixture = async () => {
   // ============================================== //
@@ -98,20 +99,20 @@ export const deployFullFixture = async () => {
   //                  関数セレクタの登録                //
   // ============================================== //
 
-  await registerFunctions(dictionary, SCRBeacon, await scrBeacon.getAddress());
+  await registerFunctions(dictionary as unknown as Contract, SCRBeacon, await scrBeacon.getAddress());
   await registerFunctions(
-    dictionary,
+    dictionary as unknown as Contract,
     ServiceFactoryBeacon,
     await serviceFactoryBeacon.getAddress()
   );
   await registerFunctions(
-    dictionary,
+    dictionary as unknown as Contract,
     ServiceFactory,
     await serviceFactory.getAddress()
   );
-  await registerFunctions(dictionary, SCR, await scr.getAddress());
+  await registerFunctions(dictionary as unknown as Contract, SCR, await scr.getAddress());
   await registerFunctions(
-    dictionary,
+    dictionary as unknown as Contract,
     SCRInitialize,
     await scrInitialize.getAddress()
   );
@@ -322,15 +323,18 @@ export const deployFullFixture = async () => {
 
   return {
     deployer,
-    dictionary,
-    scr,
-    proxy,
     founder,
     executiveMember,
     executiveMember2,
     executiveMember3,
     tokenMinter,
+    proxy,
+    dictionary,
+    scr,
     serviceFactory,
+    scrBeacon,
+    sctBeacon,
+    serviceFactoryBeacon,
     sctBeaconAddress: sctBeaconAddress ?? "",
     lets_jp_llc_exeBeaconAddress: lets_jp_llc_exeBeaconAddress ?? "",
     lets_jp_llc_non_exeBeaconAddress: lets_jp_llc_non_exeBeaconAddress ?? "",

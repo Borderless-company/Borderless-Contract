@@ -7,7 +7,7 @@ pragma solidity 0.8.28;
  */
 library Address {
     /// @notice check if the address is not zero
-    function checkAddress(address account) internal pure returns (bool) {
-        return account != address(0);
+    function isZeroAddress(address account) internal pure returns (bool) {
+        return account == address(0);
     }
 }

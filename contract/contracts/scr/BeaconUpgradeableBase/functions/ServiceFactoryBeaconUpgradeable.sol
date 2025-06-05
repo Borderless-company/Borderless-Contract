@@ -33,18 +33,11 @@ contract ServiceFactoryBeaconUpgradeable is
         override
         returns (IBeaconUpgradeableBaseStructs.Beacon memory beacon_)
     {
-        BeaconUpgradeableBaseLib.checkBeacon(
+        beacon_ = BeaconUpgradeableBaseLib.updateBeaconName(
             ServiceFactoryBeaconStorage.ServiceFactoryBeaconProxySlot(),
             beacon,
-            false
+            name
         );
-        BeaconUpgradeableBaseLib.checkBeaconName(name);
-
-        // update beacon name
-        beacon_ = ServiceFactoryBeaconStorage
-            .ServiceFactoryBeaconProxySlot()
-            .beacons[beacon];
-        beacon_.name = name;
 
         // emit event
         emit IBeaconUpgradeableBaseEvents.BeaconNameUpdated(beacon, name);
@@ -54,20 +47,11 @@ contract ServiceFactoryBeaconUpgradeable is
         address beacon,
         bool isOnline
     ) external override {
-        // check if the beacon is already online or offline
-        require(
-            ServiceFactoryBeaconStorage
-                .ServiceFactoryBeaconProxySlot()
-                .beacons[beacon]
-                .isOnline != isOnline,
-            IBeaconUpgradeableBaseErrors.BeaconAlreadyOnlineOrOffline(beacon)
+        BeaconUpgradeableBaseLib.changeSCRBeaconOnline(
+            ServiceFactoryBeaconStorage.ServiceFactoryBeaconProxySlot(),
+            beacon,
+            isOnline
         );
-
-        // change the beacon online status
-        ServiceFactoryBeaconStorage
-            .ServiceFactoryBeaconProxySlot()
-            .beacons[beacon]
-            .isOnline = isOnline;
 
         // emit event
         if (isOnline) {

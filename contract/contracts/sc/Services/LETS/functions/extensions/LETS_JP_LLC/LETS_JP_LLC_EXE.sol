@@ -12,6 +12,9 @@ import {LETSBaseLib} from "../../../libs/LETSBaseLib.sol";
 import {Constants} from "../../../../../../core/lib/Constants.sol";
 import {LETS_JP_LLC_EXEInitializeLib} from "../../../libs/extensions/LETS_JP_LLC/LETS_JP_LLC_EXEInitializeLib.sol";
 
+// interfaces
+import {IErrors} from "../../../../../../core/utils/IErrors.sol";
+
 // OpenZeppelin
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
@@ -31,7 +34,7 @@ contract LETS_JP_LLC_EXE is LETSBase, ILETS_JP_LLC_EXE {
         address dictionary,
         address implementation,
         address sc,
-        bytes calldata params
+        bytes memory params
     ) public virtual override returns (bytes4[] memory selectors) {
         selectors = super.initialize(
             dictionary,
@@ -56,7 +59,7 @@ contract LETS_JP_LLC_EXE is LETSBase, ILETS_JP_LLC_EXE {
                 Constants.FOUNDER_ROLE,
                 msg.sender
             ),
-            NotFounder(msg.sender)
+            IErrors.NotFounder(msg.sender)
         );
         for (uint256 i = 0; i < tos.length; i++) {
             LETSBaseLib.mint(tos[i]);

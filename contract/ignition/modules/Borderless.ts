@@ -111,11 +111,13 @@ export const DictionaryInitializeModule = buildModule(
 );
 
 export const RegisterSCTModule = buildModule("RegisterSCTModule", (m) => {
-  const { sct, proxy } = m.useModule(BorderlessModule);
+  const sctAddress = m.getParameter<string>("SCTAddress", "");
+  const sctName = m.getParameter<string>("SCTName", "");
+  const { proxy } = m.useModule(BorderlessModule);
   const scrConn = m.contractAt("SCR", proxy);
   const setSCContractTx = m.call(scrConn, "setSCContract", [
-    sct,
-    "SC_JP_DAOLLC",
+    sctAddress,
+    sctName,
   ]);
   const sctBeaconAddress = m.readEventArgument(
     setSCContractTx,
