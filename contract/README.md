@@ -12,6 +12,12 @@ bun run build
 bun run test
 ```
 
+- specific contract test
+
+```bash
+bun run test "test/....test.ts"
+```
+
 ## Deploy
 
 - run local node
@@ -26,8 +32,10 @@ bun run localhost
 bun run deploy --network localhost
 ```
 
+- deploy contract & create company
+
 ```bash
-bun run deploy:create-company-local --network localhost
+bun run deploy:create-company --network localhost
 ```
 
 ## Deploy Base Sepolia
@@ -43,6 +51,12 @@ bun run deploy --network base-sepolia
 
 ```bash
 bun run deploy:create-company --network base-sepolia
+```
+
+## Project
+
+```bash
+bun run deploy:kibotcha --network soneium-minato
 ```
 
 ## Verify contract
@@ -68,7 +82,7 @@ npx hardhat verify --network base-sepolia \
 
 ```bash
 npx hardhat verify --network base-sepolia "0xA960bD38Dcfa44c6e13832bFeC92462cAC3b3326" "0x"  \
-  --contract "contracts/core/Proxy/interfaces/SCRProxy.sol:SCRProxy" \
+  --contract "contracts/core/Proxy/interfaces/BorderlessProxyFacade.sol:BorderlessProxyFacade" \
   0x1CaC7D630776c87AA2d250DBf1C6796F322352FB
 ```
 
@@ -78,18 +92,39 @@ npx hardhat verify --network base-sepolia "0xA960bD38Dcfa44c6e13832bFeC92462cAC3
 
 <details><summary>Base Sepolia</summary>
 
+- deploy
+
 ```bash
 ┌───────────────────────────┬──────────────────────────────────────────────┐
 │ (index)                   │ Values                                       │
 ├───────────────────────────┼──────────────────────────────────────────────┤
-│ proxy                     │ '0x0eFAB975d9A08bB38eDEBadbA3E82F2d6F57C82f' │
-│ dictionary                │ '0xc955c9EaC8D8f4f568f83b1D575B820f27cB8e2E' │
-│ sct                       │ '0xBF2377cBBAbF6b87E682C796663A2470Bc696C39' │
-│ sctBeacon                 │ '0xD4C13637BA0E26fD14e9e28e17EaBb4c1a542a02' │
-│ governanceBeacon          │ '0x2941553244B4c77f67e01213f8B99dAB0E0bEbfC' │
-│ lets_jp_llc_exeBeacon     │ '0x38658A4c12160878bA94fA8b7dBC569c30B52008' │
-│ lets_jp_llc_non_exeBeacon │ '0x4108AEB58A5a94dda39b7771EfeA99AA6123a0a0' │
-│ lets_jp_llc_saleBeacon    │ '0xF7EFAdc56e8ccc6d09b4B186D9aF8Cb9a6CBDca8' │
+│ proxy                     │ '0x6C59F7C01775BfB88A82e20A3bB9321a9Ac788B2' │
+│ dictionary                │ '0x8552e43509041112223a9bB0f54D1A39400A29c8' │
+│ sct                       │ '0xD4b2a33F18321Db83332a9C8eBA91e3a26d36628' │
+│ sctBeacon                 │ '0xeA3Cc68b61b87D05B35f0252b0bcCC77357aC4ED' │
+│ governanceBeacon          │ '0x43727e2D9DDA3272d0b7C20D241CdfC87a0ea478' │
+│ lets_jp_llc_exeBeacon     │ '0x33a59762515d59908e394A1A53259A7Bb526B891' │
+│ lets_jp_llc_non_exeBeacon │ '0x9Bc014f74c67C45a387A81F7E52ff3712c0b65e9' │
+│ lets_jp_llc_saleBeacon    │ '0x9BCE158B8342FBd834DEF07C586D64Eb19F7d465' │
+└───────────────────────────┴──────────────────────────────────────────────┘
+```
+
+- token mint
+
+```bash
+┌───────────────────────────┬──────────────────────────────────────────────┐
+│ (index)                   │ Values                                       │
+├───────────────────────────┼──────────────────────────────────────────────┤
+│ proxy                     │ '0xba31B436ECD3D85CC8d8f58B1e3e57Ec7dAd4664' │
+│ dictionary                │ '0xA6CAdC12C56c0032937bC7d63c54F828BC5b6d44' │
+│ sct                       │ '0x9Eb049b4C6C7503cfA70c53cB2026C60df7157Bc' │
+│ sctBeacon                 │ '0x898031037151AbEe52887aAc19d5D909A7B3ADcb' │
+│ governanceBeacon          │ '0x4F31E95a28775a45BaD04e37777AF254a039Be8a' │
+│ lets_jp_llc_exeBeacon     │ '0xb5B94a7Fd024b3aB2268E1011ae28f383C9cb5fe' │
+│ lets_jp_llc_non_exeBeacon │ '0x3bc725aefd30CeA9932230Cb9477134c3A005192' │
+│ lets_jp_llc_saleBeacon    │ '0x03E67D7881D5285cFB530e7D234Fac7C81eFCCAb' │
+│ letsExeProxy              │ '0x7af607CB01Ca72039B609b56eb25003F8e4407fB' │
+│ letsNonExeProxy           │ '0x22ef5649F71dc8c62AC88403ff1B4881702948Df' │
 └───────────────────────────┴──────────────────────────────────────────────┘
 ```
 
@@ -97,20 +132,22 @@ npx hardhat verify --network base-sepolia "0xA960bD38Dcfa44c6e13832bFeC92462cAC3
 
 <details><summary>Soneium Minato</summary>
 
+- kibotcha
+
 ```bash
 ┌───────────────────────────┬──────────────────────────────────────────────┐
 │ (index)                   │ Values                                       │
 ├───────────────────────────┼──────────────────────────────────────────────┤
-│ proxy                     │ '0x3784213D4D5057AF218dA4ee8149B5d35fca8e06' │
-│ dictionary                │ '0xaE7637761A24916061d5e20683f6Da91E86A0D33' │
-│ sct                       │ '0x345aDC40394f4866804172eff1e8773FE4CAD85a' │
-│ sctBeacon                 │ '0x0C998FAe13E904F0Af25A32983A893D4ED42e986' │
-│ governanceBeacon          │ '0xCC55E1ade3b7EbB340E2e032F13c33a0204C584A' │
-│ lets_jp_llc_exeBeacon     │ '0x29E6863556D5320957399283dFe6cd80DDc29168' │
-│ lets_jp_llc_non_exeBeacon │ '0x9A675eb7e15beD039d0E28609228a422c5200611' │
-│ lets_jp_llc_saleBeacon    │ '0xd829B1b1F7B674272Eed58CF92827e82F8ba087A' │
-│ letsExeProxy              │ '0x923e0713d141d3d016D8F82867B8De4A1d112Fcc' │
-│ letsNonExeProxy           │ '0x217f6DfefB72aD0D3206b579B69C6A10d29ef3a2' │
+│ proxy                     │ '0x41Cc2c71D499795e9C35Dbf105159cDFCcC1de3c' │
+│ dictionary                │ '0xDBc7eed10E6335C235a3d4e2Fd01F369B30965E1' │
+│ sct                       │ '0x62f177Bf5517C7dE323605E4E783e6DEBb90fd14' │
+│ sctBeacon                 │ '0xeb822d51bdf7fDa8B33bA200D77d8E07B5fcce6a' │
+│ governanceBeacon          │ '0x1cF6C32b5e6EBcccD3981E890312629A019eED04' │
+│ lets_jp_llc_exeBeacon     │ '0x4f6022267464803166A1eF7188f8A2FC4B84eD2C' │
+│ lets_jp_llc_non_exeBeacon │ '0xc666aEf64A9D2208e0214cf05F8BeC9a781DB97f' │
+│ lets_jp_llc_saleBeacon    │ '0x300d6e3Dd6BAB1FE8D8c2940F56E22De0C075744' │
+│ letsExeProxy              │ '0xdbA1E17E8A6f950b9502B9c3A79421CA9a9E3314' │
+│ kibotchaLetsNonExeProxy   │ '0x8B40E01A9CD0EE856CD3eB51B1E6AC03F3e3921a' │
 └───────────────────────────┴──────────────────────────────────────────────┘
 ```
 

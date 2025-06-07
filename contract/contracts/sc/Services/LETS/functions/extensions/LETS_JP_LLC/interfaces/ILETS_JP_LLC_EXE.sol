@@ -10,12 +10,6 @@ interface ILETS_JP_LLC_EXE {
     event InitialMint(address indexed scr, address[] tos);
 
     // ============================================== //
-    //                   Errors                       //
-    // ============================================== //
-
-    error NotFounder(address sender);
-
-    // ============================================== //
     //             EXTERNAL WRITE FUNCTIONS           //
     // ============================================== //
 

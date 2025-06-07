@@ -7,20 +7,20 @@ interface IBeaconUpgradeableBaseErrors {
     // ============================================== //
 
     /**
-     * @dev emitted when an invalid implementation is used
-     * @param implementation the address of the implementation
-     */
-    error InvalidImplementation(address implementation);
-
-    /**
      * @dev emitted when an invalid beacon is used
      * @param beacon the address of the beacon
      */
-    error InvalidBeacon(address beacon);
+    error InvalidBeacon(address beacon, address implementation);
 
     /**
      * @dev emitted when a beacon is already online or offline
      * @param beacon the address of the beacon
      */
     error BeaconAlreadyOnlineOrOffline(address beacon);
+
+    /**
+     * @dev emitted when a smart company id is not found
+     * @param scid the smart company id
+     */
+    error SmartCompanyIdNotFound(string scid, address account);
 }
