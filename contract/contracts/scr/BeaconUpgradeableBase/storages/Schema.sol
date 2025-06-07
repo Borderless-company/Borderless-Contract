@@ -12,5 +12,9 @@ library Schema {
         mapping(address => IBeaconUpgradeableBaseStructs.Beacon) beacons;
         // Proxy Contract Address => Proxy Info
         mapping(address => IBeaconUpgradeableBaseStructs.Proxy) proxies;
+        /**
+         * @dev borderless proxy => beacon
+         */
+        mapping(address proxy => address beacon) borderlessProxyBeacons;
     }
 }

@@ -1,42 +1,6 @@
 import hre from "hardhat";
 import { Contract, FunctionFragment } from "ethers";
 
-export const registerFunctions = async (
-  dictionary: Contract,
-  factory: Awaited<ReturnType<typeof hre.ethers.getContractFactory>>,
-  implAddress: string
-) => {
-  const selectors = [];
-  for (const frag of factory.interface.fragments) {
-    if (!(frag instanceof FunctionFragment)) continue;
-    const selector = FunctionFragment.getSelector(
-      frag.name,
-      frag.inputs.map((i) => i.type)
-    );
-    selectors.push(selector);
-  }
-  await dictionary.getFunction("bulkSetImplementation(bytes4[],address)")(
-    selectors,
-    implAddress
-  );
-};
-
-export const getSelectors = async (name: string, implAddress: string) => {
-  const factory = await hre.ethers.getContractFactory(name);
-  const selectors = [];
-  const implementations = [];
-  for (const frag of factory.interface.fragments) {
-    if (!(frag instanceof FunctionFragment)) continue;
-    const selector = FunctionFragment.getSelector(
-      frag.name,
-      frag.inputs.map((i) => i.type)
-    );
-    selectors.push(selector);
-    implementations.push(implAddress);
-  }
-  return { selectors, implementations };
-};
-
 export const registerAllFacets = async (
   dictionary: Contract,
   scrBeaconFacet: Contract,
@@ -101,4 +65,20 @@ export const registerAllFacets = async (
   await receipt.wait();
 
   console.log("✅ Done register functions");
+};
+
+export const getSelectors = async (name: string, implAddress: string) => {
+  const factory = await hre.ethers.getContractFactory(name);
+  const selectors = [];
+  const implementations = [];
+  for (const frag of factory.interface.fragments) {
+    if (!(frag instanceof FunctionFragment)) continue;
+    const selector = FunctionFragment.getSelector(
+      frag.name,
+      frag.inputs.map((i) => i.type)
+    );
+    selectors.push(selector);
+    implementations.push(implAddress);
+  }
+  return { selectors, implementations };
 };

@@ -134,7 +134,7 @@ export default async function main() {
       ...parameters,
       RegisterSCTModule: {
         SCTAddress: sctAddress,
-        SCTName: "SC_JP_DAOLLC",
+        SCTName: "SC_JP_DAO_LLC",
       },
     },
   });
@@ -149,16 +149,16 @@ export default async function main() {
   const scrConn = await hre.ethers.getContractAt("SCR", proxy.target ?? "");
 
   await delay(delayMs);
-  await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "zip_code");
+  await scrConn.addCompanyInfoFields("SC_JP_DAO_LLC", "zip_code");
 
   await delay(delayMs);
-  await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "prefecture");
+  await scrConn.addCompanyInfoFields("SC_JP_DAO_LLC", "prefecture");
 
   await delay(delayMs);
-  await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "city");
+  await scrConn.addCompanyInfoFields("SC_JP_DAO_LLC", "city");
 
   await delay(delayMs);
-  await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "address");
+  await scrConn.addCompanyInfoFields("SC_JP_DAO_LLC", "address");
 
   console.log("✅ Set CompanyInfoFields");
 

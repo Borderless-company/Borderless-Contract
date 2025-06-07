@@ -55,4 +55,11 @@ interface IServiceFactoryFunctions {
         address founder,
         ServiceType serviceType
     ) external view returns (address);
+
+    /**
+     * @dev Get lets sale beacon
+     * @param letsBeacon LETS beacon address
+     * @return LETS sale beacon address
+     */
+    function getLetsSaleBeacon(address letsBeacon) external view returns (address);
 }

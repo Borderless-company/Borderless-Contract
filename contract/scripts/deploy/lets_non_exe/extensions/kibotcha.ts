@@ -25,8 +25,6 @@ async function main() {
     deployer,
     deployerWallet,
     proxy,
-    dictionary,
-    sct,
     sctBeaconConn,
     governanceBeacon,
     lets_jp_llc_exeBeacon,
@@ -202,14 +200,7 @@ async function main() {
   // ────────────────────────────────────────────────
 
   console.table({
-    proxy: await proxy.getAddress(),
-    dictionary: await dictionary.getAddress(),
-    sct: await sct.getAddress(),
-    sctBeacon: await sctBeaconConn.getAddress(),
-    governanceBeacon: await governanceBeacon.getAddress(),
-    lets_jp_llc_exeBeacon: await lets_jp_llc_exeBeacon.getAddress(),
-    lets_jp_llc_non_exeBeacon: await lets_jp_llc_non_exeBeacon.getAddress(),
-    lets_jp_llc_saleBeacon: await lets_jp_llc_saleBeacon.getAddress(),
+    kibotcha_lets_jp_llc_non_exeBeacon: await kibotchaBeaconConn.getAddress(),
     letsExeProxy: await letsExeConn.getAddress(),
     kibotchaLetsNonExeProxy: await letsNonExeConn.getAddress(),
   });

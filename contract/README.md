@@ -82,7 +82,7 @@ npx hardhat verify --network base-sepolia \
 
 ```bash
 npx hardhat verify --network base-sepolia "0xA960bD38Dcfa44c6e13832bFeC92462cAC3b3326" "0x"  \
-  --contract "contracts/core/Proxy/interfaces/SCRProxy.sol:SCRProxy" \
+  --contract "contracts/core/Proxy/interfaces/BorderlessProxyFacade.sol:BorderlessProxyFacade" \
   0x1CaC7D630776c87AA2d250DBf1C6796F322352FB
 ```
 

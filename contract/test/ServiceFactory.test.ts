@@ -5,7 +5,7 @@ import type {
   ServiceFactory,
   BorderlessAccessControl,
 } from "../typechain-types";
-import { deployFullFixture } from "./utils/DeployFixture";
+import { deployJP_DAO_LLCFullFixture } from "./utils/DeployFixture";
 
 // ServiceTypeの定義
 enum ServiceType {
@@ -20,17 +20,17 @@ enum ServiceType {
 
 describe("ServiceFactory Test", function () {
   const getServiceFactoryContext = async () => {
-    const { deployer, proxy, founder } = await loadFixture(deployFullFixture);
+    const { deployer, borderlessProxy, founder } = await loadFixture(deployJP_DAO_LLCFullFixture);
 
     // Get ServiceFactory contract instance
     const serviceFactory = (await ethers.getContractAt(
       "ServiceFactory",
-      await proxy.getAddress()
+      await borderlessProxy.getAddress()
     )) as ServiceFactory;
 
     return {
       deployer,
-      proxy,
+      borderlessProxy,
       founder,
       serviceFactory,
     };

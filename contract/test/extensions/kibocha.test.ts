@@ -20,7 +20,7 @@ describe("SCR Test", function () {
     expect(await dictionary.owner()).to.equal(deployer.address);
   });
 
-  it("SCRProxy が正常にデプロイされていること", async function () {
+  it("BorderlessProxyFacade が正常にデプロイされていること", async function () {
     const { proxy } = await loadFixture(deployFullFixture);
     expect(ethers.isAddress(await proxy.getAddress())).to.be.true;
   });
@@ -288,7 +288,7 @@ describe("SCR Test", function () {
     ).connect(founder) as SCR;
 
     const scid = "9876543210";
-    const legalEntityCode = "SC_JP_DAOLLC";
+    const legalEntityCode = "SC_JP_DAO_LLC";
     const companyName = "Test DAO Company 2";
     const establishmentDate = "2024-01-01";
     const jurisdiction = "JP";
@@ -354,7 +354,7 @@ describe("SCR Test", function () {
     ).connect(founder) as SCR;
 
     const scid = "9876543210";
-    const legalEntityCode = "SC_JP_DAOLLC";
+    const legalEntityCode = "SC_JP_DAO_LLC";
     const companyName = ""; // 無効な会社名
     const establishmentDate = ""; // 無効な設立日
     const jurisdiction = ""; // 無効な管轄
@@ -420,7 +420,7 @@ describe("SCR Test", function () {
     ).connect(founder) as SCR;
 
     const scid = "9876543210";
-    const legalEntityCode = "SC_JP_DAOLLC";
+    const legalEntityCode = "SC_JP_DAO_LLC";
     const companyName = "Test DAO Company";
     const establishmentDate = "2024-01-01";
     const jurisdiction = "JP";

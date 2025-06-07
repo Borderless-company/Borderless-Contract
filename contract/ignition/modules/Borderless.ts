@@ -36,7 +36,7 @@ export const BorderlessModule = buildModule("BorderlessModule", (m) => {
   // ────────────────────────────────────────────────
   // 4）SCT をデプロイ
   // ────────────────────────────────────────────────
-  const sct = m.contract("SC_JP_DAOLLC", []);
+  const sct = m.contract("SC_JP_DAO_LLC", []);
 
   // ────────────────────────────────────────────────
   // 5）Serviceをデプロイ
@@ -270,7 +270,7 @@ export const CreateSmartCompanyModule = buildModule(
     const { proxy } = m.useModule(BorderlessModule);
     const scrConn = m.contractAt("SCR", proxy);
     const scid = "1234567890";
-    const legalEntityCode = "SC_JP_DAOLLC";
+    const legalEntityCode = "SC_JP_DAO_LLC";
     const companyName = "Test DAO Company";
     const establishmentDate = "2024-01-01";
     const jurisdiction = "JP";

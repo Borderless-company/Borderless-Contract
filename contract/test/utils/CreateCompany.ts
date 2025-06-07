@@ -3,26 +3,25 @@ import { ethers } from "hardhat";
 import { expect } from "chai";
 import { SCR, SCRBeaconUpgradeable } from "../../typechain-types";
 import { getDeploySmartCompanyAddress } from "./Event";
-import { letsEncodeParams } from "../../utils/Encode";
-import { deployFullFixture } from "./DeployFixture";
+import { letsEncodeParams } from "../../scripts/utils/Encode";
+import { deployJP_DAO_LLCFullFixture } from "./DeployFixture";
 
 export const createCompany = async () => {
   // ============================================== //
   const {
     founder,
-    proxy,
-    scrBeacon,
-    sctBeaconAddress,
-    lets_jp_llc_exeBeaconAddress,
-    lets_jp_llc_non_exeBeaconAddress,
-    governance_jp_llcBeaconAddress,
-  } = await loadFixture(deployFullFixture);
+    borderlessProxy,
+    sc_jp_dao_llcBeacon,
+    governance_jp_llcBeacon,
+    lets_jp_llc_exeBeacon,
+    lets_jp_llc_non_exeBeacon,
+  } = await loadFixture(deployJP_DAO_LLCFullFixture);
   // ============================================== //
   // パラメータの準備
   // ============================================== //
 
   const scid = 1234567890;
-  const legalEntityCode = "SC_JP_DAOLLC";
+  const legalEntityCode = "SC_JP_DAO_LLC";
   const companyName = "Test DAO Company";
   const establishmentDate = "2024-01-01";
   const jurisdiction = "JP";
@@ -30,9 +29,9 @@ export const createCompany = async () => {
   const scDeployParam = "0x";
   const companyInfo = ["100-0001", "Tokyo", "Shinjuku-ku", "Shinjuku 1-1-1"];
   const scsBeaconProxy = [
-    governance_jp_llcBeaconAddress,
-    lets_jp_llc_exeBeaconAddress,
-    lets_jp_llc_non_exeBeaconAddress,
+    await governance_jp_llcBeacon.getAddress(),
+    await lets_jp_llc_exeBeacon.getAddress(),
+    await lets_jp_llc_non_exeBeacon.getAddress(),
   ];
 
   const scsExtraParams = [
@@ -62,12 +61,12 @@ export const createCompany = async () => {
   // ============================================== //
 
   const scrConn = (
-    await ethers.getContractAt("SCR", await proxy.getAddress())
+    await ethers.getContractAt("SCR", await borderlessProxy.getAddress())
   ).connect(founder) as SCR;
 
   const call = await scrConn.createSmartCompany(
     scid.toString(),
-    sctBeaconAddress,
+    sc_jp_dao_llcBeacon,
     legalEntityCode,
     companyName,
     establishmentDate,
@@ -101,18 +100,14 @@ export const createCompany = async () => {
 
   // get beacon info from contract
   const scrBeaconUpgradeableConn = (
-    await ethers.getContractAt("SCRBeaconUpgradeable", await proxy.getAddress())
+    await ethers.getContractAt("SCRBeaconUpgradeable", await borderlessProxy.getAddress())
   ).connect(founder) as SCRBeaconUpgradeable;
   const beaconInfo = await scrBeaconUpgradeableConn.getSCRBeacon(
-    sctBeaconAddress ?? ""
+    sc_jp_dao_llcBeacon
   );
 
-  console.log("beaconInfo name", beaconInfo.name);
-  console.log("beaconInfo isOnline", beaconInfo.isOnline);
-  console.log("beaconInfo implementation", beaconInfo.implementation);
-
   // Assertions
-  expect(beaconInfo.name).to.equal("SC_JP_DAOLLC");
+  expect(beaconInfo.name).to.equal("SC_JP_DAO_LLC");
   expect(beaconInfo.isOnline).to.be.true;
   expect(beaconInfo.implementation).to.not.equal(
     "0x0000000000000000000000000000000000000000"

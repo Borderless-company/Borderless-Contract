@@ -6,14 +6,13 @@ import {CompanyInfo} from "./CompanyInfo.sol";
 import {Ownable} from "../../../core/Ownable/functions/Ownable.sol";
 
 // storages
-import {Storage as SCRStorage} from "../storages/Storage.sol";
-import {Storage as ServiceFactoryStorage} from "../../Factory/storages/Storage.sol";
 import {Storage as BeaconUpgradeableBaseStorage} from "../../BeaconUpgradeableBase/storages/Storage.sol";
 
 // lib
-import {SCRLib} from "../lib/SCRLib.sol";
-import {ServiceFactoryLib} from "../../Factory/lib/ServiceFactoryLib.sol";
-import {BeaconUpgradeableBaseLib} from "../../BeaconUpgradeableBase/lib/BeaconUpgradeableBaseLib.sol";
+import {CompanyInfoLib} from "../libs/CompanyInfoLib.sol";
+import {SCRBeaconUpgradeableLib} from "../../BeaconUpgradeableBase/libs/SCRBeaconUpgradeableLib.sol";
+import {ServiceFactoryLib} from "../../Factory/libs/ServiceFactoryLib.sol";
+import {BeaconUpgradeableBaseLib} from "../../BeaconUpgradeableBase/libs/BeaconUpgradeableBaseLib.sol";
 import {BorderlessAccessControlLib} from "../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
 import {Constants} from "../../../core/lib/Constants.sol";
 import {DeployCoreContract} from "../../../core/lib/DeployCoreContract.sol";
@@ -46,7 +45,7 @@ contract SCR is ISCR, CompanyInfo {
 
     modifier onlyOnceEstablish(address founder, string calldata scid) {
         require(
-            bytes(SCRStorage.SCRSlot().founderCompanies[founder]).length == 0,
+            bytes(CompanyInfoLib.getSmartCompanyId(founder)).length == 0,
             AlreadyEstablish(founder, scid)
         );
         _;
@@ -92,16 +91,16 @@ contract SCR is ISCR, CompanyInfo {
 
         // check scid is unique
         require(
-            SCRLib.getCompanyInfo(scid).founder == address(0),
+            CompanyInfoLib.getCompanyInfo(scid).founder == address(0),
             AlreadyRegisteredScid(scid)
         );
 
         // check company info
         require(
             companyInfo.length ==
-                SCRLib.getCompanyInfoFields(legalEntityCode).length,
+                CompanyInfoLib.getCompanyInfoFields(legalEntityCode).length,
             InvalidCompanyInfoLength(
-                SCRLib.getCompanyInfoFields(legalEntityCode).length,
+                CompanyInfoLib.getCompanyInfoFields(legalEntityCode).length,
                 companyInfo.length
             )
         );
@@ -115,10 +114,10 @@ contract SCR is ISCR, CompanyInfo {
         companyInfo_.createAt = block.timestamp;
         companyInfo_.updateAt = block.timestamp;
 
-        string[] memory fields = SCRLib.getCompanyInfoFields(legalEntityCode);
+        string[] memory fields = CompanyInfoLib.getCompanyInfoFields(legalEntityCode);
 
         for (uint256 i = 0; i < companyInfo.length; i++) {
-            SCRStorage.SCRSlot().companiesInfo[scid][fields[i]] = companyInfo[i];
+            CompanyInfoLib.setCompanyInfoField(scid, fields[i], companyInfo[i]);
         }
 
         (company, services, serviceTypes) = _createSmartCompany(
@@ -206,6 +205,7 @@ contract SCR is ISCR, CompanyInfo {
         address dictionary = DeployCoreContract.deployDictionary(address(this));
         address borderlessAccessControl = DeployCoreContract
             .deployBorderlessAccessControl();
+
         address sc = BeaconUpgradeableBaseLib.createProxy(
             BeaconUpgradeableBaseStorage.SCRBeaconProxySlot(),
             beacon,
@@ -222,6 +222,8 @@ contract SCR is ISCR, CompanyInfo {
                 dictionary != address(0),
             FailedDeploySmartCompany(scid)
         );
+
+        SCRBeaconUpgradeableLib.setSCProxyBeacon(company, beacon);
 
         IDictionary(dictionary).setOnceInitialized(
             borderlessAccessControl,
@@ -245,10 +247,10 @@ contract SCR is ISCR, CompanyInfo {
 
         // register company address
         companyInfo.companyAddress = company;
-        SCRStorage.SCRSlot().companies[scid] = companyInfo;
+        CompanyInfoLib.setCompanyInfo(scid, companyInfo);
 
         // register founder to company number
-        SCRStorage.SCRSlot().founderCompanies[companyInfo.founder] = scid;
+        CompanyInfoLib.setFounderCompany(companyInfo.founder, scid);
 
         (services, serviceTypes) = _setupService(
             companyInfo.founder,
@@ -335,15 +337,17 @@ contract SCR is ISCR, CompanyInfo {
                     scsDeployParams[index]
                 );
                 Ownable(letsOwnable).initialize(founder);
-                ServiceFactoryStorage.ServiceFactorySlot().founderServices[
-                    founder
-                ][serviceType] = letsProxy;
+                ServiceFactoryLib.setFounderService(
+                    founder,
+                    serviceType,
+                    letsProxy
+                );
                 service = letsProxy;
                 console.log("letsProxy: ", letsProxy);
                 console.logUint(uint256(serviceType));
-                address letsSaleBeacon = ServiceFactoryStorage
-                    .ServiceFactorySlot()
-                    .letsSaleBeacons[scsAddresses[index]];
+                address letsSaleBeacon = ServiceFactoryLib.getLetsSaleBeacon(
+                    scsAddresses[index]
+                );
                 (
                     address letsSaleAddress,
                     ServiceType letsSaleType
@@ -407,6 +411,6 @@ contract SCR is ISCR, CompanyInfo {
     function getSmartCompanyId(
         address founder
     ) external view override returns (string memory scid) {
-        scid = SCRLib.getSmartCompanyId(founder);
+        scid = CompanyInfoLib.getSmartCompanyId(founder);
     }
 }

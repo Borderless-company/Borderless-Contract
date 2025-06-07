@@ -4,20 +4,35 @@ pragma solidity 0.8.28;
 // interfaces
 import {IBeaconUpgradeableBaseStructs} from "./IBeaconUpgradeableBaseStructs.sol";
 
+/**
+ * @title ISCRBeaconUpgradeableFunctions
+ * @notice This interface contains the functions for the SCRBeaconUpgradeable contract v0.1.0.
+ */
 interface ISCRBeaconUpgradeableFunctions {
     // =============================================== //
     //            EXTERNAL WRITE FUNCTIONS             //
     // =============================================== //
+
+    /**
+     * @notice set the SCR proxy beacon
+     * @param proxy the SCR proxy address
+     * @param beacon the SCR beacon address
+     */
+    function setSCRProxyBeacon(address proxy, address beacon) external;
+
     /**
      * @notice update the SCR beacon name
      * @param beacon the SCR beacon address
      * @param name the SCR beacon name
-     * @return beacon_ the SCR beacon
      */
-    function updateSCRBeaconName(
-        address beacon,
-        string memory name
-    ) external returns (IBeaconUpgradeableBaseStructs.Beacon memory beacon_);
+    function updateSCRBeaconName(address beacon, string memory name) external;
+
+    /**
+     * @notice update the SCR proxy name
+     * @param proxy the SCR proxy address
+     * @param name the SCR proxy name
+     */
+    function updateSCRProxyName(address proxy, string memory name) external;
 
     /**
      * @notice change the SCR beacon online status
@@ -47,6 +62,13 @@ interface ISCRBeaconUpgradeableFunctions {
     function getSCRProxy(
         address proxy
     ) external view returns (IBeaconUpgradeableBaseStructs.Proxy memory);
+
+    /**
+     * @notice get the SCR proxy beacon
+     * @param scProxy the SCR proxy address
+     * @return beacon the SCR beacon address
+     */
+    function getScProxyBeacon(address scProxy) external view returns (address beacon);
 }
 
 interface IServiceFactoryBeaconUpgradeableFunctions {
@@ -55,15 +77,31 @@ interface IServiceFactoryBeaconUpgradeableFunctions {
     // =============================================== //
 
     /**
+     * @notice set the service factory proxy beacon
+     * @param proxy the service factory proxy address
+     * @param beacon the service factory beacon address
+     */
+    function setServiceFactoryProxyBeacon(address proxy, address beacon) external;
+
+    /**
      * @notice update the service factory beacon name
      * @param beacon the service factory beacon address
      * @param name the service factory beacon name
-     * @return beacon_ the service factory beacon
      */
     function updateServiceFactoryBeaconName(
         address beacon,
         string memory name
-    ) external returns (IBeaconUpgradeableBaseStructs.Beacon memory beacon_);
+    ) external;
+
+    /**
+     * @notice update the service factory proxy name
+     * @param proxy the service factory proxy address
+     * @param name the service factory proxy name
+     */
+    function updateServiceFactoryProxyName(
+        address proxy,
+        string memory name
+    ) external;
 
     /**
      * @notice change the service factory beacon online status
