@@ -17,7 +17,6 @@ import {Constants} from "../../../../core/lib/Constants.sol";
 
 // OpenZeppelin
 import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
-import {console} from "hardhat/console.sol";
 
 /**
  * @title Legal Embedded Token Service
@@ -32,38 +31,16 @@ contract LETSBase is ERC721, ILETSBase {
         address,
         address,
         address sc,
-        bytes calldata params
+        bytes memory params
     ) public virtual override returns (bytes4[] memory selectors) {
         selectors = LETSBaseInitializeLib.initialize(sc, params);
-        console.log("LETSBase initialized");
-        console.log("sc", LETSBaseStorage.LETSBaseSlot().sc);
-        console.log("baseURI", LETSBaseStorage.LETSBaseSlot().baseURI);
-        console.log("extension", LETSBaseStorage.LETSBaseSlot().extension);
-        console.log(
-            "isMetadataFixed",
-            LETSBaseStorage.LETSBaseSlot().isMetadataFixed
-        );
-        console.log("maxSupply", LETSBaseStorage.LETSBaseSlot().maxSupply);
-        console.log("nextTokenId", LETSBaseStorage.LETSBaseSlot().nextTokenId);
-    }
-
-    // ============================================== //
-    //                MODIFIERS                       //
-    // ============================================== //
-
-    modifier onlyUnderMaxSupply() {
-        require(
-            LETSBaseStorage.LETSBaseSlot().maxSupply > super.totalSupply(),
-            MaxSupplyReached()
-        );
-        _;
     }
 
     // ============================================== //
     //             Eternal Write Functions            //
     // ============================================== //
 
-    function mint(address to) external override {
+    function mint(address to) public virtual override {
         require(
             IAccessControl(ISCT(LETSBaseStorage.LETSBaseSlot().sc).getSCR())
                 .hasRole(Constants.MINTER_ROLE, msg.sender),
@@ -93,6 +70,36 @@ contract LETSBase is ERC721, ILETSBase {
     // ============================================== //
     //             Eternal Read Functions             //
     // ============================================== //
+
+    function getSC() external view override returns (address) {
+        return LETSBaseLib.getSC();
+    }
+
+    function getIsMetadataFixed() external view override returns (bool) {
+        return LETSBaseLib.getIsMetadataFixed();
+    }
+
+    function getNextTokenId() external view override returns (uint256) {
+        return LETSBaseLib.getNextTokenId();
+    }
+
+    function getMaxSupply() external view override returns (uint256) {
+        return LETSBaseLib.getMaxSupply();
+    }
+
+    function getBaseURI() external view override returns (string memory) {
+        return LETSBaseLib.getBaseURI();
+    }
+
+    function getExtension() external view override returns (string memory) {
+        return LETSBaseLib.getExtension();
+    }
+
+    function getFreezeToken(
+        uint256 tokenId
+    ) external view override returns (bool) {
+        return LETSBaseLib.getFreezeToken(tokenId);
+    }
 
     function getUpdatedToken(
         uint256 tokenId

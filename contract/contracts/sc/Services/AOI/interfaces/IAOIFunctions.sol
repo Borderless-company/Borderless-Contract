@@ -20,6 +20,30 @@ interface IAOIFunctions {
     ) external;
 
     /**
+     * @notice Set chapter
+     * @param items Items
+     */
+    function setChapter(
+        IAOIStructs.EncryptedItemInput[] calldata items
+    ) external;
+
+    /**
+     * @notice Update chapter
+     * @param versionRoot Version root
+     * @param signers Signers
+     * @param signatures Signatures
+     * @param finalSignature Final signature
+     * @param items Items
+     */
+    function updateChapter(
+        bytes32 versionRoot,
+        address[] calldata signers,
+        bytes[] calldata signatures,
+        bytes calldata finalSignature,
+        IAOIStructs.EncryptedItemInput[] calldata items
+    ) external;
+
+    /**
      * @notice Set ephemeral salt as used
      * @param ephemeralSalt Ephemeral salt
      */

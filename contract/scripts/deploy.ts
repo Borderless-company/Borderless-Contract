@@ -11,10 +11,14 @@ import {
   RegisterLetsSaleServiceModule,
   DictionaryInitializeModule,
 } from "../ignition/modules/Borderless";
-import { parseDeployArgs } from "../utils/parseArgs";
-import { getDeployerAddress, getFounderAddresses } from "../utils/Deployer";
-import { registerAllFacets } from "../utils/DictionaryHelper";
-import { delay } from "../utils/Delay";
+import { parseDeployArgs } from "./utils/parseArgs";
+import {
+  getDeployerAddress,
+  getFounderAddresses,
+  getAdminAddresses,
+} from "./utils/Deployer";
+import { registerAllFacets } from "./utils/DictionaryHelper";
+import { delay } from "./utils/Delay";
 
 dotenv.config();
 
@@ -23,7 +27,8 @@ const { delayMs } = parseDeployArgs();
 export default async function main() {
   const { deployer, deployerWallet } = await getDeployerAddress();
   console.log(`deployer: ${deployer}`);
-  const founderAddresses = await getFounderAddresses();
+  const adminAddresses = [...(await getAdminAddresses()), deployer];
+  const founderAddresses = [...(await getFounderAddresses()), deployer];
 
   const parameters = {
     BorderlessModule: { Deployer: deployer },
@@ -127,6 +132,10 @@ export default async function main() {
   const { sctBeaconConn } = await hre.ignition.deploy(RegisterSCTModule, {
     parameters: {
       ...parameters,
+      RegisterSCTModule: {
+        SCTAddress: sctAddress,
+        SCTName: "SC_JP_DAO_LLC",
+      },
     },
   });
 
@@ -140,16 +149,16 @@ export default async function main() {
   const scrConn = await hre.ethers.getContractAt("SCR", proxy.target ?? "");
 
   await delay(delayMs);
-  await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "zip_code");
+  await scrConn.addCompanyInfoFields("SC_JP_DAO_LLC", "zip_code");
 
   await delay(delayMs);
-  await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "prefecture");
+  await scrConn.addCompanyInfoFields("SC_JP_DAO_LLC", "prefecture");
 
   await delay(delayMs);
-  await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "city");
+  await scrConn.addCompanyInfoFields("SC_JP_DAO_LLC", "city");
 
   await delay(delayMs);
-  await scrConn.addCompanyInfoFields("SC_JP_DAOLLC", "address");
+  await scrConn.addCompanyInfoFields("SC_JP_DAO_LLC", "address");
 
   console.log("✅ Set CompanyInfoFields");
 
@@ -242,12 +251,21 @@ export default async function main() {
   await delay(delayMs);
 
   // Set Role
+  const adminRole =
+    "0x0000000000000000000000000000000000000000000000000000000000000000";
   const founderRole =
     "0x7ed687a8f2955bd2ba7ca08227e1e364d132be747f42fb733165f923021b0225";
   const accessControlConn = await hre.ethers.getContractAt(
     "BorderlessAccessControl",
     proxy.target ?? ""
   );
+
+  for (const adminAddress of adminAddresses) {
+    await delay(delayMs);
+    await accessControlConn
+      .connect(deployerWallet)
+      .grantRole(adminRole, adminAddress);
+  }
 
   for (const founderAddress of founderAddresses) {
     await delay(delayMs);

@@ -16,7 +16,7 @@ contract LETS_JP_LLC_NON_EXE is LETSBase {
         address dictionary,
         address implementation,
         address sc,
-        bytes calldata params
+        bytes memory params
     ) public virtual override returns (bytes4[] memory selectors) {
         selectors = super.initialize(
             dictionary,

@@ -38,6 +38,13 @@ interface IBeaconUpgradeableBaseEvents {
     event BeaconNameUpdated(address indexed beacon, string name);
 
     /**
+     * @dev emitted when the name of a proxy is updated
+     * @param proxy the address of the proxy
+     * @param name the new name of the proxy
+     */
+    event ProxyNameUpdated(address indexed proxy, string name);
+
+    /**
      * @dev emitted when a beacon is online
      * @param beacon the address of the beacon
      */

@@ -5,7 +5,7 @@ pragma solidity 0.8.28;
 import {Storage as SCRStorage} from "../storages/Storage.sol";
 
 // lib
-import {SCRLib} from "../lib/SCRLib.sol";
+import {CompanyInfoLib} from "../libs/CompanyInfoLib.sol";
 import {BorderlessAccessControlLib} from "../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
 import {ArrayLib} from "../../../core/lib/ArrayLib.sol";
 import {Constants} from "../../../core/lib/Constants.sol";
@@ -118,7 +118,7 @@ contract CompanyInfo is ICompanyInfo {
     function getCompanyInfoFields(
         string calldata legalEntityCode
     ) external view override returns (string[] memory fields) {
-        return SCRLib.getCompanyInfoFields(legalEntityCode);
+        return CompanyInfoLib.getCompanyInfoFields(legalEntityCode);
     }
 
     function getCompanyInfo(
@@ -129,13 +129,13 @@ contract CompanyInfo is ICompanyInfo {
         override
         returns (CompanyInfo memory companyInfo)
     {
-        return SCRLib.getCompanyInfo(scid);
+        return CompanyInfoLib.getCompanyInfo(scid);
     }
 
     function getCompanyField(
         string calldata scid,
         string calldata companyInfoField
     ) external view override returns (string memory) {
-        return SCRLib.getCompanyField(scid, companyInfoField);
+        return CompanyInfoLib.getCompanyField(scid, companyInfoField);
     }
 }

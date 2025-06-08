@@ -6,9 +6,9 @@ import {Storage as ServiceFactoryStorage} from "../storages/Storage.sol";
 import {Storage as BeaconProxyBaseStorage} from "../../BeaconUpgradeableBase/storages/Storage.sol";
 
 // lib
-import {ServiceFactoryLib} from "../lib/ServiceFactoryLib.sol";
+import {ServiceFactoryLib} from "../libs/ServiceFactoryLib.sol";
 import {BorderlessAccessControlLib} from "../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
-import {BeaconUpgradeableBaseLib} from "../../BeaconUpgradeableBase/lib/BeaconUpgradeableBaseLib.sol";
+import {BeaconUpgradeableBaseLib} from "../../BeaconUpgradeableBase/libs/BeaconUpgradeableBaseLib.sol";
 
 // interfaces
 import {IServiceFactory} from "../interfaces/IServiceFactory.sol";
@@ -73,5 +73,11 @@ contract ServiceFactory is IServiceFactory {
         ServiceType serviceType
     ) external view override returns (address) {
         return ServiceFactoryLib.getFounderService(founder, serviceType);
+    }
+
+    function getLetsSaleBeacon(
+        address letsBeacon
+    ) external view override returns (address) {
+        return ServiceFactoryLib.getLetsSaleBeacon(letsBeacon);
     }
 }

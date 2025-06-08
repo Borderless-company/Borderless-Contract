@@ -3,7 +3,7 @@ pragma solidity 0.8.28;
 
 import {Proxy} from "@openzeppelin/contracts/proxy/Proxy.sol";
 
-import {ProxyUtils} from "./ProxyUtils.sol";
+import {ProxyUtils} from "./utils/ProxyUtils.sol";
 import {IDictionary} from "../Dictionary/interfaces/IDictionary/IDictionary.sol";
 
 /**
@@ -23,4 +23,6 @@ contract BorderlessProxy is Proxy {
         return
             IDictionary(ProxyUtils.getDictionary()).getImplementation(msg.sig);
     }
+
+    receive() external payable {}
 }

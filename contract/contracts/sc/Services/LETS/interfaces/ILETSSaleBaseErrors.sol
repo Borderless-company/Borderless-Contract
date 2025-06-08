@@ -13,7 +13,7 @@ interface ILETSSaleBaseErrors {
      * @param saleStart sale start time
      * @param saleEnd sale end time
      */
-    error NotSaleActive(uint256 saleStart, uint256 saleEnd);
+    error NotSaleActive(uint256 blockTimestamp, uint256 saleStart, uint256 saleEnd);
 
     /**
      * @dev Already purchased Error
@@ -35,16 +35,14 @@ interface ILETSSaleBaseErrors {
 
     /**
      * @dev Invalid sale period Error
+     * @param blockTimestamp block timestamp
+     * @param saleStart sale start time
+     * @param saleEnd sale end time
      */
-    error InvalidSalePeriod();
+    error InvalidSalePeriod(uint256 blockTimestamp, uint256 saleStart, uint256 saleEnd);
 
     /**
      * @dev Invalid price Error
      */
-    error InvalidPrice();
-
-    /**
-     * @dev Sale not active Error
-     */
-    error SaleNotActive();
+    error InvalidPrice(uint256 fixedPrice, uint256 minPrice, uint256 maxPrice);
 }

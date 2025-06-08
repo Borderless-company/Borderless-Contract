@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-// storage
-import {Storage as GovernanceStorage} from "../storages/Storage.sol";
-
 // lib
+import {GovernanceBaseLib} from "../libs/GovernanceBaseLib.sol";
 import {GovernanceInitializeLib} from "../libs/GovernanceInitializeLib.sol";
 import {ThresholdLib} from "../../../../core/lib/ThresholdLib.sol";
 import {LETSBaseLib} from "../../LETS/libs/LETSBaseLib.sol";
@@ -13,10 +11,11 @@ import {LETSBaseLib} from "../../LETS/libs/LETSBaseLib.sol";
 import {IGovernanceService} from "../interfaces/IGovernanceService.sol";
 import {IERC721} from "../../../ERC721/interfaces/IERC721.sol";
 import {IErrors} from "../../../../core/utils/IErrors.sol";
+import {console} from "hardhat/console.sol";
 
 /**
- * @title Test smart contract for Borderless.company service
- * @notice This contract is used to test the Governance service
+ * @title GovernanceBase
+ * @notice This contract is the base contract for the Governance service
  */
 contract GovernanceBase is IGovernanceService {
     // ============================================== //
@@ -29,10 +28,8 @@ contract GovernanceBase is IGovernanceService {
      */
     modifier onlyExecutor(uint256 transactionId) {
         require(
-            GovernanceStorage
-                .GovernanceSlot()
-                .transactions[transactionId]
-                .executor == msg.sender,
+            GovernanceBaseLib.getTransaction(transactionId).executor ==
+                msg.sender,
             NotExecutor(msg.sender, transactionId)
         );
         _;
@@ -44,9 +41,7 @@ contract GovernanceBase is IGovernanceService {
      */
     modifier onceApproved(uint256 transactionId) {
         require(
-            !GovernanceStorage.GovernanceSlot().approvals[transactionId][
-                msg.sender
-            ],
+            !GovernanceBaseLib.getApproval(transactionId, msg.sender),
             AlreadyApproved(msg.sender, transactionId)
         );
         _;
@@ -57,9 +52,9 @@ contract GovernanceBase is IGovernanceService {
      * @param transactionId_ The transaction ID
      */
     modifier onlyVotePeriod(uint256 transactionId_) {
-        Transaction memory transaction = GovernanceStorage
-            .GovernanceSlot()
-            .transactions[transactionId_];
+        Transaction memory transaction = GovernanceBaseLib.getTransaction(
+            transactionId_
+        );
         require(
             block.timestamp >= transaction.voteStart &&
                 block.timestamp <= transaction.voteEnd,
@@ -73,9 +68,9 @@ contract GovernanceBase is IGovernanceService {
      * @param transactionId The transaction ID
      */
     modifier thresholdReached(uint256 transactionId) {
-        Transaction memory transaction = GovernanceStorage
-            .GovernanceSlot()
-            .transactions[transactionId];
+        Transaction memory transaction = GovernanceBaseLib.getTransaction(
+            transactionId
+        );
 
         require(
             transaction.approvalCount >=
@@ -102,9 +97,9 @@ contract GovernanceBase is IGovernanceService {
 
     modifier onlyTokenHolder(uint256 transactionId) {
         bool isTokenHolder = false;
-        Transaction memory transaction = GovernanceStorage
-            .GovernanceSlot()
-            .transactions[transactionId];
+        Transaction memory transaction = GovernanceBaseLib.getTransaction(
+            transactionId
+        );
         address[] memory tokenContracts = transaction
             .proposalInfo
             .proposalMemberContracts;
@@ -143,22 +138,12 @@ contract GovernanceBase is IGovernanceService {
         uint256 transactionId
     )
         external
+        virtual
         override
         onlyExecutor(transactionId)
         thresholdReached(transactionId)
     {
-        // Transaction memory transaction = GovernanceStorage
-        //     .GovernanceSlot()
-        //     .transactions[transactionId];
-        // (bool success, ) = transaction.to.call{value: transaction.value}(
-        //     transaction.data
-        // );
-        // require(success, ExecuteFailed(transactionId));
-        GovernanceStorage
-            .GovernanceSlot()
-            .transactions[transactionId]
-            .executed = true;
-        emit TransactionExecuted(transactionId);
+        GovernanceBaseLib.execute(transactionId);
     }
 
     function approveTransaction(
@@ -169,14 +154,7 @@ contract GovernanceBase is IGovernanceService {
         onlyVotePeriod(transactionId)
         onlyTokenHolder(transactionId)
     {
-        GovernanceStorage.GovernanceSlot().approvals[transactionId][
-            msg.sender
-        ] = true;
-        GovernanceStorage
-            .GovernanceSlot()
-            .transactions[transactionId]
-            .approvalCount++;
-        emit TransactionApproved(transactionId, msg.sender);
+        GovernanceBaseLib.approveTransaction(transactionId);
     }
 
     function registerTransaction(
@@ -189,20 +167,15 @@ contract GovernanceBase is IGovernanceService {
         uint256 voteEnd,
         address[] memory proposalMemberContracts
     ) external override checkProposalLevel(proposalLevel, false) {
-        ProposalInfo memory proposalInfo = ProposalInfo({
-            numerator: proposalLevel == ProposalLevel.LEVEL_1 ? 2 : 1, // 2/3 or 1/2
-            denominator: proposalLevel == ProposalLevel.LEVEL_1 ? 3 : 2, // 2/3 or 1/2
-            proposalLevel: proposalLevel,
-            proposalMemberContracts: proposalMemberContracts
-        });
-        _registerTransaction(
+        GovernanceBaseLib.registerTransaction(
             value,
             data,
             to,
             executor,
+            proposalLevel,
             voteStart,
             voteEnd,
-            proposalInfo
+            proposalMemberContracts
         );
     }
 
@@ -218,33 +191,22 @@ contract GovernanceBase is IGovernanceService {
         uint256 voteEnd,
         address[] memory proposalMemberContracts
     ) external override checkProposalLevel(proposalLevel, true) {
-        require(
-            numerator > 0 && denominator > 0,
-            InvalidNumeratorOrDenominator(numerator, denominator)
-        );
-        ProposalInfo memory proposalInfo = ProposalInfo({
-            numerator: numerator,
-            denominator: denominator,
-            proposalLevel: proposalLevel,
-            proposalMemberContracts: proposalMemberContracts
-        });
-        _registerTransaction(
+        GovernanceBaseLib.registerTransactionWithCustomThreshold(
             value,
             data,
             to,
             executor,
+            proposalLevel,
+            numerator,
+            denominator,
             voteStart,
             voteEnd,
-            proposalInfo
+            proposalMemberContracts
         );
     }
 
     function cancelTransaction(uint256 transactionId_) external override {
-        GovernanceStorage
-            .GovernanceSlot()
-            .transactions[transactionId_]
-            .cancelled = true;
-        emit TransactionCancelled(transactionId_);
+        GovernanceBaseLib.cancelTransaction(transactionId_);
     }
 
     // ============================================== //
@@ -254,42 +216,6 @@ contract GovernanceBase is IGovernanceService {
     function getTransaction(
         uint256 transactionId
     ) external view override returns (Transaction memory) {
-        return GovernanceStorage.GovernanceSlot().transactions[transactionId];
-    }
-
-    // ============================================== //
-    //             INTERNAL WRITE FUNCTIONS           //
-    // ============================================== //
-
-    function _registerTransaction(
-        uint256 value,
-        bytes memory data,
-        address to,
-        address executor,
-        uint256 voteStart,
-        uint256 voteEnd,
-        ProposalInfo memory proposalInfo
-    ) internal {
-        GovernanceStorage.GovernanceSlot().lastTransactionId++;
-        uint256 transactionId = GovernanceStorage
-            .GovernanceSlot()
-            .lastTransactionId;
-        GovernanceStorage.GovernanceSlot().transactions[
-            transactionId
-        ] = Transaction({
-            value: value,
-            data: data,
-            to: to,
-            executor: executor,
-            executed: false,
-            cancelled: false,
-            totalMember: proposalInfo.proposalMemberContracts.length,
-            approvalCount: 0,
-            voteStart: voteStart,
-            voteEnd: voteEnd,
-            createdAt: block.timestamp,
-            proposalInfo: proposalInfo
-        });
-        emit TransactionCreated(transactionId);
+        return GovernanceBaseLib.getTransaction(transactionId);
     }
 }

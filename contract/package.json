@@ -5,11 +5,11 @@
     "localhost": "hardhat node",
     "deploy:module": "hardhat ignition deploy ./ignition/modules/Borderless.ts",
     "deploy": "hardhat run ./scripts/deploy.ts",
-    "deploy:create-company": "hardhat run ./scripts/deploy-create-company.ts --",
-    "deploy:create-company-local": "hardhat run ./scripts/deploy-create-company-local.ts",
+    "deploy:create-company": "hardhat run ./scripts/deploy-create-company.ts",
     "test": "hardhat test",
     "coverage": "hardhat coverage",
-    "typechain": "typechain --target=ethers-v5 --out-dir=typechain --extract-types"
+    "typechain": "typechain --target=ethers-v5 --out-dir=typechain --extract-types",
+    "deploy:kibotcha": "hardhat run ./scripts/deploy/lets_non_exe/extensions/kibotcha.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
