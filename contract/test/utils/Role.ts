@@ -40,3 +40,22 @@ export const grantFounderRole = async (
     await account.getAddress()
   );
 };
+
+export const grantTreasuryRole = async (
+  deployer: HardhatEthersSigner,
+  sctProxy: string,
+  account: HardhatEthersSigner
+) => {
+  const borderlessAccessControlConn = (
+    await ethers.getContractAt(
+      "BorderlessAccessControl",
+      sctProxy
+    )
+  ).connect(deployer) as BorderlessAccessControl;
+  const treasuryRole =
+    "0xe1dcbdb91df27212a29bc27177c840cf2f819ecf2187432e1fac86c2dd5dfca9";
+  await borderlessAccessControlConn.grantRole(
+    treasuryRole,
+    await account.getAddress()
+  );
+};

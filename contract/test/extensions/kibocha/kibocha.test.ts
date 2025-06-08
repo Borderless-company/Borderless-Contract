@@ -9,24 +9,24 @@ import type {
   BorderlessAccessControl,
   LETS_JP_LLC_SALE,
   LETS_JP_LLC_NON_EXE,
-} from "../../typechain-types";
-import { deployFullFixture } from "../utils/DeployFixture";
-import { letsEncodeParams } from "../../scripts/utils/Encode";
-import { createCompany } from "../utils/CreateCompany";
+} from "../../../typechain-types";
+import { deployJP_DAO_LLCFullFixture } from "../../utils/DeployFixture";
+import { letsEncodeParams } from "../../../scripts/utils/Encode";
+import { createCompany } from "../../utils/CreateCompany";
 
 describe("SCR Test", function () {
   it("Dictionary のオーナーがデプロイヤーに設定されていること", async function () {
-    const { deployer, dictionary } = await loadFixture(deployFullFixture);
+    const { deployer, dictionary } = await loadFixture(deployJP_DAO_LLCFullFixture);
     expect(await dictionary.owner()).to.equal(deployer.address);
   });
 
   it("BorderlessProxyFacade が正常にデプロイされていること", async function () {
-    const { proxy } = await loadFixture(deployFullFixture);
-    expect(ethers.isAddress(await proxy.getAddress())).to.be.true;
+    const { borderlessProxy } = await loadFixture(deployJP_DAO_LLCFullFixture);
+    expect(ethers.isAddress(await borderlessProxy.getAddress())).to.be.true;
   });
 
   it("Dictionary に SCT の getService 関数セレクタが登録されていること", async function () {
-    const { dictionary, scr } = await loadFixture(deployFullFixture);
+    const { dictionary, scrImplementation } = await loadFixture(deployJP_DAO_LLCFullFixture);
     const SCR = await ethers.getContractFactory("SCR");
     const frag = SCR.interface.getFunction("setSCContract")!;
     const selector = FunctionFragment.getSelector(
@@ -34,7 +34,7 @@ describe("SCR Test", function () {
       frag.inputs.map((i) => i.type)
     );
     expect(await dictionary.getImplementation(selector)).to.equal(
-      await scr.getAddress()
+      await scrImplementation.getAddress()
     );
   });
 });
@@ -43,13 +43,13 @@ describe("SCR Test", function () {
     it("createSmartCompany が成功すること", async function () {
       const {
         deployer,
-        proxy,
+        borderlessProxy,
         founder,
         executiveMember,
         executiveMember2,
         executiveMember3,
         tokenMinter,
-      } = await loadFixture(deployFullFixture);
+      } = await loadFixture(deployJP_DAO_LLCFullFixture);
 
       // ============================================== //
       // createSmartCompany の実行
@@ -78,7 +78,7 @@ describe("SCR Test", function () {
       // ============================================== //
 
       const serviceFactoryConn = (
-        await ethers.getContractAt("ServiceFactory", await proxy.getAddress())
+        await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())
       ).connect(founder) as ServiceFactory;
 
       const letsExeAddress = await serviceFactoryConn.getFounderService(
@@ -134,7 +134,7 @@ describe("SCR Test", function () {
       const scrAccessControlConn = (
         await ethers.getContractAt(
           "BorderlessAccessControl",
-          await proxy.getAddress()
+          await borderlessProxy.getAddress()
         )
       ).connect(deployer) as BorderlessAccessControl;
 
@@ -240,13 +240,13 @@ describe("SCR Test", function () {
   it("別のfounderからもcreateSmartCompanyが成功すること", async function () {
     const {
       deployer,
-      proxy,
+      borderlessProxy,
       founder,
       executiveMember,
       executiveMember2,
       executiveMember3,
       tokenMinter,
-    } = await loadFixture(deployFullFixture);
+    } = await loadFixture(deployJP_DAO_LLCFullFixture);
 
     // 最初のfounderで会社を作成
     await createCompany();
@@ -271,20 +271,20 @@ describe("SCR Test", function () {
   it("同じfounderで2回目のcreateSmartCompanyが失敗すること", async function () {
     const {
       deployer,
-      proxy,
+      borderlessProxy,
       founder,
       executiveMember,
       executiveMember2,
       executiveMember3,
       tokenMinter,
-    } = await loadFixture(deployFullFixture);
+    } = await loadFixture(deployJP_DAO_LLCFullFixture);
 
     // 最初の会社を作成
     await createCompany();
 
     // 同じfounderで2回目の会社作成を試みる
     const scrConn = (
-      await ethers.getContractAt("SCR", await proxy.getAddress())
+      await ethers.getContractAt("SCR", await borderlessProxy.getAddress())
     ).connect(founder) as SCR;
 
     const scid = "9876543210";
@@ -296,9 +296,9 @@ describe("SCR Test", function () {
     const scDeployParam = "0x";
     const companyInfo = ["100-0001", "Tokyo", "Shinjuku-ku", "Shinjuku 1-1-1"];
     const scsBeaconProxy = [
-      await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 1),
-      await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 3),
-      await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 4),
+      await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 1),
+      await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 3),
+      await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 4),
     ];
 
     const scsExtraParams = [
@@ -324,7 +324,7 @@ describe("SCR Test", function () {
     await expect(
       scrConn.createSmartCompany(
         scid.toString(),
-        await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 0),
+        await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 0),
         legalEntityCode,
         companyName,
         establishmentDate,
@@ -341,16 +341,16 @@ describe("SCR Test", function () {
   it("無効な会社情報でcreateSmartCompanyが失敗すること", async function () {
     const {
       deployer,
-      proxy,
+      borderlessProxy,
       founder,
       executiveMember,
       executiveMember2,
       executiveMember3,
       tokenMinter,
-    } = await loadFixture(deployFullFixture);
+    } = await loadFixture(deployJP_DAO_LLCFullFixture);
 
     const scrConn = (
-      await ethers.getContractAt("SCR", await proxy.getAddress())
+      await ethers.getContractAt("SCR", await borderlessProxy.getAddress())
     ).connect(founder) as SCR;
 
     const scid = "9876543210";
@@ -362,9 +362,9 @@ describe("SCR Test", function () {
     const scDeployParam = "0x";
     const companyInfo = ["100-0001", "Tokyo", "Shinjuku-ku", "Shinjuku 1-1-1"];
     const scsBeaconProxy = [
-      await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 1),
-      await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 3),
-      await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 4),
+      await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 1),
+      await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 3),
+      await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 4),
     ];
 
     const scsExtraParams = [
@@ -390,7 +390,7 @@ describe("SCR Test", function () {
     await expect(
       scrConn.createSmartCompany(
         scid.toString(),
-        await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 0),
+        await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 0),
         legalEntityCode,
         companyName,
         establishmentDate,
@@ -407,16 +407,16 @@ describe("SCR Test", function () {
   it("無効な会社情報フィールド数でcreateSmartCompanyが失敗すること", async function () {
     const {
       deployer,
-      proxy,
+      borderlessProxy,
       founder,
       executiveMember,
       executiveMember2,
       executiveMember3,
       tokenMinter,
-    } = await loadFixture(deployFullFixture);
+    } = await loadFixture(deployJP_DAO_LLCFullFixture);
 
     const scrConn = (
-      await ethers.getContractAt("SCR", await proxy.getAddress())
+      await ethers.getContractAt("SCR", await borderlessProxy.getAddress())
     ).connect(founder) as SCR;
 
     const scid = "9876543210";
@@ -428,9 +428,9 @@ describe("SCR Test", function () {
     const scDeployParam = "0x";
     const companyInfo = ["100-0001", "Tokyo"]; // フィールド数が不足
     const scsBeaconProxy = [
-      await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 1),
-      await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 3),
-      await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 4),
+      await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 1),
+      await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 3),
+      await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 4),
     ];
 
     const scsExtraParams = [
@@ -456,7 +456,7 @@ describe("SCR Test", function () {
     await expect(
       scrConn.createSmartCompany(
         scid.toString(),
-        await (await ethers.getContractAt("ServiceFactory", await proxy.getAddress())).getFounderService(founder, 0),
+        await (await ethers.getContractAt("ServiceFactory", await borderlessProxy.getAddress())).getFounderService(founder, 0),
         legalEntityCode,
         companyName,
         establishmentDate,

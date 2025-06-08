@@ -19,7 +19,7 @@ library LETSSaleBaseLib {
         require(
             (fixedPrice != 0 && minPrice == 0 && maxPrice == 0) ||
                 (fixedPrice == 0 && minPrice != 0 && maxPrice != 0),
-            ILETSSaleBaseErrors.InvalidPrice()
+            ILETSSaleBaseErrors.InvalidPrice(fixedPrice, minPrice, maxPrice)
         );
         if (fixedPrice != 0) {
             $.fixedPrice = fixedPrice;
@@ -34,13 +34,13 @@ library LETSSaleBaseLib {
             .LETSSaleBaseSlot();
         require(
             saleStart != 0 && saleEnd != 0,
-            ILETSSaleBaseErrors.InvalidSalePeriod()
+            ILETSSaleBaseErrors.InvalidSalePeriod(block.timestamp, saleStart, saleEnd)
         );
         require(
             saleStart > block.timestamp,
-            ILETSSaleBaseErrors.InvalidSalePeriod()
+            ILETSSaleBaseErrors.InvalidSalePeriod(block.timestamp, saleStart, saleEnd)
         );
-        require(saleStart < saleEnd, ILETSSaleBaseErrors.InvalidSalePeriod());
+        require(saleStart < saleEnd, ILETSSaleBaseErrors.InvalidSalePeriod(block.timestamp, saleStart, saleEnd));
         $.saleStart = saleStart;
         $.saleEnd = saleEnd;
     }

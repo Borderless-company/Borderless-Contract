@@ -18,6 +18,18 @@ contract AOIFacade is IAOI {
         IAOIStructs.EncryptedItemInput[] calldata items
     ) external {}
 
+    function setChapter(
+        IAOIStructs.EncryptedItemInput[] calldata items
+    ) external {}
+
+    function updateChapter(
+        bytes32 versionRoot,
+        address[] calldata signers,
+        bytes[] calldata signatures,
+        bytes calldata finalSignature,
+        IAOIStructs.EncryptedItemInput[] calldata items
+    ) external {}
+
     function setEphemeralSalt(bytes32 ephemeralSalt) external {}
 
     // ************************************************

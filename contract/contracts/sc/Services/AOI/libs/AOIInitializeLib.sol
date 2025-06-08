@@ -22,24 +22,34 @@ library AOIInitializeLib {
             .InitializeSlot();
         require(!$init.initialized, InitializeErrors.AlreadyInitialized());
 
-        bytes4[] memory selectors = new bytes4[](7);
+        bytes4[] memory selectors = new bytes4[](9);
         selectors[0] = bytes4(
             keccak256(
                 "initialSetChapter((uint256,uint256,uint256,bytes32,bytes32,bytes32)[]"
             )
         );
-        selectors[1] = bytes4(keccak256("setEphemeralSalt(bytes32)"));
+        selectors[1] = bytes4(
+            keccak256(
+                "setChapter((uint256,uint256,uint256,bytes,bytes32,bytes32)[])"
+            )
+        );
         selectors[2] = bytes4(
+            keccak256(
+                "updateChapter(bytes32,address[],bytes[],bytes,((uint256,uint256,uint256),bytes,bytes32,bytes32)[])"
+            )
+        );
+        selectors[3] = bytes4(keccak256("setEphemeralSalt(bytes32)"));
+        selectors[4] = bytes4(
             keccak256("getEncryptedItem((uint256,uint256,uint256))")
         );
-        selectors[3] = bytes4(keccak256("getVersionRoot(uint256)"));
-        selectors[4] = bytes4(keccak256("isEphemeralSaltUsed(bytes32)"));
-        selectors[5] = bytes4(
+        selectors[5] = bytes4(keccak256("getVersionRoot(uint256)"));
+        selectors[6] = bytes4(keccak256("isEphemeralSaltUsed(bytes32)"));
+        selectors[7] = bytes4(
             keccak256(
                 "verifyDecryptionKeyHash((uint256,uint256,uint256),bytes32)"
             )
         );
-        selectors[6] = bytes4(
+        selectors[8] = bytes4(
             keccak256(
                 "verifyDecryptionKeyHashWithSaltHash((uint256,uint256,uint256),bytes32,bytes32,address)"
             )

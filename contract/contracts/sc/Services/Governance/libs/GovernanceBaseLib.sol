@@ -12,6 +12,9 @@ import {IGovernanceServiceStructs} from "../interfaces/IGovernanceServiceStructs
 import {IGovernanceServiceEvents} from "../interfaces/IGovernanceServiceEvents.sol";
 import {IGovernanceServiceErrors} from "../interfaces/IGovernanceServiceErrors.sol";
 
+// OpenZeppelin
+import {IERC721} from "../../../ERC721/interfaces/IERC721.sol";
+
 /**
  * @title GovernanceBaseLib
  * @notice This library contains the functions for the GovernanceBase contract
@@ -26,12 +29,13 @@ library GovernanceBaseLib {
      * @param transactionId Transaction ID
      */
     function execute(uint256 transactionId) internal {
-        IGovernanceServiceStructs.Transaction memory transaction = GovernanceStorage
+        IGovernanceServiceStructs.Transaction storage transaction = GovernanceStorage
             .GovernanceSlot()
             .transactions[transactionId];
         (bool success, ) = transaction.to.call{value: transaction.value}(
             transaction.data
         );
+        transaction.executed = true;
         require(success, IGovernanceServiceErrors.ExecuteFailed(transactionId));
         emit IGovernanceServiceEvents.TransactionExecuted(transactionId);
     }
@@ -181,10 +185,13 @@ library GovernanceBaseLib {
         uint256 voteEnd,
         IGovernanceServiceStructs.ProposalInfo memory proposalInfo
     ) internal {
-        GovernanceStorage.GovernanceSlot().lastTransactionId++;
-        uint256 transactionId = GovernanceStorage
+        uint256 transactionId = ++GovernanceStorage
             .GovernanceSlot()
             .lastTransactionId;
+        uint256 totalMember;
+        for (uint256 i = 0; i < proposalInfo.proposalMemberContracts.length; i++) {
+            totalMember += IERC721(proposalInfo.proposalMemberContracts[i]).totalSupply();
+        }
         GovernanceStorage.GovernanceSlot().transactions[
             transactionId
         ] = IGovernanceServiceStructs.Transaction({
@@ -194,7 +201,7 @@ library GovernanceBaseLib {
             executor: executor,
             executed: false,
             cancelled: false,
-            totalMember: proposalInfo.proposalMemberContracts.length,
+            totalMember: totalMember,
             approvalCount: 0,
             voteStart: voteStart,
             voteEnd: voteEnd,

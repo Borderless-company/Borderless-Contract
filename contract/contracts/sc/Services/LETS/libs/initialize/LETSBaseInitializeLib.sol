@@ -62,7 +62,7 @@ library LETSBaseInitializeLib {
         InitializeSchema.InitializeLayout storage $init = InitializeStorage
             .InitializeSlot();
         require(!$init.initialized, InitializeErrors.AlreadyInitialized());
-        selectors = new bytes4[](22);
+        selectors = new bytes4[](29);
         selectors[0] = bytes4(keccak256("getUpdatedToken(uint256)"));
         selectors[1] = bytes4(keccak256("tokenURI(uint256)"));
         selectors[2] = bytes4(keccak256("totalSupply()"));
@@ -92,7 +92,14 @@ library LETSBaseInitializeLib {
         selectors[18] = bytes4(keccak256("mint(address)"));
         selectors[19] = bytes4(keccak256("freezeToken(uint256)"));
         selectors[20] = bytes4(keccak256("unfreezeToken(uint256)"));
-        selectors[21] = bytes4(keccak256("getUpdatedToken(uint256)"));
+        selectors[21] = bytes4(keccak256("getSC()"));
+        selectors[22] = bytes4(keccak256("getIsMetadataFixed()"));
+        selectors[23] = bytes4(keccak256("getNextTokenId()"));
+        selectors[24] = bytes4(keccak256("getMaxSupply()"));
+        selectors[25] = bytes4(keccak256("getBaseURI()"));
+        selectors[26] = bytes4(keccak256("getExtension()"));
+        selectors[27] = bytes4(keccak256("getFreezeToken(uint256)"));
+        selectors[28] = bytes4(keccak256("getUpdatedToken(uint256)"));
         emit LETSBaseInitialized(msg.sender);
     }
 }

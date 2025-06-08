@@ -2,9 +2,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import type { SCRBeaconUpgradeable, SCR } from "../typechain-types";
-import {
-  deployJP_DAO_LLCFullFixture,
-} from "./utils/DeployFixture";
+import { deployJP_DAO_LLCFullFixture } from "./utils/DeployFixture";
 import { createCompany } from "./utils/CreateCompany";
 
 describe("SCRBeaconUpgradeable Test", function () {
@@ -41,15 +39,11 @@ describe("SCRBeaconUpgradeable Test", function () {
   };
 
   describe("updateSCRBeaconName", function () {
-    it("管理者がビーコン名を更新できること", async function () {
+    it("founder can update the beacon name", async function () {
       const { deployer, scrBeaconUpgradeable, sctBeacon } =
         await getSCRBeaconUpgradeableContext();
-        console.log("ok sctBeacon", sctBeacon);
 
-      console.log("ok deploy fixture");
-      console.log("ok sctBeacon", sctBeacon);
-
-      // ビーコン名を更新
+      // Update the beacon name
       const newName = "UpdatedBeaconName";
       const tx = await scrBeaconUpgradeable
         .connect(deployer)
@@ -57,28 +51,27 @@ describe("SCRBeaconUpgradeable Test", function () {
 
       console.log("ok updateSCRBeaconName");
 
-      // イベントが発行されることを確認
+      // Verify the event is emitted
       await expect(tx)
         .to.emit(scrBeaconUpgradeable, "BeaconNameUpdated")
         .withArgs(sctBeacon, newName);
 
       console.log("ok emit event");
 
-      // ビーコン情報を取得して確認
+      // Get the beacon information and verify
       const beaconInfo = await scrBeaconUpgradeable.getSCRBeacon(sctBeacon);
       expect(beaconInfo.name).to.equal(newName);
 
-      console.log("ok getSCRBeacon");
     });
 
-    it("管理者以外がビーコン名を更新しようとすると失敗すること", async function () {
+    it("non-founder cannot update the beacon name", async function () {
       const { founder, scrBeaconUpgradeable } =
         await getSCRBeaconUpgradeableContext();
 
-      // 会社を作成してビーコンアドレスを取得
+      // Create a company and get the beacon address
       const { companyAddress } = await createCompany();
 
-      // 管理者以外がビーコン名を更新しようとする
+      // Non-founder cannot update the beacon name
       await expect(
         scrBeaconUpgradeable
           .connect(founder)
@@ -89,14 +82,14 @@ describe("SCRBeaconUpgradeable Test", function () {
       );
     });
 
-    it("存在しないビーコンの名前を更新しようとすると失敗すること", async function () {
+    it("cannot update the name of a non-existent beacon", async function () {
       const { deployer, scrBeaconUpgradeable } =
         await getSCRBeaconUpgradeableContext();
 
-      // 存在しないビーコンのアドレス
+      // Non-existent beacon address
       const nonExistentBeacon = "0x0000000000000000000000000000000000000001";
 
-      // 存在しないビーコンの名前を更新しようとする
+      // Cannot update the name of a non-existent beacon
       await expect(
         scrBeaconUpgradeable
           .connect(deployer)
@@ -106,36 +99,36 @@ describe("SCRBeaconUpgradeable Test", function () {
   });
 
   describe("changeSCRBeaconOnline", function () {
-    it("管理者がビーコンのオンライン状態を変更できること", async function () {
+    it("founder can change the beacon online status", async function () {
       const { deployer, scrBeaconUpgradeable, sctBeacon } =
         await getSCRBeaconUpgradeableContext();
 
-      // ビーコンをオフラインに設定
+      // Change the beacon online status to offline
       const changeOfflineTx = await scrBeaconUpgradeable
         .connect(deployer)
         .changeSCRBeaconOnline(sctBeacon, false);
 
-      // イベントが発行されることを確認
+      // Verify the event is emitted
       await expect(changeOfflineTx)
         .to.emit(scrBeaconUpgradeable, "BeaconOffline")
         .withArgs(sctBeacon);
 
-      // ビーコン情報を取得して確認
+      // Get the beacon information and verify
       const beaconInfoOffline = await scrBeaconUpgradeable.getSCRBeacon(
         sctBeacon
       );
 
-      // ビーコンをオンラインに設定
+      // Change the beacon online status to online
       const changeOnlineTx = await scrBeaconUpgradeable
         .connect(deployer)
         .changeSCRBeaconOnline(sctBeacon, true);
 
-      // イベントが発行されることを確認
+      // Verify the event is emitted
       await expect(changeOnlineTx)
         .to.emit(scrBeaconUpgradeable, "BeaconOnline")
         .withArgs(sctBeacon);
 
-      // ビーコン情報を取得して確認
+      // Get the beacon information and verify
       const beaconInfoOnline = await scrBeaconUpgradeable.getSCRBeacon(
         sctBeacon
       );
@@ -143,14 +136,14 @@ describe("SCRBeaconUpgradeable Test", function () {
       expect(beaconInfoOffline.isOnline).to.be.false;
     });
 
-    it("管理者以外がビーコンのオンライン状態を変更しようとすると失敗すること", async function () {
+    it("non-founder cannot change the beacon online status", async function () {
       const { founder, scrBeaconUpgradeable } =
         await getSCRBeaconUpgradeableContext();
 
-      // 会社を作成してビーコンアドレスを取得
+      // Create a company and get the beacon address
       const { companyAddress } = await createCompany();
 
-      // 管理者以外がビーコンのオンライン状態を変更しようとする
+      // Non-founder cannot change the beacon online status
       await expect(
         scrBeaconUpgradeable
           .connect(founder)
@@ -161,14 +154,14 @@ describe("SCRBeaconUpgradeable Test", function () {
       );
     });
 
-    it("存在しないビーコンのオンライン状態を変更しようとすると失敗すること", async function () {
+    it("cannot change the online status of a non-existent beacon", async function () {
       const { deployer, scrBeaconUpgradeable } =
         await getSCRBeaconUpgradeableContext();
 
-      // 存在しないビーコンのアドレス
+      // Non-existent beacon address
       const nonExistentBeacon = "0x0000000000000000000000000000000000000001";
 
-      // 存在しないビーコンのオンライン状態を変更しようとする
+      // Cannot change the online status of a non-existent beacon
       await expect(
         scrBeaconUpgradeable
           .connect(deployer)
@@ -176,11 +169,11 @@ describe("SCRBeaconUpgradeable Test", function () {
       ).to.be.revertedWithCustomError(scrBeaconUpgradeable, "InvalidBeacon");
     });
 
-    it("既に同じ状態のビーコンのオンライン状態を変更しようとすると失敗すること", async function () {
+    it("cannot change the online status of a beacon that is already online", async function () {
       const { deployer, scrBeaconUpgradeable, sctBeacon } =
         await getSCRBeaconUpgradeableContext();
 
-      // 同じ状態（オンライン）に設定しようとする
+      // Cannot change the online status of a beacon that is already online
       await expect(
         scrBeaconUpgradeable
           .connect(deployer)
@@ -195,29 +188,29 @@ describe("SCRBeaconUpgradeable Test", function () {
   });
 
   describe("getSCRBeacon", function () {
-    it("ビーコン情報を正しく取得できること", async function () {
+    it("can get the beacon information correctly", async function () {
       const { deployer, scrBeaconUpgradeable, sctBeacon } =
         await getSCRBeaconUpgradeableContext();
 
-      // ビーコン情報を設定
+      // Set the beacon information
       const name = "TestBeacon";
       await scrBeaconUpgradeable
         .connect(deployer)
         .updateSCRBeaconName(sctBeacon, name);
 
-      // ビーコン情報を取得して確認
+      // Get the beacon information and verify
       const beaconInfo = await scrBeaconUpgradeable.getSCRBeacon(sctBeacon);
       expect(beaconInfo.name).to.equal(name);
       expect(beaconInfo.isOnline).to.be.true;
     });
 
-    it("存在しないビーコンの情報を取得すると0アドレスが返ること", async function () {
+    it("cannot get the information of a non-existent beacon", async function () {
       const { scrBeaconUpgradeable } = await getSCRBeaconUpgradeableContext();
 
-      // 存在しないビーコンのアドレス
+      // Non-existent beacon address
       const nonExistentBeacon = "0x0000000000000000000000000000000000000001";
 
-      // 存在しないビーコンの情報を取得
+      // Cannot get the information of a non-existent beacon
       const beaconInfo = await scrBeaconUpgradeable.getSCRBeacon(
         nonExistentBeacon
       );
@@ -227,7 +220,7 @@ describe("SCRBeaconUpgradeable Test", function () {
   });
 
   describe("getSCRProxy", function () {
-    it("プロキシ情報を正しく取得できること", async function () {
+    it("can get the proxy information correctly", async function () {
       const { sc_jp_dao_llcBeacon, scrBeaconUpgradeable } =
         await getSCRBeaconUpgradeableContext();
 
@@ -239,13 +232,13 @@ describe("SCRBeaconUpgradeable Test", function () {
       expect(scBeacon).to.equal(sc_jp_dao_llcBeacon);
     });
 
-    it("存在しないプロキシの情報を取得すると0アドレスが返ること", async function () {
+    it("cannot get the information of a non-existent proxy", async function () {
       const { scrBeaconUpgradeable } = await getSCRBeaconUpgradeableContext();
 
-      // 存在しないプロキシのアドレス
+      // Non-existent proxy address
       const nonExistentProxy = "0x0000000000000000000000000000000000000001";
 
-      // 存在しないプロキシの情報を取得
+      // Cannot get the information of a non-existent proxy
       const borderlessProxy = await scrBeaconUpgradeable.getSCRProxy(
         nonExistentProxy
       );
@@ -254,37 +247,37 @@ describe("SCRBeaconUpgradeable Test", function () {
   });
 
   describe("updateSCRProxyName", function () {
-    it("founderがプロキシ名を更新できること", async function () {
+    it("founder can update the proxy name", async function () {
       const { founder, scrBeaconUpgradeable } =
         await getSCRBeaconUpgradeableContext();
 
-      // 会社を作成
+      // Create a company
       const { companyAddress } = await createCompany();
 
-      // プロキシ名を更新
+      // Update the proxy name
       const newName = "UpdatedProxyName";
       const tx = await scrBeaconUpgradeable
         .connect(founder)
         .updateSCRProxyName(companyAddress, newName);
 
-      // イベントが発行されることを確認
+      // Verify the event is emitted
       await expect(tx)
         .to.emit(scrBeaconUpgradeable, "ProxyNameUpdated")
         .withArgs(companyAddress, newName);
 
-      // プロキシ情報を取得して確認
+      // Get the proxy information and verify
       const proxyInfo = await scrBeaconUpgradeable.getSCRProxy(companyAddress);
       expect(proxyInfo.name).to.equal(newName);
     });
 
-    it("founder以外がプロキシ名を更新しようとすると失敗すること", async function () {
+    it("non-founder cannot update the proxy name", async function () {
       const { deployer, scrBeaconUpgradeable } =
         await getSCRBeaconUpgradeableContext();
 
-      // 会社を作成
+      // Create a company
       const { companyAddress } = await createCompany();
 
-      // founder以外がプロキシ名を更新しようとする
+      // Non-founder cannot update the proxy name
       await expect(
         scrBeaconUpgradeable
           .connect(deployer)
@@ -295,14 +288,14 @@ describe("SCRBeaconUpgradeable Test", function () {
       );
     });
 
-    it("存在しないプロキシの名前を更新しようとすると失敗すること", async function () {
+    it("cannot update the name of a non-existent proxy", async function () {
       const { founder, scrBeaconUpgradeable } =
         await getSCRBeaconUpgradeableContext();
 
-      // 存在しないプロキシのアドレス
+      // Non-existent proxy address
       const nonExistentProxy = "0x0000000000000000000000000000000000000001";
 
-      // 存在しないプロキシの名前を更新しようとする
+      // Cannot update the name of a non-existent proxy
       await expect(
         scrBeaconUpgradeable
           .connect(founder)

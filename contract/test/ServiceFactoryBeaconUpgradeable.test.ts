@@ -96,10 +96,7 @@ describe("ServiceFactoryBeaconUpgradeable", function () {
       await expect(
         serviceFactoryBeaconUpgradeable
           .connect(deployer)
-          .changeServiceFactoryBeaconOnline(
-            lets_jp_llc_exeBeacon,
-            isOnline
-          )
+          .changeServiceFactoryBeaconOnline(lets_jp_llc_exeBeacon, isOnline)
       ).to.be.revertedWithCustomError(
         serviceFactoryBeaconUpgradeable,
         "BeaconAlreadyOnlineOrOffline"
@@ -117,10 +114,7 @@ describe("ServiceFactoryBeaconUpgradeable", function () {
 
       const tx = await serviceFactoryBeaconUpgradeable
         .connect(deployer)
-        .changeServiceFactoryBeaconOnline(
-          lets_jp_llc_exeBeacon,
-          isOnline
-        );
+        .changeServiceFactoryBeaconOnline(lets_jp_llc_exeBeacon, isOnline);
 
       const receipt = await tx.wait();
       expect(receipt)
@@ -146,10 +140,7 @@ describe("ServiceFactoryBeaconUpgradeable", function () {
       await expect(
         serviceFactoryBeaconUpgradeable
           .connect(founder)
-          .changeServiceFactoryBeaconOnline(
-            lets_jp_llc_exeBeacon,
-            isOnline
-          )
+          .changeServiceFactoryBeaconOnline(lets_jp_llc_exeBeacon, isOnline)
       ).to.be.revertedWithCustomError(
         serviceFactoryBeaconUpgradeable,
         "AccessControlUnauthorizedAccount"
@@ -201,9 +192,7 @@ describe("ServiceFactoryBeaconUpgradeable", function () {
         );
       expect(beaconInfo.name).to.equal(name);
       expect(beaconInfo.isOnline).to.equal(true); // Initially online
-      expect(beaconInfo.implementation).not.to.equal(
-        lets_jp_llc_exeBeacon
-      );
+      expect(beaconInfo.implementation).not.to.equal(lets_jp_llc_exeBeacon);
       expect(beaconInfo.proxyCount).to.equal(0);
     });
   });

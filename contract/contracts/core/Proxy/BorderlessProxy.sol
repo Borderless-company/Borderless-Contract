@@ -23,4 +23,6 @@ contract BorderlessProxy is Proxy {
         return
             IDictionary(ProxyUtils.getDictionary()).getImplementation(msg.sig);
     }
+
+    receive() external payable {}
 }

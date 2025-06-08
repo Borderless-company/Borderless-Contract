@@ -42,7 +42,14 @@ contract LETSSaleBase is ILETSSaleBase {
     modifier onlySaleActive() {
         LETSSaleBaseSchema.LETSSaleBaseLayout storage $ = LETSSaleBaseStorage
             .LETSSaleBaseSlot();
-        require($.isSaleActive, SaleNotActive());
+        require(
+            $.isSaleActive,
+            NotSaleActive(
+                block.timestamp,
+                $.saleStart != 0 ? $.saleStart : 0,
+                $.saleEnd != 0 ? $.saleEnd : 0
+            )
+        );
         _;
     }
 
@@ -52,7 +59,7 @@ contract LETSSaleBase is ILETSSaleBase {
         if ($.saleStart != 0 && $.saleEnd != 0) {
             require(
                 block.timestamp >= $.saleStart && block.timestamp <= $.saleEnd,
-                NotSaleActive($.saleStart, $.saleEnd)
+                NotSaleActive(block.timestamp, $.saleStart, $.saleEnd)
             );
         }
         _;
@@ -92,6 +99,13 @@ contract LETSSaleBase is ILETSSaleBase {
         }
         LETSSaleBaseLib.setPrice(fixedPrice, minPrice, maxPrice);
         LETSSaleBaseStorage.LETSSaleBaseSlot().isSaleActive = true;
+        emit SaleInfoUpdated(
+            saleStart,
+            saleEnd,
+            fixedPrice,
+            minPrice,
+            maxPrice
+        );
     }
 
     function offerToken(
@@ -126,6 +140,7 @@ contract LETSSaleBase is ILETSSaleBase {
         uint256 saleEnd
     ) external override onlyTreasuryRole {
         LETSSaleBaseLib.setSalePeriod(saleStart, saleEnd);
+        emit SalePeriodUpdated(saleStart, saleEnd);
     }
 
     function updatePrice(
@@ -134,5 +149,6 @@ contract LETSSaleBase is ILETSSaleBase {
         uint256 maxPrice
     ) external override onlyTreasuryRole {
         LETSSaleBaseLib.setPrice(fixedPrice, minPrice, maxPrice);
+        emit PriceUpdated(fixedPrice, minPrice, maxPrice);
     }
 }

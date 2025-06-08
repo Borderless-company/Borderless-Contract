@@ -1,163 +1,173 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import type { SCT } from "../typechain-types";
+import type { AOI, SCT } from "../typechain-types";
 import { ServiceType } from "./utils/Enum";
 
-// テストユーティリティを必要に応じてインポート
-import { deployFullFixture } from "./utils/DeployFixture";
-import { grantFounderRole } from "./utils/Role";
+import { deployJP_DAO_LLCFullFixture } from "./utils/DeployFixture";
+import { grantFounderRole, grantTreasuryRole } from "./utils/Role";
 import { createCompany } from "./utils/CreateCompany";
 
 describe("SCT Service", function () {
-  // --- フィクスチャを使ったコンテキスト構築関数 ---
   const getSCTContext = async () => {
-    // 1) サインイン用アカウント取得
-    const [deployer, founder, user1, user2] = await ethers.getSigners();
-
-    // 2) deployFullFixture を呼び出してコントラクトをデプロイ・初期化
     const {
-      proxy,     // BorderlessProxyのインスタンス
-      scr,       // SCRのインスタンス
-      serviceFactory, // ServiceFactoryのインスタンス
-    } = await loadFixture(deployFullFixture);
+      deployer,
+      founder,
+      executiveMember,
+      executiveMember2,
+      borderlessProxy,
+      scrImplementation,
+      serviceFactoryImplementation
+    } = await loadFixture(deployJP_DAO_LLCFullFixture);
 
-    // 3) メインコントラクトのインスタンス化（proxy経由）
+    // Grant role to founder
+    await grantFounderRole(deployer, borderlessProxy, founder);
+
+    // Create company and get SCT instance
+    const { companyAddress, services } = await createCompany();
+
     const sct = (await ethers.getContractAt(
       "SCT",
-      await proxy.getAddress()
+      companyAddress
     )) as SCT;
+
+    const aoi = await ethers.getContractAt("AOI", services[5]);
 
     return {
       deployer,
       founder,
-      user1,
-      user2,
-      proxy,
-      scr,
-      serviceFactory,
-      sct
+      executiveMember,
+      executiveMember2,
+      borderlessProxy,
+      scrImplementation,
+      serviceFactoryImplementation,
+      sct,
+      companyAddress,
+      aoi
     };
   };
 
   describe("Service Registration", function () {
     it("should register services by founder", async function () {
-      const { sct, founder, user1, proxy, deployer } = await getSCTContext();
-      
-      // サービスアドレスをモック
-      const mockServiceAddress = user1.address;
+      const { sct, founder, executiveMember, borderlessProxy, deployer } =
+        await getSCTContext();
+
+      // Mock service address
+      const mockServiceAddress = executiveMember.address;
       const serviceTypes = [ServiceType.LETS_EXE];
       const services = [mockServiceAddress];
 
-      // founderにロールを付与
-      await grantFounderRole(deployer, proxy, founder);
+      // Grant role to founder
+      await grantFounderRole(deployer, borderlessProxy, founder);
 
-      // サービス登録
+      // Register service
       await expect(sct.connect(founder).registerService(serviceTypes, services))
         .to.emit(sct, "RegisterService")
         .withArgs(await sct.getAddress(), serviceTypes, services);
 
-      // 登録されたサービスアドレスを確認
+      // Verify registered service address
       const registeredService = await sct.getService(ServiceType.LETS_EXE);
       expect(registeredService).to.equal(mockServiceAddress);
     });
 
     it("should register services by SCR", async function () {
-      const { sct, scr, user1 } = await getSCTContext();
-      
-      const mockServiceAddress = user1.address;
+      const { sct, founder, executiveMember } = await getSCTContext();
+
+      const mockServiceAddress = executiveMember.address;
       const serviceTypes = [ServiceType.LETS_EXE];
       const services = [mockServiceAddress];
 
-      // SCRからサービス登録
-      await expect(sct.connect(scr).registerService(serviceTypes, services))
+      // Register service from SCR
+      await expect(sct.connect(founder).registerService(serviceTypes, services))
         .to.emit(sct, "RegisterService")
         .withArgs(await sct.getAddress(), serviceTypes, services);
 
-      // 登録されたサービスアドレスを確認
+      // Verify registered service address
       const registeredService = await sct.getService(ServiceType.LETS_EXE);
       expect(registeredService).to.equal(mockServiceAddress);
     });
 
     it("should fail to register services by unauthorized user", async function () {
-      const { sct, user1, user2 } = await getSCTContext();
-      
-      const mockServiceAddress = user1.address;
+      const { sct, executiveMember, executiveMember2 } = await getSCTContext();
+
+      const mockServiceAddress = executiveMember.address;
       const serviceTypes = [ServiceType.LETS_EXE];
       const services = [mockServiceAddress];
 
-      // 未認証ユーザーからのサービス登録を試みる
+      // Attempt to register service from unauthorized user
       await expect(
-        sct.connect(user2).registerService(serviceTypes, services)
+        sct.connect(executiveMember2).registerService(serviceTypes, services)
       ).to.be.revertedWithCustomError(sct, "NotFounderOrSCR");
     });
 
     it("should fail to register service with zero address", async function () {
-      const { sct, founder, proxy, deployer } = await getSCTContext();
-      
+      const { sct, founder, borderlessProxy, deployer } = await getSCTContext();
+
       const zeroAddress = ethers.ZeroAddress;
       const serviceTypes = [ServiceType.LETS_EXE];
       const services = [zeroAddress];
 
-      // founderにロールを付与
-      await grantFounderRole(deployer, proxy, founder);
+      // Grant role to founder
+      await grantFounderRole(deployer, borderlessProxy, founder);
 
-      // ゼロアドレスでのサービス登録を試みる
+      // Attempt to register service with zero address
       await expect(
         sct.connect(founder).registerService(serviceTypes, services)
-      ).to.be.revertedWithCustomError(sct, "InvalidAddress");
+      ).to.be.revertedWithCustomError(sct, "ZeroAddress");
     });
   });
 
   describe("Investment Amount Management", function () {
     it("should set investment amount by treasury role", async function () {
-      const { sct, deployer, user1, proxy } = await getSCTContext();
-      
+      const { sct, founder, executiveMember, companyAddress } = await getSCTContext();
+
       const investmentAmount = ethers.parseEther("1.0");
 
-      // deployerにTREASURY_ROLEを付与
-      await grantFounderRole(deployer, proxy, deployer);
+      // Grant TREASURY_ROLE to executiveMember
+      await grantTreasuryRole(founder, companyAddress, executiveMember);
 
-      // 投資額を設定
-      await sct.connect(deployer).setInvestmentAmount(user1.address, investmentAmount);
+      // Set investment amount
+      await sct
+        .connect(executiveMember)
+        .setInvestmentAmount(executiveMember.address, investmentAmount);
 
-      // 設定された投資額を確認
-      const amount = await sct.getInvestmentAmount(user1.address);
+      // Verify set investment amount
+      const amount = await sct.getInvestmentAmount(executiveMember.address);
       expect(amount).to.equal(investmentAmount);
     });
 
     it("should fail to set investment amount by unauthorized user", async function () {
-      const { sct, user1, user2 } = await getSCTContext();
-      
+      const { sct, executiveMember, executiveMember2 } = await getSCTContext();
+
       const investmentAmount = ethers.parseEther("1.0");
 
-      // 未認証ユーザーからの投資額設定を試みる
+      // Attempt to set investment amount from unauthorized user
       await expect(
-        sct.connect(user2).setInvestmentAmount(user1.address, investmentAmount)
-      ).to.be.revertedWithCustomError(sct, "NotAuthorized");
+        sct.connect(executiveMember2).setInvestmentAmount(executiveMember.address, investmentAmount)
+      ).to.be.revertedWithCustomError(sct, "AccessControlUnauthorizedAccount");
     });
   });
 
   describe("Information Retrieval", function () {
     it("should return correct SCR address", async function () {
-      const { sct, scr } = await getSCTContext();
-      
+      const { sct, borderlessProxy } = await getSCTContext();
+
       const scrAddress = await sct.getSCR();
-      expect(scrAddress).to.equal(await scr.getAddress());
+      expect(scrAddress).to.equal(await borderlessProxy.getAddress());
     });
 
     it("should return zero address for unregistered service", async function () {
-      const { sct } = await getSCTContext();
-      
-      const serviceAddress = await sct.getService(ServiceType.LETS_EXE);
-      expect(serviceAddress).to.equal(ethers.ZeroAddress);
+      const { sct, aoi } = await getSCTContext();
+
+      const serviceAddress = await sct.getService(ServiceType.AOI);
+      expect(serviceAddress).to.equal(await aoi.getAddress());
     });
 
     it("should return zero for unset investment amount", async function () {
-      const { sct, user1 } = await getSCTContext();
-      
-      const amount = await sct.getInvestmentAmount(user1.address);
+      const { sct, executiveMember } = await getSCTContext();
+
+      const amount = await sct.getInvestmentAmount(executiveMember.address);
       expect(amount).to.equal(0);
     });
   });
-}); 
+});

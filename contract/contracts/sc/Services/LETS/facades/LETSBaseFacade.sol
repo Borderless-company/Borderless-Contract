@@ -33,6 +33,20 @@ contract LETSBaseFacade is OwnableFacade, ERC721Facade, ILETSBase {
     //             Eternal Read Functions             //
     // ============================================== //
 
+    function getSC() external view returns (address) {}
+
+    function getIsMetadataFixed() external view returns (bool) {}
+
+    function getNextTokenId() external view returns (uint256) {}
+
+    function getMaxSupply() external view returns (uint256) {}
+
+    function getBaseURI() external view returns (string memory) {}
+
+    function getExtension() external view returns (string memory) {}
+
+    function getFreezeToken(uint256 tokenId) external view returns (bool) {}
+
     function getUpdatedToken(
         uint256 tokenId
     ) external view override returns (uint256) {}

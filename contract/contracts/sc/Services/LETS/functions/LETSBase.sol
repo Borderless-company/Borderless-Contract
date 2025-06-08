@@ -37,19 +37,6 @@ contract LETSBase is ERC721, ILETSBase {
     }
 
     // ============================================== //
-    //                MODIFIERS                       //
-    // ============================================== //
-
-    modifier onlyUnderMaxSupply() {
-        require(
-            LETSBaseStorage.LETSBaseSlot().maxSupply == 0 ||
-                LETSBaseStorage.LETSBaseSlot().maxSupply > super.totalSupply(),
-            MaxSupplyReached()
-        );
-        _;
-    }
-
-    // ============================================== //
     //             Eternal Write Functions            //
     // ============================================== //
 
@@ -83,6 +70,36 @@ contract LETSBase is ERC721, ILETSBase {
     // ============================================== //
     //             Eternal Read Functions             //
     // ============================================== //
+
+    function getSC() external view override returns (address) {
+        return LETSBaseLib.getSC();
+    }
+
+    function getIsMetadataFixed() external view override returns (bool) {
+        return LETSBaseLib.getIsMetadataFixed();
+    }
+
+    function getNextTokenId() external view override returns (uint256) {
+        return LETSBaseLib.getNextTokenId();
+    }
+
+    function getMaxSupply() external view override returns (uint256) {
+        return LETSBaseLib.getMaxSupply();
+    }
+
+    function getBaseURI() external view override returns (string memory) {
+        return LETSBaseLib.getBaseURI();
+    }
+
+    function getExtension() external view override returns (string memory) {
+        return LETSBaseLib.getExtension();
+    }
+
+    function getFreezeToken(
+        uint256 tokenId
+    ) external view override returns (bool) {
+        return LETSBaseLib.getFreezeToken(tokenId);
+    }
 
     function getUpdatedToken(
         uint256 tokenId

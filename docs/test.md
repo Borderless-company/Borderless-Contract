@@ -9,7 +9,6 @@
 3. ユーティリティ関数群（例：`CreateCompany.ts`、`Role.ts`、`LETSMint.ts`、`Event.ts`、`Encode.ts`）を適宜インポートして活用すること。  
 4. ファイル構成例：  
 ```
-
 test/
 ├─ utils/
 │   ├─ DeployFixture.ts    ← デプロイ用フィクスチャ関数を定義済みと仮定
@@ -21,8 +20,9 @@ test/
 ├─ SCR.test.ts            ← 既存サンプル
 ├─ Governance.test.ts     ← 既存サンプル
 └─ 〈ContractName〉.test.ts  ← これから生成するファイル
-
 ```
+
+5. コメントとテスト名は英語で記述すること。これにより、国際的な開発チームでも理解しやすくなり、コードの可読性が向上します。
 
 ---
 
@@ -31,22 +31,16 @@ test/
 
 - コントラクト名：  
 ```
-
 〈ContractName〉
-
 ```
 - フィクスチャ関数：  
 ```
-
 deploy〈ContractName〉Fixture
-
 ```
 （`test/utils/DeployFixture.ts` 内に定義済みと仮定）  
 - コントラクトを呼び出すインターフェース：  
 ```
-
 ethers.getContractAt("〈ContractName〉", proxy.getAddress()) as 〈ContractName〉
-
 ```
 - 主な外部メソッド例：  
 - `〈methodA〉(〈arg1Type〉 arg1, 〈arg2Type〉 arg2)`  
@@ -127,38 +121,38 @@ describe("〈ContractName〉", function () {
 ### 3.1 正常系テストグループ
 
 ```ts
-  describe("正常系機能検証", function () {
+  describe("Normal Functionality Tests", function () {
 
-    it("〈methodA〉: 正常な引数かつ権限ありで呼び出すと eventA が emit される", async function () {
+    it("〈methodA〉: should emit eventA when called with valid arguments and proper permissions", async function () {
       const { contract, user1 } = await get〈ContractName〉Context();
-      // — 必要ならばロール付与
+      // — Grant role if needed
       await grantRoleUtil(contract, "ROLE_A", user1.address);
 
-      // — 呼び出し
+      // — Call the method
       await expect(
         contract.connect(user1).〈methodA〉(〈validArg1〉, 〈validArg2〉)
       )
         .to.emit(contract, "eventA")
         .withArgs(〈expectedArgX〉, 〈expectedArgY〉);
 
-      // — eventA 発生後の状態確認（例: storage が正しく更新されていること）
+      // — Verify state after eventA
       const afterValue = await contract.〈viewMethod〉(〈someKey〉);
       expect(afterValue).to.equal(〈expectedValue〉);
     });
 
-    it("〈viewMethod〉: 事前に特定の状態をセットし、想定の戻り値を返すこと", async function () {
+    it("〈viewMethod〉: should return expected value when specific state is set", async function () {
       const { contract, user1 } = await get〈ContractName〉Context();
-      // — 例: 何か事前セットアップが必要な場合
+      // — Example: Setup if needed
       await contract.connect(user1).〈methodA〉(…);
-      // — view 関数を呼び出し
+      // — Call view function
       const result = await contract.〈viewMethod〉(〈arg〉);
       expect(result).to.equal(〈expectedReturn〉);
     });
 
-    // 関数内に複数分岐がある場合、そのすべてを網羅する正常系シナリオを追加
-    it("〈methodB〉: 分岐条件を満たすと特定の動作を行い、eventB を emit する", async function () {
+    // Add normal scenarios for all branches in the function
+    it("〈methodB〉: should perform specific action and emit eventB when branch condition is met", async function () {
       const { contract, user2 } = await get〈ContractName〉Context();
-      // — 例: 分岐を引き起こすための状態設定
+      // — Example: Set up state to trigger branch
       await contract.connect(user2).〈setupMethod〉(〈args〉);
 
       await expect(
@@ -167,7 +161,7 @@ describe("〈ContractName〉", function () {
         .to.emit(contract, "eventB")
         .withArgs(〈expectedArgForBranch〉);
 
-      // — 分岐後の storage 検証
+      // — Verify storage after branch
       const storageValue = await contract.〈viewMethod〉(〈key〉);
       expect(storageValue).to.equal(〈branchExpectedValue〉);
     });
@@ -178,62 +172,62 @@ describe("〈ContractName〉", function () {
 ### 3.2 異常系テストグループ
 
 ```ts
-  describe("異常系チェック", function () {
+  describe("Error Cases", function () {
 
-    it("権限なしで 〈methodA〉 を呼ぶと CustomErrorNotAuthorized で revert する", async function () {
+    it("should revert with CustomErrorNotAuthorized when 〈methodA〉 is called without proper permissions", async function () {
       const { contract, user2 } = await get〈ContractName〉Context();
-      // user2 は権限を持たない状態
+      // user2 has no permissions
       await expect(
         contract.connect(user2).〈methodA〉(〈anyArg1〉, 〈anyArg2〉)
       ).to.be.revertedWithCustomError(contract, "CustomErrorNotAuthorized");
     });
 
-    it("無効な引数で 〈methodA〉 を呼ぶと CustomErrorA で revert する", async function () {
+    it("should revert with CustomErrorA when 〈methodA〉 is called with invalid arguments", async function () {
       const { contract, user1 } = await get〈ContractName〉Context();
       await grantRoleUtil(contract, "ROLE_A", user1.address);
-      // arg1 が無効 (例: 0 または 範囲外) として呼ぶ
+      // Call with invalid arg1 (e.g., 0 or out of range)
       await expect(
         contract.connect(user1).〈methodA〉(〈invalidArg1〉, 〈invalidArg2〉)
       ).to.be.revertedWithCustomError(contract, "CustomErrorA");
     });
 
-    it("〈methodB〉: 条件を満たさないと revert (CustomErrorB)", async function () {
+    it("〈methodB〉: should revert with CustomErrorB when condition is not met", async function () {
       const { contract, user3 } = await get〈ContractName〉Context();
-      // 事前に分岐条件を満たさない状態を作る
-      // たとえば、methodB は「あるフラグが立っていないとエラー」とする場合
+      // Set up state where branch condition is not met
+      // For example, if methodB requires a flag to be set:
       // await contract.connect(user3).clearFlag();
       await expect(
         contract.connect(user3).〈methodB〉(〈anyArg〉)
       ).to.be.revertedWithCustomError(contract, "CustomErrorB");
     });
 
-    it("投票期間外に approveTransaction を呼ぶと NotInVotePeriod で revert する", async function () {
+    it("should revert with NotInVotePeriod when approveTransaction is called outside voting period", async function () {
       const { contract, user4 } = await get〈ContractName〉Context();
-      // 事前に投票期間が過ぎたトランザクションを登録しておく
+      // Register a transaction with past voting period
       // await contract.connect(user1).registerTransaction(〈pastVoteStart〉, 〈pastVoteEnd〉, …);
       await expect(
         contract.connect(user4).approveTransaction(〈txId〉)
       ).to.be.revertedWithCustomError(contract, "NotInVotePeriod");
     });
 
-    // メソッド内の複数分岐を網羅するために、各エラーケースを個別にテスト
-    it("ダブル承認を防ぐ: すでに承認済みで 2 回目を呼ぶと AlreadyApproved で revert", async function () {
+    // Test each error case individually to cover all branches
+    it("should prevent double approval: revert with AlreadyApproved on second approval", async function () {
       const { contract, user1, user2 } = await get〈ContractName〉Context();
-      // register + approve を事前に行う
+      // Set up: register + approve
       // await contract.connect(user1).registerTransaction(…);
       // await grantRoleUtil(contract, "ROLE_VOTER", user2.address);
-      // await tokenMintUtil(contract, user2, user2.address);  // トークンホルダー条件を満たす場合
+      // await tokenMintUtil(contract, user2, user2.address);  // If token holder condition is required
       // await contract.connect(user2).approveTransaction(〈txId〉);
 
-      // 2 回目の approve
+      // Second approval attempt
       await expect(
         contract.connect(user2).approveTransaction(〈txId〉)
       ).to.be.revertedWithCustomError(contract, "AlreadyApproved");
     });
 
-    it("閾値未満で execute を呼ぶと ThresholdNotReached で revert する", async function () {
+    it("should revert with ThresholdNotReached when execute is called before reaching threshold", async function () {
       const { contract, user1, user2, user3 } = await get〈ContractName〉Context();
-      // registerTransaction を行い、1 人だけ承認（LEVEL_1: 2/3 必須）
+      // Register transaction and get only one approval (LEVEL_1: 2/3 required)
       // await contract.connect(user1).registerTransaction(…);
       // await grantRoleUtil(contract, "ROLE_VOTER", user2.address);
       // await tokenMintUtil(contract, user2, user2.address);
@@ -244,9 +238,9 @@ describe("〈ContractName〉", function () {
       ).to.be.revertedWithCustomError(contract, "ThresholdNotReached");
     });
 
-    it("非実行者が execute を呼ぶと NotExecutor で revert する", async function () {
+    it("should revert with NotExecutor when execute is called by non-executor", async function () {
       const { contract, user1, user2, user3 } = await get〈ContractName〉Context();
-      // registerTransaction を行い、複数承認して閾値を満たす
+      // Register transaction and get multiple approvals to meet threshold
       // await contract.connect(user1).registerTransaction(…);
       // await grantRoleUtil(contract, "ROLE_VOTER", user2.address);
       // await tokenMintUtil(contract, user2, user2.address);
@@ -254,7 +248,7 @@ describe("〈ContractName〉", function () {
       // await grantRoleUtil(contract, "ROLE_VOTER", user3.address);
       // await tokenMintUtil(contract, user3, user3.address);
       // await contract.connect(user3).approveTransaction(〈txId〉);
-      // まだ user4 は実行者ではない
+      // user4 is not an executor yet
 
       await expect(
         contract.connect(user4).execute(〈txId〉)
@@ -267,21 +261,21 @@ describe("〈ContractName〉", function () {
 ### 3.3 その他分岐・枝分かれを含む追加テスト
 
 ```ts
-  describe("内部ロジックの枝分かれを網羅する追加テスト", function () {
+  describe("Additional Tests for Internal Logic Branches", function () {
 
-    // 例: ある関数が "owner == address(0)" の場合に別ルートを通るなら、その分岐をテスト
-    it("〈methodC〉: owner がゼロアドレスの場合、CustomErrorC を revert する", async function () {
+    // Example: If a function has a different path when "owner == address(0)", test that branch
+    it("〈methodC〉: should revert with CustomErrorC when owner is zero address", async function () {
       const { contract, user1 } = await get〈ContractName〉Context();
-      // 事前に owner を address(0) に設定する方法がある場合
+      // If there's a way to set owner to address(0)
       // await contract.connect(admin).resetOwnerToZero();
       await expect(
         contract.connect(user1).〈methodC〉(〈args〉)
       ).to.be.revertedWithCustomError(contract, "CustomErrorC");
     });
 
-    it("〈methodC〉: 通常ルートでは正常に動作し、eventC が emit される", async function () {
+    it("〈methodC〉: should work normally and emit eventC in normal path", async function () {
       const { contract, ownerAccount } = await get〈ContractName〉Context();
-      // ownerAccount は正しい所有者
+      // ownerAccount is the correct owner
       await expect(
         contract.connect(ownerAccount).〈methodC〉(〈validArgs〉)
       )
@@ -289,8 +283,8 @@ describe("〈ContractName〉", function () {
         .withArgs(〈expectedArgs〉);
     });
 
-    // 例: 数値計算や境界値チェックがある場合のテスト
-    it("〈methodD〉: 数値が最大値を超えたときに CustomErrorD で revert する", async function () {
+    // Example: Test numerical calculations and boundary checks
+    it("〈methodD〉: should revert with CustomErrorD when value exceeds maximum", async function () {
       const { contract, user1 } = await get〈ContractName〉Context();
       const tooLargeValue = ethers.BigNumber.from("2").pow(256).sub(1).add(1);
       await expect(
@@ -298,25 +292,25 @@ describe("〈ContractName〉", function () {
       ).to.be.revertedWithCustomError(contract, "CustomErrorD");
     });
 
-    it("〈methodD〉: 辺境値ギリギリの値では正常に処理される", async function () {
+    it("〈methodD〉: should process normally at boundary value", async function () {
       const { contract, user1 } = await get〈ContractName〉Context();
       const maxValue = ethers.BigNumber.from("2").pow(256).sub(1);
       await expect(
         contract.connect(user1).〈methodD〉(maxValue)
       ).not.to.be.reverted;
-      // 必要なら結果を検証
+      // Verify result if needed
       const ret = await contract.〈viewMethodAfterD〉(maxValue);
       expect(ret).to.equal(〈expectedReturnForMax〉);
     });
 
-    // 複数の入力パラメータを組み合わせたパターンをすべて検証
-    it("〈methodE〉: 複数引数の組み合わせに対してすべて網羅的にテスト", async function () {
+    // Test all combinations of multiple input parameters
+    it("〈methodE〉: should test all combinations of multiple parameters", async function () {
       const { contract, user1 } = await get〈ContractName〉Context();
       const testCases = [
         { a: 1, b: 1, expected: 2 },
         { a: 0, b: 5, expected: 5 },
         { a: 10, b: 0, expected: 10 },
-        // … 他の組み合わせ
+        // … other combinations
       ];
       for (const tc of testCases) {
         await expect(
@@ -378,9 +372,64 @@ describe("〈ContractName〉", function () {
 
 ---
 
+## 5. テストの実行手順
+
+1. **フィクスチャの使用**
+   - テストの初期設定には`deployJP_DAO_LLCFullFixture`を使用する
+   - サインアカウントは`deployJP_DAO_LLCFullFixture`から取得する
+   - `createCompany`は直接実行する（`loadFixture`は使用しない）
+
+2. **アカウントの役割**
+   - `deployer`: デプロイと初期設定を行うアカウント
+   - `founder`: 会社の創設者
+   - `executiveMember`: トレジャリーとして使用
+   - `executiveMember2`, `executiveMember3`: テスト用の購入者
+   - `tokenMinter`: トークンミント権限を持つアカウント
+
+3. **テストの実行順序**
+   - 各テストケースは独立して実行可能である必要がある
+   - テストケース間で状態を共有しない
+   - 各テストケースの開始時に必要な初期状態を設定する
+
+4. **エラーケースのテスト**
+   - 各関数の異常系テストを必ず含める
+   - アクセス制御のテスト（権限のないユーザーからの呼び出し）
+   - 不正なパラメータでの呼び出し
+   - 状態に依存する条件のテスト
+
+5. **イベントの検証**
+   - 各関数の実行時に発行されるイベントを検証する
+   - イベントのパラメータが期待通りの値であることを確認する
+
+---
+
+## 6. LETSBase と LETSSaleBase の Proxy 関係
+
+LETSBase と LETSSaleBase は同じ Proxy アドレスを使用します。テストファイル内で以下のように記述する必要があります：
+
+```typescript
+const letsSale = await ethers.getContractAt("LETSSaleBase", services[2]);
+const lets = await ethers.getContractAt("LETSBase", services[2]);
+```
+
+注意点：
+- 両方のコントラクトは同じ Proxy アドレス（`services[2]`）を使用します
+- 異なるサービスアドレスを使用するとエラーが発生します
+- これは、LETSBase と LETSSaleBase が同じ Proxy コントラクト内に実装されているためです
+
+---
+
 ### （補足）
 
 * すべての「正常系」「異常系」「分岐パターン」を網羅することで、テストファイルのカバレッジが 100％ に近づきます。
 * 本プロンプトをベースに、各コントラクトのメソッドシグネチャやエラー名に合わせて `〈…〉` 部分を適切に置き換えてください。
 * 複写して使いやすいよう、最初に全体テンプレートを生成させ、その後微調整を行うと効率的です。
 * 条件分岐が非常に多いコントラクトでは、ループで複数ケースを回すテストや、helper 関数を用いてコードを DRY に保つことを検討してください。
+* コメントとテスト名は英語で記述し、国際的な開発チームでも理解しやすいようにしてください。
+
+┌────────────────────────────────────┬──────────────────────────────────────────────┐
+│ Contract                           │ Addresses                                    │
+├────────────────────────────────────┼──────────────────────────────────────────────┤
+│ BorderlessProxy                    │ '0x36C02dA8a0983159322a80FFE9F24b1acfF8B570' │
+│ SC_JP_DAO_LLC                      │ '0x04C89607413713Ec9775E14b954286519d836FEf' |
+└────────────────────────────────────┴──────────────────────────────────────────────┘

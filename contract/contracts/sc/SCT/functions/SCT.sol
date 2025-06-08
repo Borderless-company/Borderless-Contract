@@ -2,11 +2,10 @@
 pragma solidity 0.8.28;
 
 // storage
-import {Schema} from "../storages/Schema.sol";
 import {Storage as SCTStorage} from "../storages/Storage.sol";
-import {Storage as ACStorage} from "../../../core/BorderlessAccessControl/storages/Storage.sol";
 
 // lib
+import {SCTLib} from "../libs/SCTLib.sol";
 import {BorderlessAccessControlLib} from "../../../core/BorderlessAccessControl/libs/BorderlessAccessControlLib.sol";
 import {Constants} from "../../../core/lib/Constants.sol";
 
@@ -34,16 +33,8 @@ contract SCT is ISCT {
             ) || msg.sender == SCTStorage.SCTSlot().scr,
             NotFounderOrSCR(msg.sender)
         );
-        for (uint256 index = 0; index < serviceTypes.length; index++) {
-            address activatedAddress = services[index];
-            require(
-                activatedAddress != address(0),
-                InvalidAddress(activatedAddress)
-            );
-            SCTStorage.SCTSlot().serviceContracts[serviceTypes[index]] = activatedAddress;
-        }
+        completed = SCTLib.registerService(serviceTypes, services);
         emit RegisterService(address(this), serviceTypes, services);
-        completed = true;
     }
 
     function setInvestmentAmount(
@@ -54,7 +45,7 @@ contract SCT is ISCT {
             Constants.TREASURY_ROLE,
             msg.sender
         );
-        SCTStorage.SCTSlot().investmentAmount[account] = investmentAmount;
+        SCTLib.setInvestmentAmount(account, investmentAmount);
     }
 
     // ============================================== //
@@ -62,18 +53,18 @@ contract SCT is ISCT {
     // ============================================== //
 
     function getSCR() external view override returns (address scr) {
-        scr = SCTStorage.SCTSlot().scr;
+        scr = SCTLib.getSCR();
     }
 
     function getService(
         ServiceType serviceType
     ) external view override returns (address) {
-        return SCTStorage.SCTSlot().serviceContracts[serviceType];
+        return SCTLib.getService(serviceType);
     }
 
     function getInvestmentAmount(
         address account
     ) external view override returns (uint256) {
-        return SCTStorage.SCTSlot().investmentAmount[account];
+        return SCTLib.getInvestmentAmount(account);
     }
 }

@@ -269,41 +269,50 @@ export const deployFixture = async () => {
   // Set Service Contracts
   // ============================================== //
 
-  const aoiBeacon = await setService(
+  const aoiBeaconAddress = await setService(
     borderlessProxy as BorderlessProxy,
     deployer,
     await aoiImplementation.getAddress(),
     "AOI",
     1
   );
-  const governanceBaseBeacon = await setService(
+  const aoiBeacon = await ethers.getContractAt("SCRBeaconUpgradeable", aoiBeaconAddress);
+
+  const governanceBaseBeaconAddress = await setService(
     borderlessProxy as BorderlessProxy,
     deployer,
     await governanceBaseImplementation.getAddress(),
     "GovernanceBase",
     2
   );
-  const letsBaseBeacon = await setService(
+  const governanceBaseBeacon = await ethers.getContractAt("SCRBeaconUpgradeable", governanceBaseBeaconAddress);
+
+  const letsBaseBeaconAddress = await setService(
     borderlessProxy as BorderlessProxy,
     deployer,
     await letsBaseImplementation.getAddress(),
     "LETSBase",
     3
   );
-  const letsNonExeBaseBeacon = await setService(
+  const letsBaseBeacon = await ethers.getContractAt("SCRBeaconUpgradeable", letsBaseBeaconAddress);
+
+  const letsNonExeBaseBeaconAddress = await setService(
     borderlessProxy as BorderlessProxy,
     deployer,
     await letsBaseImplementation.getAddress(),
     "LETSBase",
     4
   );
-  const letsSaleBaseBeacon = await setService(
+  const letsNonExeBaseBeacon = await ethers.getContractAt("SCRBeaconUpgradeable", letsNonExeBaseBeaconAddress);
+
+  const letsSaleBaseBeaconAddress = await setService(
     borderlessProxy as BorderlessProxy,
     deployer,
     await letsSaleBaseImplementation.getAddress(),
     "LETSSaleBase",
     5
   );
+  const letsSaleBaseBeacon = await ethers.getContractAt("SCRBeaconUpgradeable", letsSaleBaseBeaconAddress);
 
   // ============================================== //
   // Set LetsSaleBeacon
@@ -311,14 +320,14 @@ export const deployFixture = async () => {
 
   await setLetsSaleBeacon(
     borderlessProxy as BorderlessProxy,
-    letsBaseBeacon as string,
-    letsSaleBaseBeacon as string
+    letsBaseBeaconAddress,
+    letsSaleBaseBeaconAddress
   );
 
   await setLetsSaleBeacon(
     borderlessProxy as BorderlessProxy,
-    letsNonExeBaseBeacon as string,
-    letsSaleBaseBeacon as string
+    letsNonExeBaseBeaconAddress,
+    letsSaleBaseBeaconAddress
   );
 
   // ============================================== //
@@ -462,7 +471,7 @@ export const deployJP_DAO_LLCFullFixture = async () => {
   const lets_jp_llc_saleBeacon = await ethers.getContractAt("SCRBeaconUpgradeable", lets_jp_llc_saleBeaconAddress);
 
   // ============================================== //
-  //            LETSとSaleコントラクトの紐付け             //
+  //            LETS and Sale contract association             //
   // ============================================== //
 
   await setLetsSaleBeacon(

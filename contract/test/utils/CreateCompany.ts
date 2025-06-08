@@ -6,18 +6,21 @@ import { getDeploySmartCompanyAddress } from "./Event";
 import { letsEncodeParams } from "../../scripts/utils/Encode";
 import { deployJP_DAO_LLCFullFixture } from "./DeployFixture";
 
-export const createCompany = async () => {
+export const createCompany = async (
+  scsBeaconProxy?: string[]
+) => {
   // ============================================== //
   const {
     founder,
     borderlessProxy,
     sc_jp_dao_llcBeacon,
     governance_jp_llcBeacon,
+    aoiBeacon,
     lets_jp_llc_exeBeacon,
     lets_jp_llc_non_exeBeacon,
   } = await loadFixture(deployJP_DAO_LLCFullFixture);
   // ============================================== //
-  // パラメータの準備
+  // Prepare parameters
   // ============================================== //
 
   const scid = 1234567890;
@@ -28,10 +31,11 @@ export const createCompany = async () => {
   const entityType = "LLC";
   const scDeployParam = "0x";
   const companyInfo = ["100-0001", "Tokyo", "Shinjuku-ku", "Shinjuku 1-1-1"];
-  const scsBeaconProxy = [
+  const defaultScsBeaconProxy = [
     await governance_jp_llcBeacon.getAddress(),
     await lets_jp_llc_exeBeacon.getAddress(),
     await lets_jp_llc_non_exeBeacon.getAddress(),
+    await aoiBeacon.getAddress(),
   ];
 
   const scsExtraParams = [
@@ -52,12 +56,13 @@ export const createCompany = async () => {
       false,
       2000
     ),
+    "0x"
   ];
 
   console.log("✅ prepare params");
 
   // ============================================== //
-  // createSmartCompany の実行
+  // Execute createSmartCompany
   // ============================================== //
 
   const scrConn = (
@@ -74,7 +79,7 @@ export const createCompany = async () => {
     entityType,
     scDeployParam,
     companyInfo,
-    scsBeaconProxy,
+    scsBeaconProxy || defaultScsBeaconProxy,
     scsExtraParams
   );
   const receipt = await call.wait();
@@ -82,6 +87,7 @@ export const createCompany = async () => {
   // get company info from logs
   const scInfo = getDeploySmartCompanyAddress(receipt);
   const companyAddress = scInfo.beaconAddress;
+  console.log("✅ companyAddress", companyAddress);
   const services = scInfo.services;
 
   // get company info from contract

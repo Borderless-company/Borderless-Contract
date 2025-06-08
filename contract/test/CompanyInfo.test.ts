@@ -2,23 +2,25 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import type { CompanyInfo, BorderlessAccessControl } from "../typechain-types";
-import { deployFullFixture } from "./utils/DeployFixture";
+import { deployJP_DAO_LLCFullFixture } from "./utils/DeployFixture";
 import { createCompany } from "./utils/CreateCompany";
 
 describe("CompanyInfo", function () {
   const getCompanyInfoContext = async () => {
-    const { deployer, founder, proxy } = await loadFixture(deployFullFixture);
+    const { deployer, founder, borderlessProxy } = await loadFixture(
+      deployJP_DAO_LLCFullFixture
+    );
 
-    // Get CompanyInfo contract instance from proxy
+    // Get CompanyInfo contract instance from borderlessProxy
     const companyInfo = (await ethers.getContractAt(
       "CompanyInfo",
-      await proxy.getAddress()
+      await borderlessProxy.getAddress()
     )) as CompanyInfo;
 
-    // Get BorderlessAccessControl instance from proxy
+    // Get BorderlessAccessControl instance from borderlessProxy
     const accessControl = (await ethers.getContractAt(
       "BorderlessAccessControl",
-      await proxy.getAddress()
+      await borderlessProxy.getAddress()
     )) as BorderlessAccessControl;
 
     // Grant DEFAULT_ADMIN_ROLE to deployer
@@ -44,18 +46,20 @@ describe("CompanyInfo", function () {
       founder,
       companyInfo,
       accessControl,
-      proxy,
+      borderlessProxy,
     };
   };
 
   const getFounderContext = async () => {
-    const { deployer, founder, proxy } = await loadFixture(deployFullFixture);
+    const { deployer, founder, borderlessProxy } = await loadFixture(
+      deployJP_DAO_LLCFullFixture
+    );
     const { companyAddress } = await createCompany();
 
-    // Get CompanyInfo contract instance from proxy
+    // Get CompanyInfo contract instance from borderlessProxy
     const companyInfo = (await ethers.getContractAt(
       "CompanyInfo",
-      await proxy.getAddress()
+      await borderlessProxy.getAddress()
     )) as CompanyInfo;
 
     return {
@@ -63,7 +67,7 @@ describe("CompanyInfo", function () {
       founder,
       companyInfo,
       companyAddress,
-      proxy,
+      borderlessProxy,
     };
   };
 

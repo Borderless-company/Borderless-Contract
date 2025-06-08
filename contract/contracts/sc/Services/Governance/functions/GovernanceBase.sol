@@ -11,6 +11,7 @@ import {LETSBaseLib} from "../../LETS/libs/LETSBaseLib.sol";
 import {IGovernanceService} from "../interfaces/IGovernanceService.sol";
 import {IERC721} from "../../../ERC721/interfaces/IERC721.sol";
 import {IErrors} from "../../../../core/utils/IErrors.sol";
+import {console} from "hardhat/console.sol";
 
 /**
  * @title GovernanceBase

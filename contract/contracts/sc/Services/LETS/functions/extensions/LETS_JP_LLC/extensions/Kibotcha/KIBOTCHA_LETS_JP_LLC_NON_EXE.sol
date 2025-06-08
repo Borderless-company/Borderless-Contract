@@ -8,7 +8,7 @@ import {Storage as LETSBaseStorage} from "../../../../../storages/Storage.sol";
 
 // lib
 import {LETS_JP_LLC_NON_EXEInitializeLib} from "../../../../../libs/extensions/LETS_JP_LLC/LETS_JP_LLC_NON_EXEInitializeLib.sol";
-import {ERC721Lib} from "../../../../../../../ERC721/libs/ERC721Lib.sol";
+import {LETSBaseLib} from "../../../../../libs/LETSBaseLib.sol";
 import {Constants} from "../../../../../../../../core/lib/Constants.sol";
 
 // interface
@@ -84,6 +84,6 @@ contract KIBOTCHA_LETS_JP_LLC_NON_EXE is LETS_JP_LLC_NON_EXE {
             IErrors.NotFounder(msg.sender)
         );
         require(tokenId <= 708, InvalidTokenId(tokenId));
-        ERC721Lib.safeMint(to, tokenId);
+        LETSBaseLib.mint(to, tokenId);
     }
 }
